@@ -4,10 +4,6 @@
 
 $(function () {
 
-    $('#sdate').datetimepicker({
-        //minDate: moment()
-    });
-
     $('button.bt-send').click(function(e) {
         e.preventDefault();
 
