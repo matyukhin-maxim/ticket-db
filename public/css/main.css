@@ -1,0 +1,282 @@
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+
+/* Custom page CSS */
+
+.container .text-muted {
+  margin: 20px 0;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+body {
+  background-color: #cfcfcf;
+}
+
+.panel-response {
+    min-height: 350px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.control-label {
+    font-weight: bold;
+    margin-top: 7px;
+}
+
+.table-header {
+    width: 100%;
+}
+
+.white-bg {
+    background-color: #fff;
+}
+
+#status-box {
+    display: none;
+    position: absolute;
+    /*bottom: 0;*/
+    top: 50px;
+    z-index: 1050;
+    width: 100%;
+}
+
+#status-footer {
+    display: none;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.table > tbody > tr > td {
+    padding: 4px;
+}
+
+.strong {
+    font-weight: bold;
+}
+
+textarea.form-control {
+    height: 150px;
+    resize: none;
+}
+
+#info-block {
+    position: absolute;
+    bottom: 50px;
+    width: 300px;
+    border-radius: 6px;
+    left: 40%;
+    display: none;
+}
+.wrapper {
+    padding-top: 60px;
+}
+
+.navbar-top-links {
+    margin-right: 0;
+}
+
+.navbar-top-links li {
+    display: inline-block;
+}
+
+.navbar-top-links li:last-child {
+    margin-right: 15px;
+}
+
+.navbar-top-links li a {
+    padding: 15px;
+    min-height: 50px;
+}
+
+.navbar-top-links .dropdown-menu li {
+    display: block;
+}
+
+.navbar-top-links .dropdown-menu li:last-child {
+    margin-right: 0;
+}
+
+.navbar-top-links .dropdown-menu li a {
+    padding: 3px 20px;
+    min-height: 0;
+}
+
+.navbar-top-links .dropdown-menu li a div {
+    white-space: normal;
+}
+
+.navbar-collapse.in {
+    overflow-y: visible;
+}
+
+.nav-tabs-justified > li > a {
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overfollow: elliplis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-bottom: none; !important;
+    border-radius: 4px;
+
+    font-size: 0.9em;
+}
+
+.nav-tabs-justified > .active > a,
+.nav-tabs-justified > .active > a:hover,
+.nav-tabs-justified > .active > a:focus {
+    border: none; !important;
+    background-color: #66afe9;
+    /*background-color: #337ab7;*/
+    color: #fff;
+}
+
+/* unstack tabs on small screen */
+@media (max-width: 992px) {
+    .nav-tabs-justified > li {
+        display: inline-block;
+        width: 150px;
+    }
+}
+
+.badge {
+    min-width: 30px;
+    border-radius: 5px;
+}
+
+.navbar-text {
+    margin-left: 0px;
+}
+
+.nav-tabs-justified > li > a {
+    outline: none;
+}
+
+.role-name::before {
+    content: '[';
+}
+.role-name::after {
+    content: ']';
+}
+
+.role-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    margin: 0;
+    height: 50px;
+    padding: 15px 20px;
+}
+
+th {
+    text-align: center;
+}
+
+.no-pad {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.screen-wnd {
+    overflow-y: auto;
+    /*min-height: 270px;*/
+    /*max-height: 270px;*/
+    height: 270px;
+}
+
+@media (min-width: 768px) {
+    .screen-wnd {
+        /*min-height: 420px;*/
+        /*max-height: 420px;*/
+        height: 420px;
+    }
+}
+@media (min-width: 992px) {
+    .screen-wnd {
+        /*min-height: 550px;*/
+        /*max-height: 550px;*/
+        height: 550px;
+    }
+}
+@media (min-width: 1200px) {
+    .screen-wnd {
+        /*min-height: 650px;*/
+        /*max-height: 650px;*/
+        height: 650px;
+    }
+}
+@media (min-width: 1400px) {
+
+    .container {
+        width: 1380px;
+    }
+
+    .screen-wnd {
+        /*min-height: 720px;*/
+        /*max-height: 720px;*/
+        max-height: 720px;
+    }
+}
+
+.divider {
+    background-color: #e5e5e5;
+    height: 1px;
+    margin: 9px 0;
+    overflow: hidden;
+}
+
+#devices {
+    min-height: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 7px 3px;
+}
+
+.btn-group-ls > .btn, .btn-ls {
+    border-radius: 3px;
+    font-size: 10px;
+    line-height: 1.5;
+    margin-top: -3px;
+    padding: 1px 4px;
+}
+
+.dev-check {
+    display: none;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+    outline: none;
+}
+
+textarea {
+    resize: none;
+    height: 150px;
+    font-size: 1.2em;
+    font-style: italic;
+}
