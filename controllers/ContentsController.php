@@ -43,6 +43,8 @@ class ContentsController extends CController {
 
 	public function actionIndex() {
 
+		$tmodel = new TicketModel();
+		$this->data['tickets'] = $tmodel->getTicketList('1');
 		$this->render('list');
 	}
 

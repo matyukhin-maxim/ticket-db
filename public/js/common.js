@@ -11,13 +11,13 @@ function showPopup(text, tclass) {
     var box = $('#status-box');
     if (text) {
         box.stop().slideUp('fast');
-        box.find('#status-text').html(text);
         tmr = setTimeout(function() {
             box.addClass(tclass);
+            box.html(text);
             box.slideDown('slow').delay(5000).slideUp(function () {
                 box.removeClass(tclass);
             });
-        }, 1500);
+        }, 1000);
     }
 };
 

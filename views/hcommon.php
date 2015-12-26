@@ -78,13 +78,8 @@
 	</div>
 </nav>
 <div class="container">
-	<div class="row">
-		<div class="col-xs-4 col-xs-offset-8">
-			<div class="alert alert-dismissable fade in text-center strong" id="status-box">
-				<button class="close" aria-hidden="true" data-dismiss="alert" type="button">&times;</button>
-				<div id="status-text"></div>
-			</div>
-		</div>
+	<div class="pull-right col-xs-5">
+		<div class="alert text-center strong" id="status-box"></div>
 	</div>
 </div>
 

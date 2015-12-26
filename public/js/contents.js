@@ -10,6 +10,7 @@ $(function () {
         $('.menu > li').removeClass('active');
         $(this).closest('li').addClass('active');
 
+        //showPopup($(this).prop('href'), 'alert-info');
         //askCount();
     }).filter(':first').trigger('click');
 

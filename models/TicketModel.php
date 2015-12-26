@@ -48,7 +48,7 @@ class TicketModel extends CModel {
 			'tnumber' => $this->getTicketNumber(),
 			'dt_start' => date2mysql(get_param($arguments, 'td_start')),
 			'dt_stop' => date2mysql(get_param($arguments, 'td_stop')),
-			'tmessage' => get_param($arguments, 'tmessage', 'Текст заявки не указан.'),
+			'tmessage' => get_param($arguments, 't_message', 'Текст заявки не указан.'),
 			'tnode' => get_param($arguments, 't_node'),
 			'uid' => get_param($arguments, 'user'),
 			'depid' => get_param($arguments, 'depid'),
@@ -94,6 +94,6 @@ class TicketModel extends CModel {
 
 	public function getTicketList($status) {
 
-		return [$status];
+		return $this->select('SELECT number FROM tickets WHERE deleted = 0');
 	}
 }
