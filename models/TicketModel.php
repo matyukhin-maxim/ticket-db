@@ -45,7 +45,7 @@ class TicketModel extends CModel {
 
 		$this->select($query, [
 			'tid' => get_param($arguments, 'ticket_id'),
-			'tnumber' => $this->getTicketNumber(),
+			'tnumber' => $this->getNextTickeNumber(),
 			'dt_start' => date2mysql(get_param($arguments, 'td_start')),
 			'dt_stop' => date2mysql(get_param($arguments, 'td_stop')),
 			'tmessage' => get_param($arguments, 't_message', 'Текст заявки не указан.'),
@@ -85,7 +85,7 @@ class TicketModel extends CModel {
 		return $ok ? $ticketID : null;
 	}
 
-	public function getTicketNumber() {
+	public function getNextTickeNumber() {
 
 		$data = $this->select('SELECT ifnull(max(number),0) + 1 np FROM tickets');
 		$number = get_param($data, 0);
