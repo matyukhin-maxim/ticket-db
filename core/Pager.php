@@ -2,91 +2,91 @@
 
 class Pager {
 
-    public $m_count;    // количество страниц
-    public $m_size;     // количество на странице
-    public $m_current;  // текущая страцица
-    private $maxButtonCount;
-    private $url;
+	public  $m_count;    // количество страниц
+	public  $m_size;     // количество на странице
+	public  $m_current;  // текущая страцица
+	private $maxButtonCount;
+	private $url;
 
-    const CSS_FIRST_PAGE = '';
-    const CSS_LAST_PAGE = '';
-    const CSS_PREVIOUS_PAGE = '';
-    const CSS_NEXT_PAGE = '';
-    const CSS_INTERNAL_PAGE = '';
-    const CSS_HIDDEN_PAGE = '';
-    const CSS_SELECTED_PAGE = 'active';
+	const CSS_FIRST_PAGE    = '';
+	const CSS_LAST_PAGE     = '';
+	const CSS_PREVIOUS_PAGE = '';
+	const CSS_NEXT_PAGE     = '';
+	const CSS_INTERNAL_PAGE = '';
+	const CSS_HIDDEN_PAGE   = '';
+	const CSS_SELECTED_PAGE = 'active';
 
-    function __construct($__count, $__size, $__current = 0) {
-        $this->m_count = (int) ceil((float) $__count / (float) $__size);
-        $this->m_count = max(1, $this->m_count);
-        $this->m_size = $__size;
-        $this->m_current = min(max($__current,1), $this->m_count);
+	function __construct($__count, $__size, $__current = 0) {
+		$this->m_count = (int)ceil((float)$__count / (float)$__size);
+		$this->m_count = max(1, $this->m_count);
+		$this->m_size = $__size;
+		$this->m_current = min(max($__current, 1), $this->m_count);
 
-        $this->maxButtonCount = 15;
-    }
+		$this->maxButtonCount = 15;
+	}
 
-    public function setUrl($__url) {
-        $this->url = $__url;
-    }
+	public function setUrl($__url) {
+		$this->url = $__url;
+	}
 
-    protected function createButtons() {
-        $buttons = array();
-        $currentPage = $this->m_current;
-        $pageCount = $this->m_count;
-        
-        $first = '<i class="glyphicon glyphicon-fast-backward"></i>';
-        $last  = '<i class="glyphicon glyphicon-fast-forward"></i>';
-        $prev  = '<i class="glyphicon glyphicon-chevron-left"></i>';
-        $next  = '<i class="glyphicon glyphicon-chevron-right"></i>';
+	protected function createButtons() {
+		$buttons = array();
+		$currentPage = $this->m_current;
+		$pageCount = $this->m_count;
 
-        list($beginPage, $endPage) = $this->getPageRange();
+		$first = '<i class="glyphicon glyphicon-fast-backward"></i>';
+		$last = '<i class="glyphicon glyphicon-fast-forward"></i>';
+		$prev = '<i class="glyphicon glyphicon-chevron-left"></i>';
+		$next = '<i class="glyphicon glyphicon-chevron-right"></i>';
 
-        // first
-        $buttons[] = $this->createPageButton($first, 1, self::CSS_FIRST_PAGE, false, false);
+		list($beginPage, $endPage) = $this->getPageRange();
 
-        // prev page
-        $buttons[] = $this->createPageButton($prev, max($currentPage - 1, 1), self::CSS_PREVIOUS_PAGE, $currentPage - 1 <= 0, false);
+		// first
+		$buttons[] = $this->createPageButton($first, 1, self::CSS_FIRST_PAGE, false, false);
 
-        // internal pages
-        for ($i = $beginPage; $i <= $endPage; ++$i)
-            $buttons[] = $this->createPageButton($i, $i, self::CSS_INTERNAL_PAGE, false, $i == $currentPage);
+		// prev page
+		$buttons[] = $this->createPageButton($prev, max($currentPage - 1, 1), self::CSS_PREVIOUS_PAGE, $currentPage - 1 <= 0, false);
 
-        // next page
-        $buttons[] = $this->createPageButton($next, min($currentPage + 1, $pageCount), self::CSS_NEXT_PAGE, $currentPage + 1 > $pageCount, false);
+		// internal pages
+		for ($i = $beginPage; $i <= $endPage; ++$i)
+			$buttons[] = $this->createPageButton($i, $i, self::CSS_INTERNAL_PAGE, false, $i == $currentPage);
 
-        // last page
-        $buttons[] = $this->createPageButton($last, $pageCount, self::CSS_LAST_PAGE, false, false);
+		// next page
+		$buttons[] = $this->createPageButton($next, min($currentPage + 1, $pageCount), self::CSS_NEXT_PAGE, $currentPage + 1 > $pageCount, false);
 
-        return $buttons;
-    }
+		// last page
+		$buttons[] = $this->createPageButton($last, $pageCount, self::CSS_LAST_PAGE, false, false);
 
-    protected function getPageRange() {
-        $currentPage = $this->m_current;
-        $pageCount = $this->m_count;
+		return $buttons;
+	}
 
-        $beginPage = max(1, $currentPage - (int) ($this->maxButtonCount / 2));
-        if (($endPage = $beginPage + $this->maxButtonCount) >= $pageCount) {
-            $endPage = $pageCount ;
-            $beginPage = max(1, $endPage - $this->maxButtonCount + 1);
-        }
-        return array($beginPage, $endPage);
-    }
+	protected function getPageRange() {
+		$currentPage = $this->m_current;
+		$pageCount = $this->m_count;
 
-    protected function createPageButton($label, $page, $class, $hidden, $selected) {
+		$beginPage = max(1, $currentPage - (int)($this->maxButtonCount / 2));
+		if (($endPage = $beginPage + $this->maxButtonCount) >= $pageCount) {
+			$endPage = $pageCount;
+			$beginPage = max(1, $endPage - $this->maxButtonCount + 1);
+		}
+		return array($beginPage, $endPage);
+	}
 
-        if ($hidden || $selected)
-            $class .= ' ' . ($hidden ? self::CSS_HIDDEN_PAGE : self::CSS_SELECTED_PAGE);
+	protected function createPageButton($label, $page, $class, $hidden, $selected) {
 
-        return sprintf('<li class="%s"><a href="%s">%s</a></li>', $class, "{$this->url}page/$page/", $label);
-    }
+		if ($hidden || $selected)
+			$class .= ' ' . ($hidden ? self::CSS_HIDDEN_PAGE : self::CSS_SELECTED_PAGE);
 
-    public function draw() {
+		return sprintf('<li class="%s"><a href="%s">%s</a></li>', $class, "{$this->url}page/$page/", $label);
+	}
 
-        $buttons = $this->createButtons();
-        if (empty($buttons))
-            return;
-        
-        return '<ul class="pagination pagination-sm">' . implode(PHP_EOL, $buttons) . '</ul>';
-    }
+	public function draw() {
+
+		$buttons = $this->createButtons();
+		if (empty($buttons))
+			return;
+
+		return '<ul class="pagination pagination-sm">' . implode(PHP_EOL, $buttons) . '</ul>';
+	}
 
 }

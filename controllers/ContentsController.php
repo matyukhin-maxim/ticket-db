@@ -3,12 +3,12 @@
 class ContentsController extends CController {
 
 	private $menu = [
-		'confirm'   => 'Согласование',
-		'accept'    => 'Разрешенные',
-		'open'      => 'Открытые',
-		'complete'  => 'Прикрытые',
-		'reject'    => 'Отказанные',
-		'close'     => 'Закрытые',
+		'confirm' => 'Согласование',
+		'accept' => 'Разрешенные',
+		'open' => 'Открытые',
+		'complete' => 'Прикрытые',
+		'reject' => 'Отказанные',
+		'close' => 'Закрытые',
 	];
 
 	public function __construct() {
@@ -32,9 +32,9 @@ class ContentsController extends CController {
 
 		// рендерим основное меню
 		foreach ($this->menu as $url => $title) {
-			$this->data['cnt']      = rand(1, 15);
-			$this->data['title']    = $title;
-			$this->data['url']      = $this->createActionUrl($url);
+			$this->data['cnt'] = rand(1, 15);
+			$this->data['title'] = $title;
+			$this->data['url'] = $this->createActionUrl($url);
 			$this->data['usermenu'] .= $this->renderPartial('menu-item');
 		}
 
@@ -50,6 +50,8 @@ class ContentsController extends CController {
 
 	public function ajaxCount() {
 
-		echo json_encode(array_map(function($x) {return mt_rand(-10, 5);}, range(1, count($this->menu))));
+		echo json_encode(array_map(function ($x) {
+			return mt_rand(-10, 5);
+		}, range(1, count($this->menu))));
 	}
 }

@@ -2,9 +2,9 @@
 
 class IndexController extends CController {
 
-    public function actionIndex() {
+	public function actionIndex() {
 
-        $this->redirect('/contents/');
-    }
+		$this->redirect('/contents/');
+	}
 
 }

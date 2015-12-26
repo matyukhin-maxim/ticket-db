@@ -3,153 +3,157 @@
 /** @property PDO $db */
 class CModel {
 
-    protected static $db = null;
-    protected static $errorlist = [];   // store all errors happening in runtime
-            
-            
-    function __construct() {
+	protected static $db        = null;
+	protected static $errorlist = [];   // store all errors happening in runtime
 
-        if (!$this->isConnected()) {
 
-            $properties = Configuration::$connection;
+	function __construct() {
 
-            try {
+		if (!$this->isConnected()) {
 
-                // init mysql connection
-                self::$db = new PDO(
-                    sprintf("mysql:host=%s;dbname=%s", $properties['host'], $properties['base'])
-                    , $properties['user']
-                    , $properties['pass']
-                    , [
-                        PDO::ATTR_TIMEOUT => 5,
-                        PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8',
-                    ]);
+			$properties = Configuration::$connection;
 
-                self::$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-                //this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-                self::$db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
-                self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-            } catch (Exception $exc) {
+			try {
 
-                self::$db = null;
-                self::$errorlist[] = 'База данных не доступна! ' . $exc->getMessage();
-            }
-        }
-    }
+				// init mysql connection
+				self::$db = new PDO(
+					sprintf("mysql:host=%s;dbname=%s", $properties['host'], $properties['base'])
+					, $properties['user']
+					, $properties['pass']
+					, [
+					PDO::ATTR_TIMEOUT => 5,
+					PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8',
+				]);
 
-    public function getErrors() {
-        
-        return self::$errorlist;
-    }
-    
-    protected function select($query, $param = array()) {
+				self::$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+				//this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+				self::$db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+				self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+			} catch (Exception $exc) {
 
-        if (!self::isConnected()) {
-            self::$errorlist[] = 'Связь с БД не установлена.';
-            return [];
-        }
+				self::$db = null;
+				self::$errorlist[] = 'База данных не доступна! ' . $exc->getMessage();
+			}
+		}
+	}
 
-        /** 
-         * модернизируем запрос на лету
-         * если есть параметры в виде массивов
-         * такие параметры будем заменять на конструкцию in
-         * 
-         * where field in :[ARRAY] => where field in (x1,x2,...)
-         */
-                
-        $cnt = 0;
-        foreach ($param as $key => $value) {
-            if (gettype($value) === 'array') {
-                $condition = "(";
-                foreach ($value as $item) {
-                    
-                    $condition .= $cnt ? "," : ""; // если не первый параметр, то добавим запятую
-                    $vparam = "_X" . ++$cnt;
-                    $condition .= " :$vparam";
-                    
-                    // а параметр подмассива перекидываем в основной массив
-                    // елементы вложенного массива не должны быть сами массивами, иначе хрень будет
-                    $param[$vparam] = $item;
-                }
-                $condition .= ") ";
-                $query = str_replace(":$key", $condition, $query);
-                unset($param[$key]);
-            }
-        }
-        
-        $sth = self::$db->prepare($query);
+	public function getErrors() {
 
-        foreach ($param as $key => $value) {
-            $type = strtolower(gettype($value));
-            $cast = null;
-            switch ($type) {
-                case 'integer': $cast = PDO::PARAM_INT;
-                    break;
-                case 'null': $cast = PDO::PARAM_NULL;
-                    break;
-                case 'boolean': $cast = PDO::PARAM_BOOL;
-                    break;
-                default: $cast = PDO::PARAM_STR;
-                    break;
-            }
-            $sth->bindValue($key, $value, $cast);
-        }
+		return self::$errorlist;
+	}
 
-        $sth->execute();
-        $error = $sth->errorInfo();
-        $ecode = get_param($error, 0);
+	protected function select($query, $param = array()) {
 
-        if ($ecode !== '00000') {
-            $emsg = get_param($error, 2);
-            self::$errorlist[] = "MySQL error [$ecode]: " . ($emsg ? $emsg : 'Invalid params');
-        }
-        return  $sth->fetchAll();
-    }
+		if (!self::isConnected()) {
+			self::$errorlist[] = 'Связь с БД не установлена.';
+			return [];
+		}
 
-    protected function prepareArguments($parguments, &$query) {
-        $res = [];
-        $cnt = 0;
-        foreach ($parguments as $key => $value) {
-            if (gettype($value) === 'array') {
-                $condition = "(";
-                foreach ($value as $item) {
+		/**
+		 * модернизируем запрос на лету
+		 * если есть параметры в виде массивов
+		 * такие параметры будем заменять на конструкцию in
+		 *
+		 * where field in :[ARRAY] => where field in (x1,x2,...)
+		 */
 
-                    $condition .= $cnt ? "," : ""; // если не первый параметр, то добавим запятую
-                    $vparam = "_X" . ++$cnt;
-                    $condition .= " :$vparam";
+		$cnt = 0;
+		foreach ($param as $key => $value) {
+			if (gettype($value) === 'array') {
+				$condition = "(";
+				foreach ($value as $item) {
 
-                    // а параметр подмассива перекидываем в основной массив
-                    // елементы вложенного массива не должны быть сами массивами, иначе хрень будет
-                    $res[$vparam] = $item;
-                }
-                $condition .= ") ";
-                $query = str_replace(":$key", $condition, $query);
-            } else
-                $res[$key] = $value;
-        }
-        return $res;
-    }
+					$condition .= $cnt ? "," : ""; // если не первый параметр, то добавим запятую
+					$vparam = "_X" . ++$cnt;
+					$condition .= " :$vparam";
 
-    public static function isConnected() {
+					// а параметр подмассива перекидываем в основной массив
+					// елементы вложенного массива не должны быть сами массивами, иначе хрень будет
+					$param[$vparam] = $item;
+				}
+				$condition .= ") ";
+				$query = str_replace(":$key", $condition, $query);
+				unset($param[$key]);
+			}
+		}
 
-        return self::$db !== null;
-    }
-    
-    public function startTransaction() {
-        
-        self::$db->beginTransaction();
-    }
-    
-    public function stopTransaction($success = true) {
-        
-        if ($success)
-            self::$db->commit();
-        else
-            self::$db->rollBack();
-    }
+		$sth = self::$db->prepare($query);
 
-    public function getDB() {
-        return self::$db;
-    }
+		foreach ($param as $key => $value) {
+			$type = strtolower(gettype($value));
+			$cast = null;
+			switch ($type) {
+				case 'integer':
+					$cast = PDO::PARAM_INT;
+					break;
+				case 'null':
+					$cast = PDO::PARAM_NULL;
+					break;
+				case 'boolean':
+					$cast = PDO::PARAM_BOOL;
+					break;
+				default:
+					$cast = PDO::PARAM_STR;
+					break;
+			}
+			$sth->bindValue($key, $value, $cast);
+		}
+
+		$sth->execute();
+		$error = $sth->errorInfo();
+		$ecode = get_param($error, 0);
+
+		if ($ecode !== '00000') {
+			$emsg = get_param($error, 2);
+			self::$errorlist[] = "MySQL error [$ecode]: " . ($emsg ? $emsg : 'Invalid params');
+		}
+		return $sth->fetchAll();
+	}
+
+	protected function prepareArguments($parguments, &$query) {
+		$res = [];
+		$cnt = 0;
+		foreach ($parguments as $key => $value) {
+			if (gettype($value) === 'array') {
+				$condition = "(";
+				foreach ($value as $item) {
+
+					$condition .= $cnt ? "," : ""; // если не первый параметр, то добавим запятую
+					$vparam = "_X" . ++$cnt;
+					$condition .= " :$vparam";
+
+					// а параметр подмассива перекидываем в основной массив
+					// елементы вложенного массива не должны быть сами массивами, иначе хрень будет
+					$res[$vparam] = $item;
+				}
+				$condition .= ") ";
+				$query = str_replace(":$key", $condition, $query);
+			} else
+				$res[$key] = $value;
+		}
+		return $res;
+	}
+
+	public static function isConnected() {
+
+		return self::$db !== null;
+	}
+
+	public function startTransaction() {
+
+		self::$db->beginTransaction();
+	}
+
+	public function stopTransaction($success = true) {
+
+		if ($success)
+			self::$db->commit();
+		else
+			self::$db->rollBack();
+	}
+
+	public function getDB() {
+		return self::$db;
+	}
 
 }

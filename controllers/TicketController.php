@@ -122,9 +122,9 @@ class TicketController extends CController {
 			$data .= $this->renderPartial('no-device');
 		} else {
 			foreach ($devices as $item) {
-                $this->data['dev_name'] = get_param($item, 'name');
-                $this->data['dev_id']   = get_param($item, 'id');
-				$this->data['dev_class']= mb_strlen($this->data['dev_name']) >= 35 ? 'col-md-12' : 'col-md-6'; // fine view of wide name
+				$this->data['dev_name'] = get_param($item, 'name');
+				$this->data['dev_id'] = get_param($item, 'id');
+				$this->data['dev_class'] = mb_strlen($this->data['dev_name']) >= 35 ? 'col-md-12' : 'col-md-6'; // fine view of wide name
 				$data .= $this->renderPartial('device-item');
 			}
 		}

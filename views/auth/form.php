@@ -10,7 +10,7 @@
 							<input class="form-control" placeholder="Фамилия"
 							       name="login" type="text"
 							       autofocus required>
-							<input name="userid" type="hidden" />
+							<input name="userid" type="hidden"/>
 						</div>
 						<div class="form-group">
 							<input class="form-control" placeholder="Пароль"

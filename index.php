@@ -21,51 +21,51 @@ Session::start();
 
 try {
 
-    // подгружаем все файлы моделей (можено бы было в автолоаде, но фтопку)
-    foreach (glob('models/*.php') as $model) {
-        include_once $model;
-    }
-    
-    $module = $url[0];
+	// подгружаем все файлы моделей (можено бы было в автолоаде, но фтопку)
+	foreach (glob('models/*.php') as $model) {
+		include_once $model;
+	}
 
-    // проверяем сущевствование файла контролера (класса)
-    $file = 'controllers/' . ucfirst($module) . 'Controller.php';
-    if (!file_exists($file)) {
-        throw new Exception("Файл контроллера '$module' не найден.");
-    }
+	$module = $url[0];
 
-    // подключаем
-    require_once $file;
+	// проверяем сущевствование файла контролера (класса)
+	$file = 'controllers/' . ucfirst($module) . 'Controller.php';
+	if (!file_exists($file)) {
+		throw new Exception("Файл контроллера '$module' не найден.");
+	}
 
-    $module .= 'Controller';
-    if (!class_exists($module)) {
-        throw new Exception("Класс контроллера '$module' не объявлен.");
-    }
-    
-    /* @var $ctrl CController */
-    $ctrl = new $module();
+	// подключаем
+	require_once $file;
 
-    // проверим существует ли нужный метод
-    $action = get_param($url, 1, 'index');
-    $prefix = isAjax() ? 'ajax' : 'action';
-    $method = $prefix . ucfirst($action);
+	$module .= 'Controller';
+	if (!class_exists($module)) {
+		throw new Exception("Класс контроллера '$module' не объявлен.");
+	}
 
-    if (!method_exists($ctrl, $method)) {
-        throw new Exception("Действие '$method' не определено для контроллера '$module'.");
-    }
-    
-    // передаем параметры
-    $ctrl->arguments = array_slice($url, 2);
-    
-    // и вызываем запрошенное действие
-    $ctrl->$method();
-    
+	/* @var $ctrl CController */
+	$ctrl = new $module();
+
+	// проверим существует ли нужный метод
+	$action = get_param($url, 1, 'index');
+	$prefix = isAjax() ? 'ajax' : 'action';
+	$method = $prefix . ucfirst($action);
+
+	if (!method_exists($ctrl, $method)) {
+		throw new Exception("Действие '$method' не определено для контроллера '$module'.");
+	}
+
+	// передаем параметры
+	$ctrl->arguments = array_slice($url, 2);
+
+	// и вызываем запрошенное действие
+	$ctrl->$method();
+
 } catch (Exception $exc) {
-    
-    $message = $exc->getMessage();
 
-    setcookie('status', $message, time() + 5, '/');
-    header('Location: /');
-    //echo $message . PHP_EOL;
-    exit();
+	$message = $exc->getMessage();
+
+	setcookie('status', $message, time() + 5, '/');
+	header('Location: /');
+	//echo $message . PHP_EOL;
+	exit();
 }
