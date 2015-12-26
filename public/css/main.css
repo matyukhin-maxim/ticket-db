@@ -8,7 +8,7 @@ body {
 }
 .footer {
   position: absolute;
-  bottom: 0;
+  bottom: 1px; /* i have no idea why '0' did't work */
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 60px;
@@ -53,14 +53,18 @@ body {
 #status-box {
     display: none;
     position: absolute;
-    /*bottom: 0;*/
     top: 50px;
     z-index: 1050;
     width: 100%;
 }
 
 #status-footer {
-    display: none;
+    /*display: none;*/
+    position: absolute;
+    /*top: -60px;*/
+    bottom: 60px;
+    z-index: 1050;
+    width: 100%;
 }
 
 .pagination {
@@ -87,6 +91,7 @@ textarea.form-control {
     border-radius: 6px;
     left: 40%;
     display: none;
+    z-index: 2000;
 }
 .wrapper {
     padding-top: 60px;

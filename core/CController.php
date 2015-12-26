@@ -52,7 +52,7 @@ class CController {
 		}
 
 		if ($endpage) {
-			if ($this->model) $elist = join("<br/>", $this->model->getErrors());
+			$elist = CModel::getErrorList();
 			include $this->viewFolder . 'fcommon.php';
 		}
 	}

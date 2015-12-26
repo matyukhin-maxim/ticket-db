@@ -13,14 +13,14 @@
 		</div>
 	</div>
 	<div class="col-md-9">
-		<div class="panel panel-default screen-wnd">
+		<div class="panel panel-default">
 			<div class="panel-heading strong">
 				<i class="glyphicon glyphicon-bullhorn"></i>&nbsp;
 				Список заявок
 			</div>
 			<div class="screen--wnd">
 				<div class="panel-body no-pad">
-					<table class="table table-bordered no-pad">
+					<table class="table no-pad">
 						<thead>
 						<tr>
 							<th class="col-xs-1">#</th>
@@ -33,8 +33,9 @@
 						</thead>
 					</table>
 				</div>
-				<div class="panel-body" id="ticket-list">
-					<table class="table table-bordered">
+				<div class="panel-body screen-wnd" id="ticket-list">
+					<table class="table table-bordered table-striped text-center">
+						<tbody>
 						<colgroup>
 							<col class="col-xs-1">
 							<col class="col-xs-2">
@@ -43,18 +44,14 @@
 							<col class="col-xs-4">
 							<col class="col-xs-2">
 						</colgroup>
-						<tbody>
-						<?php
-						var_dump($tickets);
-						?>
-						<!--						<tr>-->
-						<!--							<td>32131</td>-->
-						<!--							<td>28.12.2015</td>-->
-						<!--							<td>СДТУ</td>-->
-						<!--							<td>04.12.2015 10:00 <br/> 14.12.2015 12:00</td>-->
-						<!--							<td>Общестанционное оборудование ЦТАИ</td>-->
-						<!--							<td>Разрешена</td>-->
-						<!--						</tr>-->
+						<tr class="">
+							<td>32131</td>
+							<td>28.12.2015</td>
+							<td>СДТУ</td>
+							<td>04.12.2015 10:00 <br/> 14.12.2015 12:00</td>
+							<td>Общестанционное оборудование ЦТАИ</td>
+							<td>Разрешена</td>
+						</tr>
 						</tbody>
 					</table>
 				</div>

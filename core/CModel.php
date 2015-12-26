@@ -42,6 +42,11 @@ class CModel {
 		return self::$errorlist;
 	}
 
+	public static function getErrorList() {
+
+		return join('<br/>', self::$errorlist);
+	}
+
 	protected function select($query, $param = array()) {
 
 		if (!self::isConnected()) {
