@@ -28,7 +28,10 @@ body {
 }
 
 body {
-  background-color: #cfcfcf;
+  /*background-color: #cfcfcf;*/
+    background-image: url("/bg2.jpg");
+    background-size: 100% 100%;
+    opacity: 0.95;
 }
 
 .panel-response {
@@ -205,30 +208,30 @@ th {
 
 .screen-wnd {
     overflow-y: auto;
-    /*min-height: 270px;*/
-    /*max-height: 270px;*/
-    height: 270px;
+    min-height: 270px;
+    max-height: 270px;
+    /*height: 270px;*/
 }
 
 @media (min-width: 768px) {
     .screen-wnd {
-        /*min-height: 420px;*/
-        /*max-height: 420px;*/
-        height: 420px;
+        min-height: 420px;
+        max-height: 420px;
+        /*height: 420px;*/
     }
 }
 @media (min-width: 992px) {
     .screen-wnd {
-        /*min-height: 550px;*/
-        /*max-height: 550px;*/
-        height: 550px;
+        min-height: 550px;
+        max-height: 550px;
+        /*height: 550px;*/
     }
 }
 @media (min-width: 1200px) {
     .screen-wnd {
-        /*min-height: 650px;*/
-        /*max-height: 650px;*/
-        height: 650px;
+        min-height: 650px;
+        max-height: 650px;
+        /*height: 650px;*/
     }
 }
 @media (min-width: 1400px) {
@@ -238,9 +241,9 @@ th {
     }
 
     .screen-wnd {
-        /*min-height: 720px;*/
-        /*max-height: 720px;*/
+        min-height: 720px;
         max-height: 720px;
+        /*max-height: 720px;*/
     }
 }
 

@@ -7,6 +7,7 @@
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 	<title><?= $this->title; ?></title>
 	<link rel="stylesheet" href="/public/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="/public/css/bootstrap-theme.css"/>
 	<link rel="stylesheet" href="/public/css/bootstrap-select.min.css"/>
 	<link rel="stylesheet" href="/public/css/bootstrap-datetimepicker.min.css"/>
 	<link rel="stylesheet" href="/public/css/main.css"/>
@@ -29,7 +30,7 @@
 			<?= $brand; ?>
 		</a>
 		<?php if ($authdata !== false): ?>
-			<ul class="nav navbar-left">
+			<ul class="nav navbar-left hidden-xs">
 				<li class="role-name alert-info strong text-center" title="Роль">
 					<?= get_param($authdata, 'rolename', '?'); ?>
 				</li>
@@ -44,6 +45,9 @@
 						Вход</a>
 				</li>
 			<?php else: ?>
+				<li class="role-name alert-info strong text-center visible-xs" title="Роль">
+					<?= get_param($authdata, 'rolename', '?'); ?>
+				</li>
 				<li class="navbar-text"><span>Вы вошли как:</span></li>
 				<li class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -56,7 +60,8 @@
 							<?= get_param($authdata, 'fullname', '-'); ?>
 						</li>
 						<li class="divider"></li>
-						<li><a href="/auth/changepassword/">
+						<li>
+							<a href="/auth/changepassword/">
 								<i class="glyphicon glyphicon-lock"></i>
 								Изменить пароль
 							</a>
