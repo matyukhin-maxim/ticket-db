@@ -1,5 +1,6 @@
 <?php
 
+/** @property ContentsModel $model */
 class ContentsController extends CController {
 
 	private $menu = [
@@ -43,8 +44,7 @@ class ContentsController extends CController {
 
 	public function actionIndex() {
 
-		$tmodel = new TicketModel();
-		$this->data['tickets'] = $tmodel->getTicketList('1');
+
 		$this->render('list');
 	}
 
@@ -53,5 +53,29 @@ class ContentsController extends CController {
 		echo json_encode(array_map(function ($x) {
 			return mt_rand(-10, 5);
 		}, range(1, count($this->menu))));
+	}
+
+	public function ajaxList() {
+
+		sleep(3);
+		$status = filter_input(INPUT_POST, 'type', FILTER_VALIDATE_INT, [
+			'options' => [
+				'min_range' => 0,
+			    'default' => 0,
+			]
+		]);
+
+		$ticketlist = $this->model->getTicketListByStatus($status);
+		foreach ($ticketlist as $ticket) {
+
+			$this->data['tn'] = get_param($ticket, 'number');
+			$this->data['dcreate'] = get_param($ticket, 'dc');
+			$this->data['tdepartment'] = get_param($ticket, 'dname');
+			$this->data['twork'] = join('<br/>', get_array_part($ticket, 'dstart dstop'));
+			$this->data['tnode'] = get_param($ticket, 'nodename');
+			$this->data['tstatus'] = 'Черновик';
+
+			echo $this->renderPartial('ticket-row');
+		}
 	}
 }

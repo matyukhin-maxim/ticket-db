@@ -9,12 +9,12 @@
 						<div class="form-group">
 							<input class="form-control" placeholder="Фамилия"
 							       name="login" type="text"
-							       autofocus required>
+							       autofocus required autocomplete="off">
 							<input name="userid" type="hidden"/>
 						</div>
 						<div class="form-group">
 							<input class="form-control" placeholder="Пароль"
-							       name="password" type="password" required>
+							       name="password" type="password" required autocomplete="off">
 						</div>
 						<button class="btn btn-primary btn-block" type="submit">Войти</button>
 					</fieldset>

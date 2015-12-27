@@ -2,12 +2,10 @@
 	<div class="col-sm-12">
 		<div class="panel panel-default">
 			<div class="panel-heading strong">
-				<div class="pull-right">
-					<a href="/contents/" class="close" title="Закрыть без сохранения">&times;</a>
-				</div>
+				<a href="/contents/" class="close" title="Закрыть без сохранения">&times;</a>
 				<?= $title; ?>
 			</div>
-			<div class="panel-body screen-wnd">
+			<div class="panel-body screen--wnd">
 				<form action="/ticket/save/" id="ticket">
 					<table class="table table-bordered text-center">
 						<tr class="strong">
@@ -86,7 +84,7 @@
 					</div>
 					<div class="form-group no-pad">
 						<label for="ticket-message" class="control-label">Содержание заявки :</label>
-						<textarea name="t_message" id="ticket-message" class="form-control" autofocus
+						<textarea name="t_message" id="ticket-message" class="form-control"
 						          placeholder="Текстовое сообщение, описывающее характер работ"
 						          spellcheck="false"><?= $t_message; ?></textarea>
 					</div>

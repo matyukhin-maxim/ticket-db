@@ -10,6 +10,11 @@ $(function () {
         $('.menu > li').removeClass('active');
         $(this).closest('li').addClass('active');
 
+        $('#ticket-list').html('<tr class="warning"><td colspan="6">Загрузка...</td></tr>');
+        $.post('/contents/list/', {type: 0},
+        function (data) {
+            $('#ticket-list').html(data);
+        });
         //showPopup($(this).prop('href'), 'alert-info');
         //askCount();
     }).filter(':first').trigger('click');

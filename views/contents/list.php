@@ -33,9 +33,8 @@
 						</thead>
 					</table>
 				</div>
-				<div class="panel-body screen-wnd" id="ticket-list">
+				<div class="panel-body screen--wnd">
 					<table class="table table-bordered table-striped text-center">
-						<tbody>
 						<colgroup>
 							<col class="col-xs-1">
 							<col class="col-xs-2">
@@ -44,15 +43,7 @@
 							<col class="col-xs-4">
 							<col class="col-xs-2">
 						</colgroup>
-						<tr class="">
-							<td>32131</td>
-							<td>28.12.2015</td>
-							<td>СДТУ</td>
-							<td>04.12.2015 10:00 <br/> 14.12.2015 12:00</td>
-							<td>Общестанционное оборудование ЦТАИ</td>
-							<td>Разрешена</td>
-						</tr>
-						</tbody>
+						<tbody id="ticket-list"></tbody>
 					</table>
 				</div>
 			</div>

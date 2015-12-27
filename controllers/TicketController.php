@@ -49,6 +49,7 @@ class TicketController extends CController {
 
 		$this->render('', false);
 		var_dump($this->arguments);
+		$this->render('edit', false);
 		$this->render('');
 	}
 
