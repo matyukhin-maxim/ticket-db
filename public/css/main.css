@@ -8,7 +8,7 @@ body {
 }
 .footer {
   position: absolute;
-  bottom: 1px; /* i have no idea why '0' did't work */
+  bottom: 0; /* i have no idea why '0' did't work */
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 60px;
@@ -66,8 +66,9 @@ body {
     position: absolute;
     /*top: -60px;*/
     bottom: 60px;
+    left: 0;
     z-index: 1050;
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .pagination {

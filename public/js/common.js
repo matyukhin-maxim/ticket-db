@@ -39,7 +39,7 @@ $(function() {
         $('#info-block').slideToggle('slow');
     });
 
-    $('#status-footer:empty').hide();
+    $('#status-text:empty').closest('.container').hide();
 
     $('.selectpicker').selectpicker({
         dropupAuto : false

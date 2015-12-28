@@ -5,7 +5,7 @@ class Configuration {
 	public static $connection = [
 		'host' => 'localhost',
 		'user' => 'root',
-		'pass' => 'fell1x',
+		'pass' => 'max',
 		'base' => 'bid',
 	];
 

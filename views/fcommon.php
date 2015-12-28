@@ -53,8 +53,8 @@
 	</div>
 	<div class="container">
 		<div class="row">
-			<div class="col-xs-10 col-xs-offset-1">
-				<div class="alert alert-warning" id="status-footer"><?= get_param($elist); ?></div>
+			<div class="alert alert-danger col-sm-6 col-sm-offset-3" id="status-footer">
+				<div class="strong" id="status-text"><?= get_param($elist); ?></div>
 			</div>
 		</div>
 	</div>
