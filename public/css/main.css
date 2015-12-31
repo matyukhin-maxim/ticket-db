@@ -1,34 +1,35 @@
 
 html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  margin-bottom: 60px;
-}
-.footer {
-  position: absolute;
-  bottom: 0; /* i have no idea why '0' did't work */
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #f5f5f5;
+    position: relative;
+    min-height: 100%;
 }
 
+body {
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0; /* i have no idea why '0' did't work */
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    background-color: #f5f5f5;
+}
 
 /* Custom page CSS */
 
 .container .text-muted {
-  margin: 20px 0;
+    margin: 20px 0;
 }
 
 .footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 body {
-  /*background-color: #cfcfcf;*/
+    /*background-color: #cfcfcf;*/
     background-image: url("/bg2.jpg");
     background-size: 100% 100%;
     opacity: 0.95;
@@ -91,12 +92,13 @@ textarea.form-control {
 #info-block {
     position: absolute;
     bottom: 50px;
-    width: 300px;
+    /*width: 300px;*/
     border-radius: 6px;
-    left: 40%;
+    left: 0;
     display: none;
     z-index: 2000;
 }
+
 .wrapper {
     padding-top: 60px;
 }
@@ -145,7 +147,8 @@ textarea.form-control {
     -o-text-overfollow: elliplis;
     text-overflow: ellipsis;
     white-space: nowrap;
-    border-bottom: none; !important;
+    border-bottom: none;
+!important;
     border-radius: 4px;
 
     font-size: 0.9em;
@@ -154,7 +157,8 @@ textarea.form-control {
 .nav-tabs-justified > .active > a,
 .nav-tabs-justified > .active > a:hover,
 .nav-tabs-justified > .active > a:focus {
-    border: none; !important;
+    border: none;
+!important;
     background-color: #66afe9;
     /*background-color: #337ab7;*/
     color: #fff;
@@ -184,6 +188,7 @@ textarea.form-control {
 .role-name::before {
     content: '[';
 }
+
 .role-name::after {
     content: ']';
 }
@@ -221,6 +226,7 @@ th {
         /*height: 420px;*/
     }
 }
+
 @media (min-width: 992px) {
     .screen-wnd {
         min-height: 550px;
@@ -228,6 +234,7 @@ th {
         /*height: 550px;*/
     }
 }
+
 @media (min-width: 1200px) {
     .screen-wnd {
         min-height: 650px;
@@ -235,6 +242,7 @@ th {
         /*height: 650px;*/
     }
 }
+
 @media (min-width: 1400px) {
 
     .container {
