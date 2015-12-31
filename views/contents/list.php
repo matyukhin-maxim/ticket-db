@@ -18,8 +18,8 @@
 				<i class="glyphicon glyphicon-bullhorn"></i>&nbsp;
 				Список заявок
 			</div>
-			<div class="screen--wnd">
-				<div class="panel-body no-pad">
+			<div class="">
+				<div class="panel-body no-pad table-header">
 					<table class="table no-pad">
 						<thead>
 						<tr>
@@ -33,7 +33,7 @@
 						</thead>
 					</table>
 				</div>
-				<div class="panel-body screen--wnd">
+				<div class="panel-body ticket-window">
 					<table class="table table-bordered table-striped text-center">
 						<colgroup>
 							<col class="col-xs-1">

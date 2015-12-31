@@ -9,9 +9,10 @@ $(function () {
 
         $('.menu > li').removeClass('active');
         $(this).closest('li').addClass('active');
+        var ttype = $(this).data('type');
 
-        $('#ticket-list').html('<tr class="warning"><td colspan="6">Загрузка...</td></tr>');
-        $.post('/contents/list/', {type: 0},
+        $('#ticket-list').html('<tr class="warning strong"><td colspan="6">Загрузка...</td></tr>');
+        $.post('/contents/list/', {type: ttype},
         function (data) {
             $('#ticket-list').html(data);
         });
@@ -22,15 +23,16 @@ $(function () {
     function askCount() {
         $.post('/contents/count/', null,
             function (data) {
-                $.each(data, function (idx, nval) {
-                    var item = $('.item-cnt').eq(idx);
-                    nval = nval <= 0 ? '' : nval;
-                    if (item.text() != nval) {
-                        item.closest('li').stop().effect('highlight', {color:"#dff0d8"}, 4000); //color: "#33e9af"
-                        item.text(nval);
+                $.each(data, function (idx, row) {
+                    row.cnt = row.cnt <= 0 ? '' : row.cnt;
+                    //var item = $('#menu-' + row.id).find('.item-cnt');
+                    var item = $('.menu-item[data-type="' + row.id + '"] > .item-cnt');
+                    if (item.text() != row.cnt) {
+                        item.closest('li').stop().effect('highlight', {color:"#dff0d8"}, 4000);
+                        item.text(row.cnt);
                     }
                 });
-        }, 'json');
+            }, 'json');
     }
-    //setInterval(askCount, 10000);
+    setInterval(askCount, 10000);
 });

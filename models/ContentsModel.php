@@ -21,8 +21,23 @@ class ContentsModel extends CModel {
 		  LEFT JOIN departments d ON t.department_id = d.id
 		  LEFT JOIN nodes n ON t.node_id = n.id
 		WHERE t.deleted = 0
-		  AND t.status = :pstate", [
+		  AND t.status = :pstate
+		ORDER BY t.dt_create DESC ", [
 			'pstate' => $status,
 		]);
+	}
+
+	public function getCounter() {
+
+		return $this->select('
+		SELECT s.id, ifnull(o.cnt, 0) cnt
+		FROM states s
+		LEFT JOIN (
+			SELECT
+				status, count(*) cnt
+			FROM tickets t
+			WHERE t.deleted = 0
+			GROUP BY t.status
+		) o ON s.id = o.status');
 	}
 }

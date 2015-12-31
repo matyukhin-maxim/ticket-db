@@ -47,7 +47,7 @@ body {
 }
 
 .table-header {
-    width: 100%;
+    padding-right: 30px;
 }
 
 .white-bg {
@@ -177,21 +177,14 @@ textarea.form-control {
     border-radius: 5px;
 }
 
-.navbar-text {
-    margin-left: 0px;
-}
-
 .nav-tabs-justified > li > a {
     outline: none;
 }
 
-.role-name::before {
-    content: '[';
+.role-name::before, .role-name::after {
+    content: '|';
 }
 
-.role-name::after {
-    content: ']';
-}
 
 .role-name {
     text-overflow: ellipsis;
@@ -296,4 +289,11 @@ textarea {
     height: 150px;
     font-size: 1.2em;
     font-style: italic;
+}
+
+.ticket-window {
+
+    min-height: 450px;
+    max-height: 450px;
+    overflow-y: auto;
 }

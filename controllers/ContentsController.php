@@ -4,12 +4,12 @@
 class ContentsController extends CController {
 
 	private $menu = [
-		'confirm' => 'Согласование',
-		'accept' => 'Разрешенные',
-		'open' => 'Открытые',
-		'complete' => 'Прикрытые',
-		'reject' => 'Отказанные',
-		'close' => 'Закрытые',
+		'1' => 'Согласование',
+		'2' => 'Разрешенные',
+		'3' => 'Открытые',
+		'4' => 'Прикрытые',
+		'5' => 'Отказанные',
+		'6' => 'Закрытые',
 	];
 
 	public function __construct() {
@@ -27,15 +27,18 @@ class ContentsController extends CController {
 
 			// и пункт меню для черновиков
 			$this->menu = array_merge([
-				'draft' => 'Черновики',
+				'0' => 'Черновики',
 			], $this->menu);
 		}
 
+		// получим количество заявок в разрезе статусов
+		$states = array_column($this->model->getCounter(), 'cnt', 'id');
+
 		// рендерим основное меню
-		foreach ($this->menu as $url => $title) {
-			$this->data['cnt'] = rand(1, 15);
+		foreach ($this->menu as $index => $title) {
+			$this->data['cnt'] = $states[$index] > 0 ?: '' ; //rand(1, 15);
 			$this->data['title'] = $title;
-			$this->data['url'] = $this->createActionUrl($url);
+			$this->data['type'] = $index;
 			$this->data['usermenu'] .= $this->renderPartial('menu-item');
 		}
 
@@ -50,14 +53,17 @@ class ContentsController extends CController {
 
 	public function ajaxCount() {
 
+		/*
 		echo json_encode(array_map(function ($x) {
 			return mt_rand(-10, 5);
 		}, range(1, count($this->menu))));
+		*/
+		echo json_encode($this->model->getCounter());
 	}
 
 	public function ajaxList() {
 
-		sleep(3);
+		sleep(1);
 		$status = filter_input(INPUT_POST, 'type', FILTER_VALIDATE_INT, [
 			'options' => [
 				'min_range' => 0,
@@ -66,6 +72,7 @@ class ContentsController extends CController {
 		]);
 
 		$ticketlist = $this->model->getTicketListByStatus($status);
+		if (count($ticketlist) == 0) echo $this->renderPartial('no-ticket');
 		foreach ($ticketlist as $ticket) {
 
 			$this->data['tn'] = get_param($ticket, 'number');
