@@ -8,11 +8,21 @@
  */
 class ContentsModel extends CModel {
 
-	public function getTicketListByStatus($status) {
+	public function getTicketListByStatus($status, $user_department = 0) {
+
+		$depcondition = '';
+		$params = [
+			'pstate' => $status,
+		];
+
+		if ($status == 1) {
+			$depcondition = "AND t.department_id = :udep ";
+			$params['udep'] = $user_department;
+		}
 
 		return $this->select("
 		SELECT
-		  t.id, t.number, d.name dname,
+		  t.id, t.number, d.name dname, d.id depid,
 		  date_format(t.dt_create, '%d.%m.%Y') dc,
 		  date_format(t.dt_start, '%d.%m.%Y %H:%i') dstart,
 		  date_format(t.dt_stop, '%d.%m.%Y %H:%i') dstop,
@@ -22,22 +32,26 @@ class ContentsModel extends CModel {
 		  LEFT JOIN nodes n ON t.node_id = n.id
 		WHERE t.deleted = 0
 		  AND t.status = :pstate
-		ORDER BY t.dt_create DESC ", [
-			'pstate' => $status,
-		]);
+		  $depcondition
+		ORDER BY t.dt_create DESC ", $params);
 	}
 
-	public function getCounter() {
+	public function getCounter($udep = 0) {
 
 		return $this->select('
-		SELECT s.id, ifnull(o.cnt, 0) cnt
-		FROM states s
-		LEFT JOIN (
-			SELECT
-				status, count(*) cnt
-			FROM tickets t
-			WHERE t.deleted = 0
-			GROUP BY t.status
-		) o ON s.id = o.status');
+        SELECT s.id, ifnull(o.cnt, 0) cnt
+        FROM states s
+          LEFT JOIN (
+              SELECT
+                status,
+                if(t.status = 1, t.department_id, :depid) town,
+                count(*)                                  cnt
+              FROM tickets t
+              WHERE t.deleted = 0
+              GROUP BY t.status, 2
+            ) o ON s.id = o.status
+        WHERE o.town = :depid', [
+			'depid' => $udep,
+		]);
 	}
 }

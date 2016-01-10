@@ -117,24 +117,6 @@ function get_array_part($data, $keys, $addempty = false) {
 }
 
 /**
- * Callback function to convert mysql datatime field
- * to human presentation
- * yyyy-mm-dd h:mm:ss -> dd.mm.yyyy hh:ss
- *
- * @param $item string mysql datetime value
- * @param $key string represents index of array
- */
-function date2human(&$item, $key) {
-
-	if (strpos($key, 'date') !== false) {
-		$date = date_create($item);
-		$item = date_format($date, 'd.m.Y H:i');
-	} else if (strpos($key, 'message') !== false) {
-		$item = mb_strimwidth($item, 0, 50, '...');
-	}
-}
-
-/**
  * Генерирует опции для тега select
  * переданного в виде массива.
  *
@@ -173,4 +155,18 @@ function generateOptions($options, $selected = 0, $default = true) {
 function date2mysql($userDate) {
 	$date = date_create_from_format('d.m.Y H:i', $userDate);
 	return $date ? date_format($date, 'Y-m-d H:i') : date('Y-m-d H:i');
+}
+
+
+/**
+ * Преобрразование даты выбранной из mysql базы
+ * в нужный формат
+ *
+ * @param string $dbdate  database date
+ * @param string $format
+ * @return string
+ */
+function sqldate2human($dbdate, $format = "d.m.Y H:i") {
+	$date = date_create_from_format('Y-m-d H:i:s', $dbdate);
+	return $date ? date_format($date, $format) : date($format);
 }

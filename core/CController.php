@@ -86,15 +86,23 @@ class CController {
 			];
 		}
 
+		if (isAjax()) {
+			// если идет вызов редиректа при ajax-запросе,
+			// то значит сессия устарела
+			// но работе это мешать не должно
+			return;
+		}
+
 		$location = get_param($param, 'location', '');
 		if (get_param($param, 'back') === 1)
 			$location = get_param($_SERVER, 'HTTP_REFERER', $location);
 		if (get_param($param, 'soft') === 1) {
 			$delay = get_param($param, 'delay', 3);
-			printf('<meta http-equiv="refresh" content=%d; url=%s"', $delay, $location);
-		} else
+			printf('<meta http-equiv="refresh" content="%d; url=%s">', $delay, $location);
+		} else {
 			header("Location: $location");
-		die;
+			die;
+		}
 	}
 
 	public function createActionUrl($pAction) {

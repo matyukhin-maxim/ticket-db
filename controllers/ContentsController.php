@@ -4,12 +4,12 @@
 class ContentsController extends CController {
 
 	private $menu = [
-		'1' => 'Согласование',
-		'2' => 'Разрешенные',
-		'3' => 'Открытые',
-		'4' => 'Прикрытые',
-		'5' => 'Отказанные',
-		'6' => 'Закрытые',
+		'2' => 'Согласование',
+		'3' => 'Разрешенные',
+		'4' => 'Открытые',
+		'5' => 'Прикрытые',
+		'6' => 'Отказанные',
+		'7' => 'Закрытые',
 	];
 
 	public function __construct() {
@@ -26,17 +26,17 @@ class ContentsController extends CController {
 			$this->data['usermenu'] .= $this->renderPartial('new-ticket');
 
 			// и пункт меню для черновиков
-			$this->menu = array_merge([
-				'0' => 'Черновики',
-			], $this->menu);
+			$this->menu = ['1' => 'Черновики',] + $this->menu;
 		}
 
 		// получим количество заявок в разрезе статусов
-		$states = array_column($this->model->getCounter(), 'cnt', 'id');
+		$udep = get_param($this->authdata, 'depid', 0);
+		$states = array_column($this->model->getCounter($udep), 'cnt', 'id');
 
 		// рендерим основное меню
 		foreach ($this->menu as $index => $title) {
-			$this->data['cnt'] = $states[$index] > 0 ?: '' ; //rand(1, 15);
+
+			$this->data['cnt'] = $states[$index] ?: '' ; //rand(1, 15);
 			$this->data['title'] = $title;
 			$this->data['type'] = $index;
 			$this->data['usermenu'] .= $this->renderPartial('menu-item');
@@ -58,7 +58,8 @@ class ContentsController extends CController {
 			return mt_rand(-10, 5);
 		}, range(1, count($this->menu))));
 		*/
-		echo json_encode($this->model->getCounter());
+		$udep = get_param($this->authdata, 'depid', 0);
+		echo json_encode($this->model->getCounter($udep));
 	}
 
 	public function ajaxList() {
@@ -71,7 +72,7 @@ class ContentsController extends CController {
 			]
 		]);
 
-		$ticketlist = $this->model->getTicketListByStatus($status);
+		$ticketlist = $this->model->getTicketListByStatus($status, get_param($this->authdata, 'depid'));
 		if (count($ticketlist) == 0) echo $this->renderPartial('no-ticket');
 		foreach ($ticketlist as $ticket) {
 
@@ -81,6 +82,7 @@ class ContentsController extends CController {
 			$this->data['twork'] = join('<br/>', get_array_part($ticket, 'dstart dstop'));
 			$this->data['tnode'] = get_param($ticket, 'nodename');
 			$this->data['tstatus'] = 'Черновик';
+			$this->data['tid'] = get_param($ticket, 'id');
 
 			echo $this->renderPartial('ticket-row');
 		}

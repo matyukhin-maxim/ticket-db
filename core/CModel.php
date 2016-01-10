@@ -26,9 +26,10 @@ class CModel {
 				]);
 
 				self::$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-				//this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+				//self::$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 				self::$db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
 				self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+				//self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			} catch (Exception $exc) {
 
 				self::$db = null;

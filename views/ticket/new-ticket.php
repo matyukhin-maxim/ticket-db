@@ -5,7 +5,7 @@
 				<a href="/contents/" class="close" title="Закрыть без сохранения">&times;</a>
 				<?= $title; ?>
 			</div>
-			<div class="panel-body screen--wnd">
+			<div class="panel-body">
 				<form action="/ticket/save/" id="ticket">
 					<table class="table table-bordered text-center">
 						<tr class="strong">
@@ -17,12 +17,12 @@
 						</tr>
 						<tr>
 							<td>
-								<input type="text" class="form-control text-center" name="t_number" disabled
+								<input type="text" class="form-control text-center" name="t_number" readonly
 								       value="<?= $t_number; ?>">
 								<input type="hidden" name="ticket_id" value="<?= $t_id; ?>">
 							</td>
 							<td>
-								<input type="text" class="form-control text-center" name="t_cdate" disabled
+								<input id="dcurrent" type="text" class="form-control text-center" name="t_cdate" disabled
 								       value="<?= $t_cdate; ?>">
 							</td>
 							<td>
@@ -33,7 +33,7 @@
 								<input type="text" class="form-control" name="t_user" disabled value="<?= $t_user; ?>">
 							</td>
 							<td>
-								<select class="selectpicker show-tick form-control has-success" name="agreement">
+								<select class="selectpicker show-tick form-control" name="agreement">
 									<?= $departments; ?>
 								</select>
 							</td>
@@ -41,23 +41,23 @@
 					</table>
 					<div class="row form-group">
 						<div class="col-xs-6">
-							<label class="control-label">Дата начала работ :</label>
+							<label class="control-label">Дата и время начала работ :</label>
 
 							<div class="input-group date tpicker">
                                 <span class="input-group-addon">
                                     <i class="glyphicon glyphicon-calendar"></i>
                                 </span>
-								<input id="sdate" type="text" class="form-control" name="td_start" required/>
+								<input id="sdate" type="text" class="form-control" name="td_start" required value="<?= $tstart; ?>"/>
 							</div>
 						</div>
 						<div class="col-xs-6">
-							<label class="control-label">Дата окончания работ :</label>
+							<label class="control-label">Дата и время окончания работ :</label>
 
 							<div class="input-group date tpicker">
                                 <span class="input-group-addon">
                                     <i class="glyphicon glyphicon-calendar"></i>
                                 </span>
-								<input id="edate" type="text" class="form-control" name="td_stop" required/>
+								<input id="edate" type="text" class="form-control" name="td_stop" required value="<?= $tstop; ?>"/>
 							</div>
 						</div>
 					</div>
@@ -79,7 +79,7 @@
 						<div class="col-xs-8">
 							<label class="control-label">Механизмы :</label>
 
-							<div id="devices" class="well"></div>
+							<div id="devices" class="well"><?= $devlist; ?></div>
 						</div>
 					</div>
 					<div class="form-group no-pad">

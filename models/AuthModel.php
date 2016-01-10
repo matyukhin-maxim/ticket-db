@@ -6,7 +6,7 @@ class AuthModel extends CModel {
 
 		$auth = $this->select('
 		SELECT
-			u.id, u.fullname, u.role_id, u.department_id,
+			u.id, u.fullname, u.role_id, u.department_id depid,
 			u.login, r.rolename, d.name depname
 		FROM users u
 		LEFT JOIN roles r ON u.role_id = r.id

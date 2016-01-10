@@ -30,7 +30,7 @@ body {
 
 body {
     /*background-color: #cfcfcf;*/
-    background-image: url("/bg2.jpg");
+    background: url("../back.jpg") fixed;
     background-size: 100% 100%;
     opacity: 0.95;
 }
@@ -157,8 +157,7 @@ textarea.form-control {
 .nav-tabs-justified > .active > a,
 .nav-tabs-justified > .active > a:hover,
 .nav-tabs-justified > .active > a:focus {
-    border: none;
-!important;
+    border: none;  !important;
     background-color: #66afe9;
     /*background-color: #337ab7;*/
     color: #fff;
@@ -184,7 +183,6 @@ textarea.form-control {
 .role-name::before, .role-name::after {
     content: '|';
 }
-
 
 .role-name {
     text-overflow: ellipsis;
@@ -296,4 +294,8 @@ textarea {
     min-height: 450px;
     max-height: 450px;
     overflow-y: auto;
+}
+
+.ticket {
+    cursor: pointer;
 }

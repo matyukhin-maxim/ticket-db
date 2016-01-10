@@ -32,7 +32,7 @@ $(function() {
         sideBySide: true,
         stepping: 10,
         //useCurrent: false,
-        minDate: moment().format('YYYY-MM-DD')
+        //minDate: current
     });
 
     $('#asu-info').click(function() {

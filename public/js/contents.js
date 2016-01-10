@@ -15,6 +15,9 @@ $(function () {
         $.post('/contents/list/', {type: ttype},
         function (data) {
             $('#ticket-list').html(data);
+            $('.ticket').click(function () {
+                console.info($(this));
+            });
         });
         //showPopup($(this).prop('href'), 'alert-info');
         //askCount();
@@ -34,5 +37,5 @@ $(function () {
                 });
             }, 'json');
     }
-    setInterval(askCount, 10000);
+    //setInterval(askCount, 10000);
 });

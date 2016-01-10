@@ -4,6 +4,31 @@
 
 $(function () {
 
+    function updateDevs() {
+        $('#dev-cnt').text(0);
+        $('.btn-check').click(function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var box = btn.parent().find('.dev-check');
+            var chk = !btn.data('checked');
+
+            btn.data('checked', chk).blur();
+            box.prop('checked', chk);
+            btn.find('i').toggleClass('glyphicon-ok', chk).html(chk ? '' : '&nbsp;');
+
+            $('#dev-cnt').text($('.dev-check:checked').length);
+        });
+        $('.btn-check').each(function() {
+            var btn = $(this);
+            var box = btn.parent().find('.dev-check');
+            var chk = btn.data('checked');
+
+            box.prop('checked', chk);
+            btn.find('i').toggleClass('glyphicon-ok', !!chk).html(chk ? '' : '&nbsp;');
+        });
+        $('#dev-cnt').text($('.dev-check:checked').length);
+    }
+
     $('button.bt-send').click(function(e) {
         e.preventDefault();
 
@@ -34,19 +59,15 @@ $(function () {
         $.post('/ticket/devices/', {node: $(this).val()},
         function(data) {
             $('#devices').html(data);
-            $('#dev-cnt').text(0);
-            $('.btn-check').click(function(e) {
-                e.preventDefault();
-                var btn = $(this);
-                var box = btn.parent().find('.dev-check');
-                var chk = !btn.data('checked');
-
-                btn.data('checked', chk).blur();
-                box.prop('checked', chk);
-                box.parent().find('i').toggleClass('glyphicon-ok', chk).html(chk ? '' : '&nbsp;');
-
-                $('#dev-cnt').text($('.dev-check:checked').length);
-            });
+            updateDevs();
         });
     });
+
+
+    $('.input-group.date').each(function() {
+        $(this).data("DateTimePicker").minDate(moment($('#dcurrent').val(), 'DD.MM.YYYY'));
+    });
+
+
+    updateDevs(true);
 });
