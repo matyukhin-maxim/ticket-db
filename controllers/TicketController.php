@@ -35,8 +35,8 @@ class TicketController extends CController {
 			$this->render('block-create', false);
 			$this->redirect([
 				'location' => '/contents/',
-			    'soft' => 1,
-			    'delay' => 5,
+				'soft' => 1,
+				'delay' => 5,
 			]);
 			$this->render('');
 			return;
@@ -67,7 +67,7 @@ class TicketController extends CController {
 		$req_id = filter_var($req_id, FILTER_VALIDATE_INT, [
 			'options' => [
 				'min_range' => 1,
-			    'default' => -1,
+				'default' => -1,
 			],
 		]);
 
@@ -92,7 +92,7 @@ class TicketController extends CController {
 		$this->data['t_id'] = $req_id;
 
 		$departments = $this->model->getDepartments();
-		$tdep  = get_param($ticket, 'department_id');
+		$tdep = get_param($ticket, 'department_id');
 		$dlist = array_column($departments, 'title', 'id');
 
 		// цех создатель
@@ -141,7 +141,7 @@ class TicketController extends CController {
 		$this->data['devlist'] = $devices;
 
 		$this->data['tstart'] = sqldate2human(get_param($ticket, 'dt_start'));
-		$this->data['tstop' ] = sqldate2human(get_param($ticket, 'dt_stop'));
+		$this->data['tstop'] = sqldate2human(get_param($ticket, 'dt_stop'));
 
 
 		$this->render('new-ticket');
@@ -208,10 +208,22 @@ class TicketController extends CController {
 				'filter' => FILTER_VALIDATE_INT,
 				'flags' => FILTER_REQUIRE_ARRAY,
 			],
-		    't_number' => FILTER_SANITIZE_STRING,
+			't_number' => FILTER_SANITIZE_STRING,
+			't_cdate' => [
+				'filter' => FILTER_VALIDATE_REGEXP,
+				'options' => [
+					'regexp' => '/^(\d{2}\.){2}\d{4}$/',
+					'default' => date('d.m.Y'),
+				],
+			],
 		]);
 
 		$info['devices'] = $info['devices'] ?: [];
+
+		$info['t_cdate'] .= ' 00:00';
+		$info['t_cdate'] = date2mysql($info['t_cdate']);
+
+
 
 		// обнуляем номер заявки если это новая (чтобы номер сгенерировался автоматически)
 		if ($info['t_number'] === '-') $info['t_number'] = null;

@@ -22,7 +22,7 @@
 								<input type="hidden" name="ticket_id" value="<?= $t_id; ?>">
 							</td>
 							<td>
-								<input id="dcurrent" type="text" class="form-control text-center" name="t_cdate" disabled
+								<input id="dcurrent" type="text" class="form-control text-center" name="t_cdate" readonly
 								       value="<?= $t_cdate; ?>">
 							</td>
 							<td>

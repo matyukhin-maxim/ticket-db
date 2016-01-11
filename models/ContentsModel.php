@@ -33,7 +33,7 @@ class ContentsModel extends CModel {
 		WHERE t.deleted = 0
 		  AND t.status = :pstate
 		  $depcondition
-		ORDER BY t.dt_create DESC ", $params);
+		ORDER BY t.dt_create DESC, t.realtime desc ", $params);
 	}
 
 	public function getCounter($udep = 0) {

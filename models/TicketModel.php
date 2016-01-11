@@ -39,7 +39,7 @@ class TicketModel extends CModel {
 		$query = "REPLACE INTO tickets
 			(id, dt_create, number, dt_start, dt_stop, user_id, department_id, node_id, message)
 			VALUES
-  			(:tid, now(), :tnumber, :dt_start, :dt_stop, :uid, :depid, :tnode, :tmessage)";
+  			(:tid, :dt_create, :tnumber, :dt_start, :dt_stop, :uid, :depid, :tnode, :tmessage)";
 
 		$this->startTransaction();
 
@@ -53,6 +53,7 @@ class TicketModel extends CModel {
 			'tnode' => get_param($arguments, 't_node'),
 			'uid' => get_param($arguments, 'user'),
 			'depid' => get_param($arguments, 'depid'),
+			'dt_create' => get_param($arguments, 't_cdate'),
 		]);
 
 		// получаем идентификатор созданного/измененного тикета
