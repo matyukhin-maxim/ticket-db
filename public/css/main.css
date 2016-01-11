@@ -282,7 +282,7 @@ th {
     outline: none;
 }
 
-textarea {
+textarea.form-control {
     resize: none;
     height: 150px;
     font-size: 1.2em;
@@ -296,6 +296,6 @@ textarea {
     overflow-y: auto;
 }
 
-.ticket {
-    cursor: pointer;
+::-webkit-scrollbar {
+    display: none;
 }
