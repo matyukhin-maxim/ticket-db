@@ -29,10 +29,10 @@ $(function () {
         $('#dev-cnt').text($('.dev-check:checked').length);
     }
 
-    $('button.bt-send').click(function(e) {
+    $('button.bt-save').click(function(e) {
         e.preventDefault();
+        var btn = $(e.target);
 
-        var btn = $(this);
         // validation
         $('#ticket-message').closest('.form-group').toggleClass('has-error', $('#ticket-message').val() === '');
         $('.tpicker').each(function() {
@@ -48,10 +48,15 @@ $(function () {
             return;
         }
 
+        // В скрытое поле запоминаем какая из кнопок была нажата (сохранение / отправка)
+        $('#confirm').val(btn.data('confirm'));
+
+        // И отправляем форму на проверку-сохранение
         $.post('/ticket/save/', $('#ticket').serialize(),
         function(data) {
-            location.href = btn.data('edit') ? data : '/';
-        }, 'json');
+            location.href = '/contents/';
+            //$('#response').html(data);
+        });
     });
 
     $('#t_node').change(function() {

@@ -4,12 +4,13 @@
 class ContentsController extends CController {
 
 	private $menu = [
-		'2' => 'Согласование',
-		'3' => 'Разрешенные',
-		'4' => 'Открытые',
-		'5' => 'Прикрытые',
-		'6' => 'Отказанные',
-		'7' => 'Закрытые',
+		STATUS_AGREE    => 'Согласование',
+		STATUS_REVIEW   => 'На рассмотрении',
+		STATUS_ACCEPT   => 'Разрешенные',
+		STATUS_OPEN     => 'Открытые',
+		STATUS_COMPLETE => 'Прикрытые',
+		STATUS_REJECT   => 'Отказанные',
+		STATUS_CLOSE    => 'Закрытые',
 	];
 
 	public function __construct() {
@@ -23,10 +24,10 @@ class ContentsController extends CController {
 
 		// если текущий пользователь - руководитель, то добавим ссылку на создание новой заявки
 		if (get_param($this->authdata, 'role_id') == Configuration::$ROLE_USER) {
-			$this->data['usermenu'] .= $this->renderPartial('new-ticket');
+			$this->data['usermenu'] .= $this->renderPartial('new-create');
 
 			// и пункт меню для черновиков
-			$this->menu = ['1' => 'Черновики',] + $this->menu;
+			$this->menu = [STATUS_DRAFT => 'Черновики',] + $this->menu;
 		}
 
 		// получим количество заявок в разрезе статусов
@@ -38,7 +39,7 @@ class ContentsController extends CController {
 
 			$this->data['cnt'] = $states[$index] ?: '' ; //rand(1, 15);
 			$this->data['title'] = $title;
-			$this->data['type'] = $index;
+			$this->data['type'] = $index; // статус заявок (для фильтрации)
 			$this->data['usermenu'] .= $this->renderPartial('menu-item');
 		}
 
@@ -64,7 +65,7 @@ class ContentsController extends CController {
 
 	public function ajaxList() {
 
-		sleep(1);
+		//sleep(1);
 		$status = filter_input(INPUT_POST, 'type', FILTER_VALIDATE_INT, [
 			'options' => [
 				'min_range' => 0,

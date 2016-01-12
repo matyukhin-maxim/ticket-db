@@ -91,6 +91,9 @@ class TicketController extends CController {
 		$this->data['t_message'] = get_param($ticket, 'message');
 		$this->data['t_id'] = $req_id;
 
+		// кнопка удаления заявки доступна только из черновика
+		$this->data['button_delete'] = sprintf('<a class="btn btn-danger" href="/ticket/delete/%s/">Удалить</a>', $req_id);
+
 		$departments = $this->model->getDepartments();
 		$tdep = get_param($ticket, 'department_id');
 		$dlist = array_column($departments, 'title', 'id');
@@ -126,42 +129,44 @@ class TicketController extends CController {
 			}
 		}
 
-		$devices = '';
-		if (count($dlist) === 0) {
-			$devices .= $this->renderPartial('no-device');
-		} else {
-			foreach ($dlist as $key => $value) {
-				$this->data['mark'] = (int)in_array($key, $devs);
-				$this->data['dev_name'] = $value;
-				$this->data['dev_id'] = $key;
-				$this->data['dev_class'] = mb_strlen($value) >= 35 ? 'col-md-12' : 'col-md-6';
-				$devices .= $this->renderPartial('device-item');
-			}
-		}
-		$this->data['devlist'] = $devices;
 
 		$this->data['tstart'] = sqldate2human(get_param($ticket, 'dt_start'));
 		$this->data['tstop'] = sqldate2human(get_param($ticket, 'dt_stop'));
 
+		$devices = '';
+		switch (get_param($ticket, 'status')) {
+			case '1' : {
+				$template = 'new-ticket';
+				if (count($dlist) === 0) {
+					$devices .= $this->renderPartial('no-device');
+				} else {
+					foreach ($dlist as $key => $value) {
+						$this->data['mark'] = intval(in_array($key, $devs));
+						$this->data['dev_name'] = $value;
+						$this->data['dev_id'] = $key;
+						$this->data['dev_class'] = mb_strlen($value) >= 35 ? 'col-md-12' : 'col-md-6';
+						$devices .= $this->renderPartial('device-item');
+					}
+				}
+			} break;
+			case '2' : {
+				$template = 'accept-ticket';
 
-		$this->render('new-ticket');
+				$this->data['title'] = 'Согласование заявки';
 
-		//var_dump($ticket);
+				$nlist = array_column($nodes, 'title', 'id');
+				$this->data['nodename'] = get_param($nlist, $nodeid, '?');
+				foreach($devs as $item_id)
+					$devices .= get_param($dlist, $item_id, '?') . PHP_EOL;
+				$devices = $devices ?: 'Устроства не указаны';
+				$devices = nl2br($devices);
+			} break;
+			default: $template = '';
+		}
 
-		/** @todo Алгоритм следующий:
-		 * Получаем статус заявки
-		 * Если это черновик, то просматривать его может
-		 * только пользователь цеха, который ее создал
-		 * В этом случае получаем всю информацию по заявке, и выводим шаблон новой,
-		 * передав текщие параметры
-		 * @todo [добавить в шаблон кнопку удаления заявки]
-		 *
-		 * Если черновик но цех левый,
-		 * (явно жульничество, т.к. отобразиться в списке у него она не могла),
-		 * то просто шлем нах
-		 *
-		 * Иначе в зависисости от стутуса рисуем опредиленый шаблон
-		 */
+		$this->data['devlist'] = $devices;
+		$this->render($template);
+
 	}
 
 	public function ajaxSave() {
@@ -216,28 +221,44 @@ class TicketController extends CController {
 					'default' => date('d.m.Y'),
 				],
 			],
+			'confirm' => [
+				'filter' => FILTER_VALIDATE_INT,
+				'options' => [
+					'default' => 0,
+				],
+			],
 		]);
 
 		$info['devices'] = $info['devices'] ?: [];
 
-		$info['t_cdate'] .= ' 00:00';
-		$info['t_cdate'] = date2mysql($info['t_cdate']);
-
-
+		// дату создания добиваем нулями (время), и преобразум к mysql формату
+		$info['t_cdate'] = date2mysql($info['t_cdate'] . ' 00:00');
 
 		// обнуляем номер заявки если это новая (чтобы номер сгенерировался автоматически)
 		if ($info['t_number'] === '-') $info['t_number'] = null;
 
+		$user_id = get_param($this->authdata, 'id', null);
 		// информацию о создателе берем из сессии пользователя
-		$info['user'] = get_param($this->authdata, 'id', null);
+		$info['user'] = $user_id;
 		$info['depid'] = get_param($this->authdata, 'depid', null);
+
+		//var_dump($info);
 
 		$res = $this->model->saveTicket($info);
 		if ($res) {
 			$this->prepareError('Заявка сохранена.', 'alert-success');
+			$this->model->setTicketStatus($res, STATUS_DRAFT, $user_id);
+
+			// если отправляем на согасование, то установим соответствующий статус
+			if ($info['confirm'] === 1) {
+				// Если agreement задан, то заявка уходит в согласование цеха, иначе сразу к ГИ
+				$this->model->setTicketStatus($res, $info['agreement'] ? STATUS_AGREE : STATUS_REVIEW, $user_id);
+				$this->prepareError('Заявка отправлена на рассмотрение', 'alert-info');
+			}
+
 		} else $this->prepareError('Ошибка создания заявки.');
 
-		echo json_encode($res ? $this->createActionUrl("edit/$res") : '/');
+		//echo json_encode($res ? $this->createActionUrl("edit/$res") : '/');
 	}
 
 	public function ajaxDevices() {
@@ -259,5 +280,29 @@ class TicketController extends CController {
 		}
 
 		echo $data;
+	}
+
+	public function actionDelete() {
+
+		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
+
+		$info = $this->model->getTicketInfo($ticket_id);
+		if ($info['status'] !== '1') {
+			$this->prepareError('Удалять можно только черновик.');
+			$this->redirect('/contents/');
+		} elseif ($info['department_id'] != get_param($this->authdata,'depid')) {
+			$this->prepareError('Заявку другого цеха удалять запрещено!');
+			$this->redirect('/contents/');
+		}
+
+		$res = $this->model->deleteDraft($ticket_id);
+		if ($res) {
+			$this->prepareError('Заявка удалена.', 'alert-success');
+			$this->model->setTicketStatus($ticket_id, -1);
+		} else {
+			$this->prepareError('Заявка е найдена.');
+		}
+
+		$this->redirect('/contents/');
 	}
 }

@@ -22,7 +22,8 @@
 								<input type="hidden" name="ticket_id" value="<?= $t_id; ?>">
 							</td>
 							<td>
-								<input id="dcurrent" type="text" class="form-control text-center" name="t_cdate" readonly
+								<input id="dcurrent" type="text" class="form-control text-center" name="t_cdate"
+								       readonly
 								       value="<?= $t_cdate; ?>">
 							</td>
 							<td>
@@ -47,7 +48,8 @@
                                 <span class="input-group-addon">
                                     <i class="glyphicon glyphicon-calendar"></i>
                                 </span>
-								<input id="sdate" type="text" class="form-control" name="td_start" required value="<?= $tstart; ?>"/>
+								<input id="sdate" type="text" class="form-control" name="td_start" required
+								       value="<?= $tstart; ?>"/>
 							</div>
 						</div>
 						<div class="col-xs-6">
@@ -57,7 +59,8 @@
                                 <span class="input-group-addon">
                                     <i class="glyphicon glyphicon-calendar"></i>
                                 </span>
-								<input id="edate" type="text" class="form-control" name="td_stop" required value="<?= $tstop; ?>"/>
+								<input id="edate" type="text" class="form-control" name="td_stop" required
+								       value="<?= $tstop; ?>"/>
 							</div>
 						</div>
 					</div>
@@ -87,6 +90,7 @@
 						<textarea name="t_message" id="ticket-message" class="form-control"
 						          placeholder="Текстовое сообщение, описывающее характер работ"
 						          spellcheck="false"><?= $t_message; ?></textarea>
+						<input type="hidden" name="confirm" value="" id="confirm">
 					</div>
 				</form>
 				<div id="response"></div>
@@ -95,11 +99,13 @@
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="pull-right">
-							<div class="btn-group">
-								<button class="btn btn-default bt-send" type="button" data-edit="true">Сохранить
+							<div class="btn-toolbar">
+								<?= $button_delete; ?>
+								<button class="btn btn-primary bt-save" type="button" data-confirm="1">
+									Отправить на согласование
 								</button>
-								<button class="btn btn-primary bt-send" type="button" data-edit="false">Сохранить и
-									закрыть
+								<button class="btn btn-default strong bt-save" type="button"
+								        title="Сохранить заявку в качестве черновика">Сохранить черновик
 								</button>
 							</div>
 						</div>
