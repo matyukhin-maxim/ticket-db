@@ -46,10 +46,6 @@ body {
     margin-top: 7px;
 }
 
-.table-header {
-    padding-right: 30px;
-}
-
 .white-bg {
     background-color: #fff;
 }
@@ -77,16 +73,12 @@ body {
 }
 
 .table > tbody > tr > td {
-    padding: 4px;
+    padding: 3px;
+    vertical-align: middle;
 }
 
 .strong {
     font-weight: bold;
-}
-
-textarea.form-control {
-    height: 150px;
-    resize: none;
 }
 
 #info-block {
@@ -258,7 +250,8 @@ th {
     min-height: 200px;
     max-height: 200px;
     overflow-y: auto;
-    padding: 7px 3px;
+    padding: 7px 5px;
+    font-weight: bold;
 }
 
 .btn-group-ls > .btn, .btn-ls {
@@ -290,7 +283,6 @@ textarea.form-control {
 }
 
 .ticket-window {
-
     min-height: 450px;
     max-height: 450px;
     overflow-y: auto;
