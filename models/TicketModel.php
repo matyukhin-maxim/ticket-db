@@ -46,7 +46,7 @@ class TicketModel extends CModel {
 		$tnum = get_param($arguments, 't_number');
 		$this->select($query, [
 			'tid' => get_param($arguments, 'ticket_id'),
-			'tnumber' => $tnum ?: $this->getNextTickeNumber(),
+			'tnumber' => $tnum ?: $this->getNextTicketNumber(),
 			'dt_start' => date2mysql(get_param($arguments, 'td_start')),
 			'dt_stop' => date2mysql(get_param($arguments, 'td_stop')),
 			'tmessage' => get_param($arguments, 't_message', 'Текст заявки не указан.'),
@@ -87,7 +87,7 @@ class TicketModel extends CModel {
 		return $ok ? $ticketID : null;
 	}
 
-	public function getNextTickeNumber() {
+	public function getNextTicketNumber() {
 
 		$data = $this->select('SELECT ifnull(max(number),0) + 1 np FROM tickets');
 		$number = get_param($data, 0);
@@ -125,5 +125,34 @@ class TicketModel extends CModel {
 		]);
 
 		return get_param($data, 0);
+	}
+
+	public function deleteDraft($ticket_id) {
+
+		$sth = $this->getDB()->prepare('UPDATE tickets SET deleted = 1 WHERE id = :tid');
+		$sth->execute(['tid' => $ticket_id,	]);
+
+		return $sth->rowCount();
+	}
+
+	public function setTicketStatus($ticket_id, $status, $user_id = null) {
+
+		if (!$user_id) {
+			$auth = Session::get('auth');
+			$user_id = get_param($auth, 'id');
+		}
+
+		$this->select('update tickets set status = :state where id = :tid', [
+			'tid' => $ticket_id,
+			'state' => $status,
+		]);
+
+		$this->select('INSERT INTO history
+			(ticket_id, user_id, dt_stamp, status_id)
+		VALUES (:tid, :uid, now(), :state)', [
+			'tid' => $ticket_id,
+			'uid' => $user_id,
+			'state' => $status,
+		]);
 	}
 }
