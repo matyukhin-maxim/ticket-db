@@ -1,5 +1,14 @@
 <?php
 
+define('STATUS_DRAFT'     , 1);
+define('STATUS_AGREE'     , 2);
+define('STATUS_ACCEPT'    , 3);
+define('STATUS_OPEN'      , 4);
+define('STATUS_COMPLETE'  , 5);
+define('STATUS_REJECT'    , 6);
+define('STATUS_CLOSE'     , 7);
+define('STATUS_REVIEW'    , 8);
+
 class Configuration {
 
 	public static $connection = [
