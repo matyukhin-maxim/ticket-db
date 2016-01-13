@@ -155,4 +155,17 @@ class TicketModel extends CModel {
 			'state' => $status,
 		]);
 	}
+
+	public function setAgreement($ticket_id, $dep, $user_id, $result, $reason) {
+
+		$this->select('REPLACE INTO agreements
+			(ticket_id, department_id, dt_stamp, user_id, result, reason)
+			VALUES (:tid, :depid, now(), :uid, :result, :reason) ', [
+			'tid' => $ticket_id,
+			'depid' => $dep,
+			'uid' => $user_id,
+			'result' => $result,
+			'reason' => $reason,
+		]);
+	}
 }

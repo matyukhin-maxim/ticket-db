@@ -35,9 +35,8 @@ class Configuration {
 	public static $siteName  = 'Журнал заявок НГРЭС';
 	public static $brandName = 'Журнал заявок Нерюнгринской ГРЭС';
 
-	public static $ROLE_NSS   = 1;
-	public static $ROLE_ME    = 2;
-	public static $ROLE_USER  = 3;
-	public static $ROLE_ADMIN = 15;
+	public static $ROLE_NSS   = "1";
+	public static $ROLE_ME    = "2";
+	public static $ROLE_USER  = "3";
 
 }

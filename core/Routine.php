@@ -14,7 +14,7 @@ function get_param($source, $key = null, $def = false) {
 	if ($key === null) {
 		return isset($source) ? $source : $def;
 	}
-	return isset($source[$key]) ? $source[$key] : $def;
+	return array_key_exists($key, $source) ? $source[$key] : $def;
 }
 
 /**

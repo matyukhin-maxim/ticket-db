@@ -72,7 +72,7 @@ class CController {
 	}
 
 	public function prepareError($etext, $eclass = 'alert-danger') {
-		if (!headers_sent()) {
+		if (!headers_sent() && $etext) {
 			setcookie('status', $etext, time() + 10, '/');
 			setcookie('class', $eclass, time() + 10, '/');
 		}

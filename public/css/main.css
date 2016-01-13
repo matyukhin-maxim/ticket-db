@@ -282,6 +282,11 @@ textarea.form-control {
     font-style: italic;
 }
 
+textarea.reason {
+    height: 100px;
+    font-size: 1em;
+}
+
 .ticket-window {
     min-height: 450px;
     max-height: 450px;
@@ -290,4 +295,8 @@ textarea.form-control {
 
 ::-webkit-scrollbar {
     display: none;
+}
+
+.choice.active {
+    font-weight: bold;
 }

@@ -93,7 +93,6 @@
 						<input type="hidden" name="confirm" value="" id="confirm">
 					</div>
 				</form>
-				<div id="response"></div>
 			</div>
 			<div class="panel-footer">
 				<div class="row">

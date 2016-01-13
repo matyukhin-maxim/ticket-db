@@ -85,6 +85,8 @@ class CModel {
 			}
 		}
 
+		//var_dump($param);
+
 		$sth = self::$db->prepare($query);
 
 		foreach ($param as $key => $value) {

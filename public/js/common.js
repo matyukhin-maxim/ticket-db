@@ -39,11 +39,13 @@ $(function() {
         $('#info-block').slideToggle('slow');
     });
 
-    $('#status-text:empty').closest('.container').hide();
+    $('#status-text:empty').closest('#status-footer').hide();
 
     $('.selectpicker').selectpicker({
         dropupAuto : false
     });
 
     showPopup();
+
+    //setTimeout(function () {location.reload();}, 10000);
 });

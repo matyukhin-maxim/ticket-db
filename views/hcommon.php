@@ -88,6 +88,9 @@
 	</div>
 </div>
 
+
 <!-- Begin page content -->
 <div class="container wrapper">
 
+	<!-- ajax debug block -->
+	<div id="response"></div>

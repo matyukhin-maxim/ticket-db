@@ -23,7 +23,7 @@ class ContentsController extends CController {
 		}
 
 		// если текущий пользователь - руководитель, то добавим ссылку на создание новой заявки
-		if (get_param($this->authdata, 'role_id') == Configuration::$ROLE_USER) {
+		if (get_param($this->authdata, 'role_id') === Configuration::$ROLE_USER) {
 			$this->data['usermenu'] .= $this->renderPartial('new-create');
 
 			// и пункт меню для черновиков
