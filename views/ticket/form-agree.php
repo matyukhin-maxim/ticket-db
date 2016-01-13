@@ -1,6 +1,6 @@
 <form action="#" id="agreement" method="post">
 	<input type="hidden" name="ticket_id" value="<?= $t_id; ?>">
-	<input type="hidden" name="result" id="result" value="<?= $agree ?>">
+	<input type="hidden" name="result" id="result">
 	<div class="row">
 		<div class="col-xs-12">
 			<div class="btn-group btn-group-justified" id="agree-radio">

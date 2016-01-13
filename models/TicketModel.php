@@ -110,7 +110,11 @@ class TicketModel extends CModel {
 		$data['devices'] = array_column($devs, 'device_id');
 
 		// а также информацию о согласовании и разрешении
-		$row = $this->select('SELECT * FROM agreements WHERE ticket_id = :tid AND deleted = 0', [
+		$row = $this->select('
+			SELECT a.department_id, a.dt_stamp, u.fullname, a.result, a.reason
+			FROM agreements a
+			  LEFT JOIN users u ON a.user_id = u.id
+			WHERE a.ticket_id = :tid AND a.deleted = 0', [
 			'tid' => $ticket_id,
 		]);
 		$data['agree'] = get_param($row, 0);
@@ -130,7 +134,7 @@ class TicketModel extends CModel {
 	public function deleteDraft($ticket_id) {
 
 		$sth = $this->getDB()->prepare('UPDATE tickets SET deleted = 1 WHERE id = :tid');
-		$sth->execute(['tid' => $ticket_id,	]);
+		$sth->execute(['tid' => $ticket_id,]);
 
 		return $sth->rowCount();
 	}
@@ -142,7 +146,7 @@ class TicketModel extends CModel {
 			$user_id = get_param($auth, 'id');
 		}
 
-		$this->select('update tickets set status = :state where id = :tid', [
+		$this->select('UPDATE tickets SET status = :state WHERE id = :tid', [
 			'tid' => $ticket_id,
 			'state' => $status,
 		]);
@@ -163,6 +167,18 @@ class TicketModel extends CModel {
 			VALUES (:tid, :depid, now(), :uid, :result, :reason) ', [
 			'tid' => $ticket_id,
 			'depid' => $dep,
+			'uid' => $user_id,
+			'result' => $result,
+			'reason' => $reason,
+		]);
+	}
+
+	public function setConfirmation($ticket_id, $user_id, $result, $reason) {
+
+		$this->select('REPLACE INTO resolutions
+			(ticket_id, dt_stamp, user_id, result, reason)
+			VALUES (:tid, now(), :uid, :result, :reason) ', [
+			'tid' => $ticket_id,
 			'uid' => $user_id,
 			'result' => $result,
 			'reason' => $reason,

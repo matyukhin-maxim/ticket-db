@@ -38,9 +38,9 @@
 							<div class="col-sm-6">
 								<label class="control-label">Дата и время начала работ :</label>
 								<div class="input-group">
-                                <span class="input-group-addon">
-                                    <i class="glyphicon glyphicon-calendar"></i>
-                                </span>
+	                                <span class="input-group-addon hidden-sm hidden-xs">
+	                                    <i class="glyphicon glyphicon-calendar"></i>
+	                                </span>
 									<input id="sdate" type="text" class="form-control" disabled
 									       value="<?= $tstart; ?>"/>
 								</div>
@@ -48,7 +48,7 @@
 							<div class="col-sm-6">
 								<label class="control-label">Дата и время окончания работ :</label>
 								<div class="input-group">
-                                    <span class="input-group-addon">
+                                    <span class="input-group-addon hidden-sm hidden-xs">
 	                                    <i class="glyphicon glyphicon-calendar"></i>
                                     </span>
 									<input id="edate" type="text" class="form-control" disabled
@@ -68,9 +68,15 @@
 						</div>
 					</div>
 					<div class="col-xs-6">
+						<?php if (isset($agree_depname)) : ?>
+							<div class="panel panel-default">
+								<div class="panel-heading strong">Резолюция цеха <?= $agree_depname; ?></div>
+								<div class="panel-body"><?= $agree_form; ?></div>
+							</div>
+						<?php endif; ?>
 						<div class="panel panel-default">
-							<div class="panel-heading strong">Резолюция цеха <?= $agree_depname;?></div>
-							<div class="panel-body"><?= $agree_form;?></div>
+							<div class="panel-heading strong">Разрешение главного инженера</div>
+							<div class="panel-body"><?= $form;?></div>
 						</div>
 					</div>
 				</div>
@@ -86,7 +92,7 @@
 					<div class="col-xs-12">
 						<div class="pull-right">
 							<a href="/contents/" class="btn btn-default">Закрыть</a>
-							<a id="save-btn" href="/contents/" class="btn btn-primary">Сохранить</a>
+							<a href="/contents/" class="btn btn-primary" id="save-btn">Сохранить</a>
 						</div>
 					</div>
 				</div>

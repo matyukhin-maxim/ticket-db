@@ -7,6 +7,8 @@
  * Time: 15:11
  */
 
+/** @todo Убрать из списка отделов для согласования собственный цех, чтобы не отправлять заявки самому себе */
+
 /** @property TicketModel $model */
 class TicketController extends CController {
 
@@ -103,9 +105,9 @@ class TicketController extends CController {
 
 		// цех согласователь
 		$agree = get_param($ticket, 'agree');
-		$adep = get_param($agree, 'department_id', null);
+		$adep = get_param($agree, 'department_id', -1);
 		$this->data['departments'] = generateOptions($departments, $adep, 'Не требуется');
-		$this->data['agree_depname'] = get_param($dlist, $adep, '?'); // Название цеха, кто должен согласовать
+		$this->data['agree_depname'] = get_param($dlist, $adep, null); // Название цеха, кто должен согласовать
 
 		// пользователь создавший заявку
 		$uid = get_param($ticket, 'user_id');
@@ -151,16 +153,15 @@ class TicketController extends CController {
 				}
 			} break;
 			case STATUS_AGREE : {
-				$template = 'agree-ticket';
+				$template = 'ticket-panel-agree';
 				$this->data['title'] = 'Согласование заявки';
 
 				$nlist = array_column($nodes, 'title', 'id');
 				$this->data['nodename'] = get_param($nlist, $nodeid, '?');
 				foreach($devs as $item_id)
 					$devices .= get_param($dlist, $item_id, '?') . PHP_EOL;
-				$devices = $devices ?: 'Устроства не указаны';
+				$devices = $devices ?: 'Устройства не указаны';
 				$devices = nl2br($devices);
-				//$this->data['agree'] = -1;
 
 				$ares = get_param($agree, 'result', null);
 				// Проверка и защита от дурака
@@ -174,16 +175,33 @@ class TicketController extends CController {
 				} elseif ($my_dep === $adep) {
 					// Если согласовать должен цех авторизованного пользователя, то нарисуем форму и кнопку
 					// js скрипт перехватит нажатие кнопки сохранения и сделает всю грязную работу
-					$this->data['agree_form'] = $this->renderPartial('form-agree');
+					$this->data['form'] = $this->renderPartial('form-agree');
 					$this->scripts[] = 'agreement';
 				} else {
-					$this->data['agree_form'] = $this->renderPartial('wait-agree');
+					$this->data['form'] = " Ожидание решения руководителя цеха";
 				}
 
 			} break;
 			case STATUS_REVIEW : {
-				$template = 'review-ticket';
-				$this->data['title'] = 'Рассмотрение заявки Главным Инженером';
+				$template = 'ticket-panel-review';
+				$this->data['title'] = 'Рассмотрение заявки';
+
+				// Информацияя об узле и устройствах
+				$nlist = array_column($nodes, 'title', 'id');
+				$this->data['nodename'] = get_param($nlist, $nodeid, '?');
+				foreach($devs as $item_id)
+					$devices .= get_param($dlist, $item_id, '?') . PHP_EOL;
+				$devices = $devices ?: 'Устройства не указаны';
+				$devices = nl2br($devices);
+
+				// заполним информацию о том кто и когда согласовал
+				$this->data['ag_res' ] = 'Согласованно';
+				$this->data['ag_user'] = get_param($agree, 'fullname', '-');
+				$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
+				$this->data['agree_form'] = $this->renderPartial('agree-info');
+
+				$this->data['form'] = $this->renderPartial('form-review');
+				$this->scripts[] = 'review-ticket';
 			} break;
 			default: $template = '';
 		}
@@ -331,9 +349,6 @@ class TicketController extends CController {
 
 	public function ajaxAgreement() {
 
-		//$this->authdata['role_id'] = Configuration::$ROLE_NSS;
-		//var_dump($_POST);
-
 		// проверим чтоб статус заявки был нужный
 		// и что у пользоателя есть право согласования
 		$role = get_param($this->authdata, 'role_id');
@@ -391,4 +406,63 @@ class TicketController extends CController {
 			$this->prepareError('Заявка сохранена', 'alert-success');
 		}
 	}
+
+	public function ajaxConfirmation() {
+
+		// проверим чтоб статус заявки был нужный
+		// и что у пользоателя есть право согласования
+		$role = get_param($this->authdata, 'role_id');
+		$me    = get_param($this->authdata, 'id');
+		$request = filter_input_array(INPUT_POST, [
+			'ticket_id' => [
+				'filter' => FILTER_VALIDATE_INT,
+				'options' => [
+					'default' => -1,
+					'min_range' => 1
+				],
+			],
+			'result' => [
+				'filter' => FILTER_VALIDATE_INT,
+				'options' => [
+					'default' => null,
+					'min_range' => 1,
+					'max_range' => 3,
+				],
+			],
+			'agree-text' => FILTER_SANITIZE_SPECIAL_CHARS,
+		]);
+
+		$tid = get_param($request, 'ticket_id');
+		$info = $this->model->getTicketInfo($tid);
+
+		/** @todo delete line below */
+		$role = Configuration::$ROLE_ME; // for debug
+
+		if ($role !== Configuration::$ROLE_ME) {
+			$this->prepareError('Согласовывать заявки может только главный инженер', 'alert-warning');
+			return;
+		} elseif (!$info) {
+			$this->prepareError('Запрошеная заявка не найдена');
+			return;
+		} elseif (get_param($info, 'status') != STATUS_REVIEW) {
+			$this->prepareError('Неправильный статус рассматриваемой заявки');
+			return;
+		}
+
+		$result = get_param($request, 'result', null);
+
+		if ($result !== null) {
+			$this->model->setConfirmation($tid, $me, $result, get_param($request, 'agree-text'));
+
+			// в зависимости от результата рассмотрения, установим новый статус заявки
+			$this->model->setTicketStatus($tid, $result === 3 ? STATUS_REJECT : STATUS_ACCEPT, $me);
+		}
+
+		if (count($this->model->getErrors())) {
+			echo CModel::getErrorList();
+		} else {
+			$this->prepareError('Заявка сохранена', 'alert-success');
+		}
+	}
+
 }
