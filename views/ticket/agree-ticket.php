@@ -69,7 +69,7 @@
 					</div>
 					<div class="col-xs-6">
 						<div class="panel panel-default">
-							<div class="panel-heading strong">Резолюция</div>
+							<div class="panel-heading strong">Резолюция цеха <?= $agree_depname;?></div>
 							<div class="panel-body"><?= $agree_form;?></div>
 						</div>
 					</div>

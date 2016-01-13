@@ -105,7 +105,7 @@ class TicketController extends CController {
 		$agree = get_param($ticket, 'agree');
 		$adep = get_param($agree, 'department_id', null);
 		$this->data['departments'] = generateOptions($departments, $adep, 'Не требуется');
-		$adepname = get_param($dlist, $adep, '?'); // Название цеха, кто должен согласовать
+		$this->data['agree_depname'] = get_param($dlist, $adep, '?'); // Название цеха, кто должен согласовать
 
 		// пользователь создавший заявку
 		$uid = get_param($ticket, 'user_id');
@@ -151,8 +151,7 @@ class TicketController extends CController {
 				}
 			} break;
 			case STATUS_AGREE : {
-				$template = 'accept-ticket';
-
+				$template = 'agree-ticket';
 				$this->data['title'] = 'Согласование заявки';
 
 				$nlist = array_column($nodes, 'title', 'id');
@@ -178,10 +177,13 @@ class TicketController extends CController {
 					$this->data['agree_form'] = $this->renderPartial('form-agree');
 					$this->scripts[] = 'agreement';
 				} else {
-					$this->data['wait'] = $adepname;
 					$this->data['agree_form'] = $this->renderPartial('wait-agree');
 				}
 
+			} break;
+			case STATUS_REVIEW : {
+				$template = 'review-ticket';
+				$this->data['title'] = 'Рассмотрение заявки Главным Инженером';
 			} break;
 			default: $template = '';
 		}
