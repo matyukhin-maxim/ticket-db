@@ -119,6 +119,21 @@ class TicketModel extends CModel {
 		]);
 		$data['agree'] = get_param($row, 0);
 
+		$row = $this->select("
+			SELECT dt_stamp, u.fullname, r.reason,
+        case r.result
+          when 1 then 'Разрешено'
+          when 2 then 'Разрешено при условии'
+          when 3 then 'Отказано'
+          else '-'
+        end result
+			FROM resolutions r
+			  LEFT JOIN users u ON r.user_id = u.id
+			WHERE r.ticket_id = :tid AND r.deleted = 0", [
+			'tid' => $ticket_id,
+		]);
+		$data['review'] = get_param($row, 0);
+
 		return $data;
 	}
 

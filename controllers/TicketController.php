@@ -151,6 +151,7 @@ class TicketController extends CController {
 		} elseif (!(count($devs) || $ticket_status === STATUS_DRAFT)) {
 			$devices = "Устройства не указаны";
 		}
+		$review = get_param($ticket, 'review');
 
 		$this->scripts[] = 'debug-reload';
 
@@ -253,6 +254,25 @@ class TicketController extends CController {
 				} else {
 					$this->data['panel_title'] = "Согласование цеха";
 					$this->data['panel_content'] = "<em>Не требуется</em>";
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+				}
+
+				if (!$review) {
+					// Если информации о согласовании нет, то в этом статусе быть она не может
+					$this->prepareError('Некорректный статус заявки');
+
+					// понижаем статус
+					$this->model->setTicketStatus($req_id, $agree ? STATUS_REVIEW : STATUS_ACCEPT, 0);
+					$this->redirect('/'); // и к списку...
+				} else {
+					$this->data['panel_title'] = 'Резолюция главного инженера';
+
+					$this->data['ag_res'] = get_param($review, 'result');
+					$this->data['ag_user'] = makeSortName(get_param($review, 'fullname'));
+					$this->data['ag_date'] = sqldate2human(get_param($review, 'dt_stamp'));
+					$this->data['ag_reason'] = nl2br(get_param($review, 'reason'));
+
+					$this->data['panel_content'] = $this->renderPartial('review-info');
 					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
 				}
 
