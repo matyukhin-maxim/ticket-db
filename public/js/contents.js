@@ -9,7 +9,7 @@ $(function () {
     $('.menu-item').click(function(e) {
         var self = $(this);
         var idx = $('.menu-item').index((self));
-        $.cookie('last-item', idx, {expires: 1});
+        $.cookie('last-item', idx, {path: '/', expires: 1});
 
         e.preventDefault();
 
@@ -40,5 +40,5 @@ $(function () {
             }, 'json');
     }
     //setInterval(askCount, 10000);
-    $('.menu-item').eq(last).trigger('click');
+    $('.menu-item').eq(last % $('.menu-item').length).trigger('click');
 });

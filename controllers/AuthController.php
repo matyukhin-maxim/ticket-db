@@ -35,6 +35,8 @@ class AuthController extends CController {
 
 		Session::del('auth');
 		Session::destroy();
+		setcookie('last-item', null, -1, '/'); // forgot menu item
+
 		$this->redirect('/');
 	}
 }

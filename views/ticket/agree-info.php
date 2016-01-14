@@ -1,7 +1,7 @@
-<table class="table table-bordered no-pad text-center">
-	<tr class="success">
-		<td class="col-xs-3"><?= $ag_res;?></td>
-		<td class="col-xs-5"><?= $ag_user;?></td>
-		<td class="col-xs-4"><?= $ag_date;?></td>
-	</tr>
-</table>
+<div class="resolution alert text-center strong <?= $ag_class; ?>">
+	<div class="clearfix">
+		<div class="col-md-4"><?= $ag_date; ?></div>
+		<div class="col-md-5"><?= $ag_user; ?></div>
+		<div class="col-md-3"><?= $ag_res; ?></div>
+	</div>
+</div>

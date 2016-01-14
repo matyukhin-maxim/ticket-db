@@ -170,3 +170,11 @@ function sqldate2human($dbdate, $format = "d.m.Y H:i") {
 	$date = date_create_from_format('Y-m-d H:i:s', $dbdate);
 	return $date ? date_format($date, $format) : date($format);
 }
+
+function makeSortName($fullname) {
+
+	$parts = preg_split('/\s+/',$fullname);
+	$result = '';
+	foreach ($parts as $next) $result .= ' ' . ($result ? mb_substr($next, 0, 1) . '.' : $next);
+	return trim($result);
+}

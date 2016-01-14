@@ -19,13 +19,11 @@
 							       value="<?= $t_number; ?>">
 						</td>
 						<td>
-							<input id="dcurrent" type="text" class="form-control text-center"
-							       disabled
+							<input id="dcurrent" type="text" class="form-control text-center" disabled
 							       value="<?= $t_cdate; ?>">
 						</td>
 						<td>
-							<input type="text" class="form-control" disabled
-							       value="<?= $t_department; ?>">
+							<input type="text" class="form-control" disabled value="<?= $t_department; ?>">
 						</td>
 						<td>
 							<input type="text" class="form-control" disabled value="<?= $t_user; ?>">
@@ -68,10 +66,7 @@
 						</div>
 					</div>
 					<div class="col-xs-6">
-						<div class="panel panel-default">
-							<div class="panel-heading strong">Согласование цеха <?= $agree_depname;?></div>
-							<div class="panel-body"><?= $form;?></div>
-						</div>
+						<?= $resolutions; ?>
 					</div>
 				</div>
 				<div class="form-group no-pad">

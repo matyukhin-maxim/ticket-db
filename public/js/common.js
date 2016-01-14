@@ -35,17 +35,24 @@ $(function() {
         //minDate: current
     });
 
+    // блок с информаций об отделе
     $('#asu-info').click(function() {
         $('#info-block').slideToggle('slow');
     });
 
+    // mysql ошибки или другие
     $('#status-text:empty').closest('#status-footer').hide();
 
     $('.selectpicker').selectpicker({
         dropupAuto : false
     });
 
+    // подсказки для кнопок, текст которых может свернуться на мелких экранах
+    $('.btn-group-justified .btn').each(function () {
+        var self = $(this);
+        self.attr('title', $.trim(self.text()));
+    });
+
     showPopup();
 
-    //setTimeout(function () {location.reload();}, 10000);
 });

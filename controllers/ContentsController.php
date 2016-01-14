@@ -4,13 +4,13 @@
 class ContentsController extends CController {
 
 	private $menu = [
-		STATUS_AGREE    => 'Согласование',
-		STATUS_REVIEW   => 'На рассмотрении',
-		STATUS_ACCEPT   => 'Разрешенные',
-		STATUS_OPEN     => 'Открытые',
+		STATUS_AGREE => 'Согласование',
+		STATUS_REVIEW => 'На рассмотрении',
+		STATUS_ACCEPT => 'Разрешенные',
+		STATUS_OPEN => 'Открытые',
 		STATUS_COMPLETE => 'Прикрытые',
-		STATUS_REJECT   => 'Отказанные',
-		STATUS_CLOSE    => 'Закрытые',
+		STATUS_REJECT => 'Отказанные',
+		STATUS_CLOSE => 'Закрытые',
 	];
 
 	public function __construct() {
@@ -37,7 +37,7 @@ class ContentsController extends CController {
 		// рендерим основное меню
 		foreach ($this->menu as $index => $title) {
 
-			$this->data['cnt'] = $states[$index] ?: '' ; //rand(1, 15);
+			$this->data['cnt'] = $states[$index] ?: ''; //rand(1, 15);
 			$this->data['title'] = $title;
 			$this->data['type'] = $index; // статус заявок (для фильтрации)
 			$this->data['usermenu'] .= $this->renderPartial('menu-item');
@@ -65,11 +65,13 @@ class ContentsController extends CController {
 
 	public function ajaxList() {
 
+		/** @todo При запросе завок для согласования нужно сделать чтобы сверху были заявки цеха текущего пользователя и подсвечивались */
+
 		//sleep(1);
 		$status = filter_input(INPUT_POST, 'type', FILTER_VALIDATE_INT, [
 			'options' => [
 				'min_range' => 0,
-			    'default' => 0,
+				'default' => 0,
 			]
 		]);
 

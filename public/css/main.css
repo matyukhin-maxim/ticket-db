@@ -306,3 +306,8 @@ textarea.reason {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.resolution {
+    padding: 5px;
+    margin-bottom: 0;
+}

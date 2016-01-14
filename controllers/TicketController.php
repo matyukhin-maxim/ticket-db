@@ -76,6 +76,7 @@ class TicketController extends CController {
 		$this->render('', false);
 		$ticket = $this->model->getTicketInfo($req_id);
 		$my_dep = get_param($this->authdata, 'depid');
+		$my_role = get_param($this->authdata, 'role_id');
 
 		if (!$ticket) {
 			$this->prepareError('Заявка не найдена', 'alert-warning');
@@ -97,17 +98,17 @@ class TicketController extends CController {
 		$this->data['button_delete'] = sprintf('<a class="btn btn-danger" href="/ticket/delete/%s/">Удалить</a>', $req_id);
 
 		$departments = $this->model->getDepartments();
-		$tdep = get_param($ticket, 'department_id');
+		$tdepid = get_param($ticket, 'department_id');
 		$dlist = array_column($departments, 'title', 'id');
 
 		// цех создатель
-		$this->data['t_department'] = get_param($dlist, $tdep, '?');
+		$this->data['t_department'] = get_param($dlist, $tdepid, '?');
 
 		// цех согласователь
 		$agree = get_param($ticket, 'agree');
-		$adep = get_param($agree, 'department_id', -1);
-		$this->data['departments'] = generateOptions($departments, $adep, 'Не требуется');
-		$this->data['agree_depname'] = get_param($dlist, $adep, null); // Название цеха, кто должен согласовать
+		$adepid = get_param($agree, 'department_id', -1);
+		$this->data['departments'] = generateOptions($departments, $adepid, 'Не требуется');
+		$adepname = get_param($dlist, $adepid, null); // Название цеха, кто должен согласовать
 
 		// пользователь создавший заявку
 		$uid = get_param($ticket, 'user_id');
@@ -117,98 +118,177 @@ class TicketController extends CController {
 
 		$nodes = $this->model->getNodes();
 		$nodeid = get_param($ticket, 'node_id');
-		$this->data['nodes'] = generateOptions($nodes, $nodeid, false);
+		$nlist = array_column($nodes, 'title', 'id');
+		$this->data['nodename'] = get_param($nlist, $nodeid, '?');
 
 		// получим список устройств узла, и нарисуем чекбокс-лист
 		// но изменим порядок, чтобы спервы отрисовались отмеченные в заявке устройства
 		$dlist = $this->model->getDevices($nodeid);
 		$dlist = array_column($dlist, 'name', 'id');
 		$devs = get_param($ticket, 'devices', []);
-		foreach ($devs as $item_id) {
-			$item = get_param($dlist, $item_id);
-			if ($item) {
-				unset($dlist[$item_id]);
-				$dlist = [$item_id => $item] + $dlist; // ставим на первое место
-			}
-		}
-
 
 		$this->data['tstart'] = sqldate2human(get_param($ticket, 'dt_start'));
 		$this->data['tstop'] = sqldate2human(get_param($ticket, 'dt_stop'));
+		$this->data['resolutions'] = '';
+		$ticket_status = intval(get_param($ticket, 'status', -1));
 
 		$devices = '';
-		switch (get_param($ticket, 'status')) {
+		// обходим перечень устройств указанных в заявке
+		foreach ($devs as $item_id) {
+			// получаем название из списка
+			$devname = get_param($dlist, $item_id);
+
+			$this->data['mark'] = 1;
+			$this->data['dev_name'] = $devname;
+			$this->data['dev_id'] = $item_id;
+			$this->data['dev_class'] = mb_strlen($devname) >= 35 ? 'col-md-12' : 'col-md-6';
+			$devices .= $ticket_status === STATUS_DRAFT ? $this->renderPartial('device-item') : $devname . PHP_EOL;
+		}
+
+		if ($ticket_status !== STATUS_DRAFT) $devices = nl2br($devices);
+		if (!count($dlist)) {
+			$devices = $this->renderPartial('no-device');
+		} elseif (!(count($devs) || $ticket_status === STATUS_DRAFT)) {
+			$devices = "Устройства не указаны";
+		}
+
+		$this->scripts[] = 'debug-reload';
+
+		switch ($ticket_status) {
 			case STATUS_DRAFT : {
 				$template = 'new-ticket';
-				if (count($dlist) === 0) {
-					$devices .= $this->renderPartial('no-device');
-				} else {
-					foreach ($dlist as $key => $value) {
-						$this->data['mark'] = intval(in_array($key, $devs));
+				$this->data['nodes'] = generateOptions($nodes, $nodeid, false);
+
+				// дорисуем все остальные устройства выбранного узла, тчобы их можно было при необходимости выбрать
+				foreach ($dlist as $key => $value) {
+
+					if (!in_array($key, $devs)) {
+
+						$this->data['mark'] = 0;
 						$this->data['dev_name'] = $value;
 						$this->data['dev_id'] = $key;
 						$this->data['dev_class'] = mb_strlen($value) >= 35 ? 'col-md-12' : 'col-md-6';
 						$devices .= $this->renderPartial('device-item');
 					}
 				}
-			} break;
+			}
+				break;
 			case STATUS_AGREE : {
 				$template = 'ticket-panel-agree';
 				$this->data['title'] = 'Согласование заявки';
 
-				$nlist = array_column($nodes, 'title', 'id');
-				$this->data['nodename'] = get_param($nlist, $nodeid, '?');
-				foreach($devs as $item_id)
-					$devices .= get_param($dlist, $item_id, '?') . PHP_EOL;
-				$devices = $devices ?: 'Устройства не указаны';
-				$devices = nl2br($devices);
-
 				$ares = get_param($agree, 'result', null);
 				// Проверка и защита от дурака
-				if (!$adep || $ares) {
+				if (!$adepid || $ares) {
 					// Если id цеха, который должен согласовывать, не указан, или согласование уже получено (!= null)
 					// то статус у заявки неверный, и его желательно исправить
 					// (отправляем на согласование, представивщись Роботом
 					$this->model->setTicketStatus($req_id, STATUS_REVIEW, 0);
 					$this->prepareError('Ошибочный статус заявки');
 					$this->redirect('/');
-				} elseif ($my_dep === $adep) {
+				} elseif ($my_dep === $adepid && $my_role === Configuration::$ROLE_USER) {
 					// Если согласовать должен цех авторизованного пользователя, то нарисуем форму и кнопку
 					// js скрипт перехватит нажатие кнопки сохранения и сделает всю грязную работу
-					$this->data['form'] = $this->renderPartial('form-agree');
+					$this->data['panel_title'] = "Согласование цеха $adepname";
+					$this->data['panel_content'] = $this->renderPartial('form-agree');
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+
 					$this->scripts[] = 'agreement';
 				} else {
-					$this->data['form'] = " Ожидание решения руководителя цеха";
+					$this->data['panel_title'] = "Согласование цеха $adepname";
+					$this->data['panel_content'] = "<em>Ожидание решения руководителя цеха</em>";
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
 				}
 
-			} break;
+			}
+				break;
 			case STATUS_REVIEW : {
 				$template = 'ticket-panel-review';
 				$this->data['title'] = 'Рассмотрение заявки';
 
-				// Информацияя об узле и устройствах
-				$nlist = array_column($nodes, 'title', 'id');
-				$this->data['nodename'] = get_param($nlist, $nodeid, '?');
-				foreach($devs as $item_id)
-					$devices .= get_param($dlist, $item_id, '?') . PHP_EOL;
-				$devices = $devices ?: 'Устройства не указаны';
-				$devices = nl2br($devices);
+				if ($agree) {
+					// заполним информацию о том кто и когда согласовал
+					$this->data['ag_res'] = 'Согласованно';
+					$this->data['ag_class'] = 'alert-success';
+					$this->data['ag_user'] = makeSortName(get_param($agree, 'fullname', '-'));
+					$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
 
-				// заполним информацию о том кто и когда согласовал
-				$this->data['ag_res' ] = 'Согласованно';
-				$this->data['ag_user'] = get_param($agree, 'fullname', '-');
-				$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
-				$this->data['agree_form'] = $this->renderPartial('agree-info');
+					$this->data['panel_title'] = "Резолюция цеха $adepname";
+					$this->data['panel_content'] = $this->renderPartial('agree-info');
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+				} else {
+					$this->data['panel_title'] = "Согласование цеха";
+					$this->data['panel_content'] = "<em>Не требуется</em>";
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+				}
 
-				$this->data['form'] = $this->renderPartial('form-review');
-				$this->scripts[] = 'review-ticket';
-			} break;
-			default: $template = '';
+				if ($my_role === Configuration::$ROLE_ME) {
+
+					$this->data['panel_title'] = 'Резолюция главного инженера';
+					$this->data['panel_content'] = $this->renderPartial('form-review');
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+
+					$this->scripts[] = 'review-ticket';
+				} else {
+					$this->data['panel_title'] = 'Резолюция главного инженера';
+					$this->data['panel_content'] = "<em> Ожидание... </em>";
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+				}
+			}
+				break;
+			case STATUS_ACCEPT : {
+				$template = 'ticket-panel-accept';
+				$this->data['title'] = 'Обработка заявки';
+
+				if ($agree) {
+					// заполним информацию о том кто и когда согласовал
+					$this->data['ag_res'] = 'Согласованно';
+					$this->data['ag_class'] = 'alert-success';
+					$this->data['ag_user'] = makeSortName(get_param($agree, 'fullname', '-'));
+					$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
+
+					$this->data['panel_title'] = "Резолюция цеха $adepname";
+					$this->data['panel_content'] = $this->renderPartial('agree-info');
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+				} else {
+					$this->data['panel_title'] = "Согласование цеха";
+					$this->data['panel_content'] = "<em>Не требуется</em>";
+					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+				}
+
+			}
+				break;
+			default:
+				$template = 'incorrect-status';
 		}
 
 		$this->data['devlist'] = $devices;
 		$this->render($template);
 
+	}
+
+	public function actionDelete() {
+
+		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
+
+		$info = $this->model->getTicketInfo($ticket_id);
+		if ($info['status'] !== '1') {
+			$this->prepareError('Удалять можно только черновик.');
+			$this->redirect('/contents/');
+		} elseif ($info['department_id'] != get_param($this->authdata, 'depid')) {
+			$this->prepareError('Заявку другого цеха удалять запрещено!');
+			$this->redirect('/contents/');
+		}
+
+		$res = $this->model->deleteDraft($ticket_id);
+		if ($res) {
+			$this->prepareError('Заявка удалена.', 'alert-success');
+			$this->model->setTicketStatus($ticket_id, -1);
+		} else {
+			$this->prepareError('Заявка не найдена.');
+		}
+
+		$this->redirect('/contents/');
 	}
 
 	public function ajaxSave() {
@@ -323,37 +403,13 @@ class TicketController extends CController {
 		echo $data;
 	}
 
-	public function actionDelete() {
-
-		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
-
-		$info = $this->model->getTicketInfo($ticket_id);
-		if ($info['status'] !== '1') {
-			$this->prepareError('Удалять можно только черновик.');
-			$this->redirect('/contents/');
-		} elseif ($info['department_id'] != get_param($this->authdata,'depid')) {
-			$this->prepareError('Заявку другого цеха удалять запрещено!');
-			$this->redirect('/contents/');
-		}
-
-		$res = $this->model->deleteDraft($ticket_id);
-		if ($res) {
-			$this->prepareError('Заявка удалена.', 'alert-success');
-			$this->model->setTicketStatus($ticket_id, -1);
-		} else {
-			$this->prepareError('Заявка е найдена.');
-		}
-
-		$this->redirect('/contents/');
-	}
-
 	public function ajaxAgreement() {
 
 		// проверим чтоб статус заявки был нужный
 		// и что у пользоателя есть право согласования
 		$role = get_param($this->authdata, 'role_id');
 		$depid = get_param($this->authdata, 'depid');
-		$me    = get_param($this->authdata, 'id');
+		$me = get_param($this->authdata, 'id');
 		$request = filter_input_array(INPUT_POST, [
 			'ticket_id' => [
 				'filter' => FILTER_VALIDATE_INT,
@@ -412,7 +468,7 @@ class TicketController extends CController {
 		// проверим чтоб статус заявки был нужный
 		// и что у пользоателя есть право согласования
 		$role = get_param($this->authdata, 'role_id');
-		$me    = get_param($this->authdata, 'id');
+		$me = get_param($this->authdata, 'id');
 		$request = filter_input_array(INPUT_POST, [
 			'ticket_id' => [
 				'filter' => FILTER_VALIDATE_INT,
