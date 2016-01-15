@@ -1,13 +1,13 @@
 <?php
 
-define('STATUS_DRAFT'     , 1);
-define('STATUS_AGREE'     , 2);
-define('STATUS_ACCEPT'    , 3);
-define('STATUS_OPEN'      , 4);
-define('STATUS_COMPLETE'  , 5);
-define('STATUS_REJECT'    , 6);
-define('STATUS_CLOSE'     , 7);
-define('STATUS_REVIEW'    , 8);
+define('STATUS_DRAFT'     , 1); // Черновик
+define('STATUS_AGREE'     , 2); // Согласование цеха
+define('STATUS_REVIEW'    , 8); // рассмотрение ГИ
+define('STATUS_ACCEPT'    , 3); // Разрешенная ГИ
+define('STATUS_OPEN'      , 4); // Открыта ННСом
+define('STATUS_COMPLETE'  , 5); // Прикрыта (исполнена)
+define('STATUS_REJECT'    , 6); // Отказана (цехом или ГИ)
+define('STATUS_CLOSE'     , 7); // закрыта
 
 class Configuration {
 

@@ -199,4 +199,10 @@ class TicketModel extends CModel {
 			'reason' => $reason,
 		]);
 	}
+
+	public function openTicket($ticket_id, $user_id) {
+
+		$this->select('UPDATE tickets SET dt_open = now() WHERE id = :tid', ['tid' => $ticket_id]);
+		$this->setTicketStatus($ticket_id, STATUS_OPEN, $user_id);
+	}
 }

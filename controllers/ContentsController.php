@@ -82,7 +82,8 @@ class ContentsController extends CController {
 			$this->data['tn'] = get_param($ticket, 'number');
 			$this->data['dcreate'] = get_param($ticket, 'dc');
 			$this->data['tdepartment'] = get_param($ticket, 'dname');
-			$this->data['twork'] = join('<br/>', get_array_part($ticket, 'dstart dstop'));
+			// чтобы на разых экранах время не "упрыгивало" от даты на новую строку, разменим обычный пробел - неразрывным
+			$this->data['twork'] = str_replace(' ','&nbsp;',join('<br/>', get_array_part($ticket, 'dstart dstop')));
 			$this->data['tnode'] = get_param($ticket, 'nodename');
 			$this->data['tstatus'] = 'Черновик';
 			$this->data['tid'] = get_param($ticket, 'id');

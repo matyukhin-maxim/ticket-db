@@ -8,10 +8,10 @@
 			<div class="panel-body">
 				<table class="table table-bordered text-center">
 					<tr class="strong">
-						<td class="col-xs-1">№ заявки</td>
-						<td class="col-xs-2">Дата подачи</td>
+						<td class="col-xs-2">№ заявки</td>
+						<td class="col-xs-3">Дата подачи</td>
 						<td class="col-xs-2">Цех</td>
-						<td class="col-xs-3">Заявку подал</td>
+						<td class="col-xs-5">Заявку подал</td>
 					</tr>
 					<tr>
 						<td>
@@ -31,7 +31,7 @@
 					</tr>
 				</table>
 				<div class="row form-group no-pad">
-					<div class="col-xs-6">
+					<div class="col-sm-6">
 						<div class="row">
 							<div class="col-sm-6">
 								<label class="control-label">Дата и время начала работ :</label>
@@ -65,7 +65,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-xs-6">
+					<div class="col-sm-6">
 						<?= $resolutions; ?>
 					</div>
 				</div>

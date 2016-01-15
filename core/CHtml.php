@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * Created by PhpStorm.
+ * User: Матюхин_МП
+ * Date: 15.01.2016
+ * Time: 14:02
+ */
+class CHtml {
+
+	public static function createTag($tagName, $htmlOptions = [], $content = []) {
+
+		if (!is_array($content)) $content = array($content);
+		if (!is_array($htmlOptions)) $htmlOptions = array($htmlOptions);
+
+		$result = '<' . $tagName;
+		foreach ($htmlOptions as $param => $option) {
+			$result .= $option !== null ? sprintf(' %s="%s"', $param, $option) : sprintf(' %s', $param);
+		}
+
+		if (!count($content)) return $result . '/>' . PHP_EOL; // <input type="text"/>
+
+		$result .= '>' . PHP_EOL;
+		foreach ($content as $item) {
+			$result .= $item . PHP_EOL;
+		}
+		$result .= '</' . $tagName . '>' . PHP_EOL;
+
+		return $result;
+	}
+
+	public static function createButton($text, $options = null) {
+
+		if (!$options) $options = [];
+		$options['class'] = get_param($options, 'class', 'btn btn-default');
+
+		return self::createTag('button', $options, $text);
+	}
+
+	public static function createLink($text, $options = null) {
+		if (!$options) $options = [];
+		$options['href'] = get_param($options, 'href', '#');
+
+		return self::createTag('a', $options, $text);
+	}
+}

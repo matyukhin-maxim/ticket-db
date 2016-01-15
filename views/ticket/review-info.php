@@ -1,10 +1,13 @@
-<div class="resolution alert text-center <?= $ag_class; ?>">
-	<div class="clearfix">
-		<div class="col-md-4"><?= $ag_date; ?></div>
-		<div class="col-md-3"><?= $ag_user; ?></div>
-		<div class="col-md-5"><?= $ag_res; ?></div>
+<div class="resolution alert <?= $ag_class; ?>">
+	<div class="row">
+		<div class="col-md-6 strong"><?= $ag_res; ?></div>
+		<div class="col-md-6"><abbr title="<?= $ag_date; ?>"><?= $ag_user; ?></abbr></div>
 		<?php if (isset($ag_reason)) :?>
-			<div class="col-md-12 strong h4"><?= $ag_reason; ?></div>
+			<div class="col-md-12">
+				<blockquote class="no-pad">
+					<?= $ag_reason; ?>
+				</blockquote>
+			</div>
 		<?php endif;?>
 	</div>
 </div>

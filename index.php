@@ -12,6 +12,7 @@ require_once 'core/CController.php';
 require_once 'core/Routine.php';
 require_once 'core/Pager.php';
 require_once 'core/Session.php';
+require_once 'core/CHtml.php';
 
 $query = strtolower(rtrim(get_param($_GET, 'url', 'index'), '/'));
 $url = explode('/', $query);

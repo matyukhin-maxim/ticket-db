@@ -155,13 +155,6 @@ body {
     color: #fff;
 }
 
-/* unstack tabs on small screen */
-@media (max-width: 992px) {
-    .nav-tabs-justified > li {
-        display: inline-block;
-        width: 150px;
-    }
-}
 
 .badge {
     min-width: 30px;
@@ -200,6 +193,24 @@ th {
     min-height: 270px;
     max-height: 270px;
     /*height: 270px;*/
+}
+
+.interval-row {
+    font-size: 100%;
+}
+
+/* unstack tabs on small screen */
+@media (max-width: 992px) {
+    .nav-tabs-justified > li {
+        display: inline-block;
+        width: 150px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .interval-row {
+        font-size: 85%;
+    }
 }
 
 @media (min-width: 768px) {
@@ -310,4 +321,8 @@ textarea.reason {
 .resolution {
     padding: 5px;
     margin-bottom: 0;
+}
+
+.table input {
+    text-align: center;
 }

@@ -78,8 +78,9 @@ class CController {
 		}
 	}
 
-	public function redirect($param = []) {
+	public function redirect($param = null) {
 
+		if (is_null($param)) $param = '/';
 		if (!is_array($param)) {
 			$param = [
 				'location' => $param,

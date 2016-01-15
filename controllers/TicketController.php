@@ -153,7 +153,7 @@ class TicketController extends CController {
 		}
 		$review = get_param($ticket, 'review');
 
-		$this->scripts[] = 'debug-reload';
+		//$this->scripts[] = 'debug-reload';
 
 		switch ($ticket_status) {
 			case STATUS_DRAFT : {
@@ -267,17 +267,25 @@ class TicketController extends CController {
 				} else {
 					$this->data['panel_title'] = 'Резолюция главного инженера';
 
+					$this->data['ag_class'] = '';
 					$this->data['ag_res'] = get_param($review, 'result');
-					$this->data['ag_user'] = makeSortName(get_param($review, 'fullname'));
+					$this->data['ag_user'] = get_param($review, 'fullname');
 					$this->data['ag_date'] = sqldate2human(get_param($review, 'dt_stamp'));
-					$this->data['ag_reason'] = nl2br(get_param($review, 'reason'));
+
+					$reason = get_param($review, 'reason', null);
+					$this->data['ag_reason'] = nl2br(html_entity_decode($reason)) ?: null;
 
 					$this->data['panel_content'] = $this->renderPartial('review-info');
 					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
 				}
 
-			}
-				break;
+				if ($my_role === Configuration::$ROLE_NSS) {
+					$this->data['buttons'] = CHtml::createLink('Открыть заявку', [
+						'class' => 'btn btn-primary',
+						'href' => '/ticket/start/' . $req_id .'/',
+					]);
+				}
+			} break;
 			default:
 				$template = 'incorrect-status';
 		}
@@ -287,22 +295,48 @@ class TicketController extends CController {
 
 	}
 
+	public function actionStart() {
+
+		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
+
+		$info = $this->model->getTicketInfo($ticket_id);
+
+		if (!$info) {
+			$this->prepareError('Запрошенная заявка не найдена.');
+			$this->redirect();
+		} elseif ($info['status'] != STATUS_ACCEPT) {
+			$this->prepareError('Заявка должна быть утверждена главным инженером.');
+			$this->redirect();
+		}
+
+		$this->model->openTicket($ticket_id, get_param($this->authdata, 'id'));
+		$errors = CModel::getErrorList();
+		if ($errors) {
+			$this->prepareError($errors);
+		} else $this->prepareError('Статус заявки изменен. <br/> Заявка открыта.', 'alert-success');
+
+		$this->redirect('/contents/');
+	}
+
 	public function actionDelete() {
 
 		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
 
 		$info = $this->model->getTicketInfo($ticket_id);
-		if ($info['status'] !== '1') {
+		if (!$info) {
+			$this->prepareError('Запрошенная заявка не найдена.');
+			$this->redirect('/contents/');
+		} elseif ($info['status'] != STATUS_DRAFT) {
 			$this->prepareError('Удалять можно только черновик.');
 			$this->redirect('/contents/');
-		} elseif ($info['department_id'] != get_param($this->authdata, 'depid')) {
+		} elseif ($info['department_id'] !== get_param($this->authdata, 'depid')) {
 			$this->prepareError('Заявку другого цеха удалять запрещено!');
 			$this->redirect('/contents/');
 		}
 
 		$res = $this->model->deleteDraft($ticket_id);
 		if ($res) {
-			$this->prepareError('Заявка удалена.', 'alert-success');
+			$this->prepareError('Заявка удалена.', 'alert-info');
 			$this->model->setTicketStatus($ticket_id, -1);
 		} else {
 			$this->prepareError('Заявка не найдена.');

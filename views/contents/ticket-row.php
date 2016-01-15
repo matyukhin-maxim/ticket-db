@@ -2,7 +2,7 @@
 echo <<<ROWDATA
 <tr class="ticket- $tclass">
 	<td>$tn
-	<a href="/ticket/edit/$tid/" class="btn btn-xs btn-default" title="Открыть заявку">Открыть</a>
+		<a href="/ticket/edit/$tid/" class="btn btn-xs btn-default" title="Открыть заявку">Открыть</a>
 	</td>
 	<td>$dcreate</td>
 	<td>$tdepartment</td>
@@ -12,5 +12,3 @@ echo <<<ROWDATA
 </tr>
 
 ROWDATA;
-?>
-<!--<button class="btn btn-xs"><i class="glyphicon glyphicon-pencil"></i></button>-->
