@@ -90,7 +90,7 @@
 
 
 <!-- Begin page content -->
-<div class="container wrapper">
+<div class="container-fluid wrapper">
 
 	<!-- ajax debug block -->
 	<div id="response"></div>
