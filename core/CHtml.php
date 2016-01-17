@@ -37,9 +37,9 @@ class CHtml {
 		return self::createTag('button', $options, $text);
 	}
 
-	public static function createLink($text, $options = null) {
+	public static function createLink($text, $href = '#', $options = null) {
 		if (!$options) $options = [];
-		$options['href'] = get_param($options, 'href', '#');
+		$options['href'] = $href;
 
 		return self::createTag('a', $options, $text);
 	}
