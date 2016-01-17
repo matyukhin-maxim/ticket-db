@@ -81,13 +81,13 @@
 			</li>
 		</ul>
 	</div>
-</nav>
-<div class="container">
-	<div class="pull-right col-xs-5">
-		<div class="alert text-center strong" id="status-box"></div>
-	</div>
-</div>
 
+	<div class="container">
+		<div class="pull-right col-xs-5">
+			<div class="alert text-center strong" id="status-box"></div>
+		</div>
+	</div>
+</nav>
 
 <!-- Begin page content -->
 <div class="container-fluid wrapper">
