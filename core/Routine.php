@@ -28,9 +28,15 @@ function charsetChange(&$value) {
 		$value = mb_convert_encoding($value, 'UTF-8', 'Windows-1251');
 }
 
+/**
+ * Функция возвращает переданный ей многострочный текст,
+ * убрав лишние пробелы в каждой подстроке
+ * (т.к. при копипасте с word`а нсс копируют ТАБы)
+ *
+ * @param $txt
+ * @return string
+ */
 function trimHereDoc($txt) {
-	// разбиваем текст по строками, и удаляем пробелы в каждой
-	// т.к. при копипасте с word`а нсс копируют ТАБы
 	return implode("\n", array_map('trim', explode("\n", $txt)));
 }
 
@@ -171,6 +177,14 @@ function sqldate2human($dbdate, $format = "d.m.Y H:i") {
 	return $date ? date_format($date, $format) : date($format);
 }
 
+/**
+ * Функция преобразования полного ФИО
+ * в короткое представление (Фамилия и инициалы) для отображения
+ * на странице, где нет много свободного места
+ *
+ * @param string $fullname
+ * @return string
+ */
 function makeSortName($fullname) {
 
 	$parts = preg_split('/\s+/',$fullname);
