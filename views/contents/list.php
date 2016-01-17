@@ -2,7 +2,7 @@
 	<div class="col-md-3">
 		<div class="panel panel-default strong">
 			<div class="panel-heading hidden-sm hidden-xs">
-				<i class="glyphicon glyphicon-menu-hamburger"></i>&nbsp;
+				<i class="glyphicon glyphicon-menu-hamburger"></i>
 				Меню
 			</div>
 			<div class="panel-body">
@@ -15,7 +15,7 @@
 	<div class="col-md-9">
 		<div class="panel panel-default">
 			<div class="panel-heading strong">
-				<i class="glyphicon glyphicon-bullhorn"></i>&nbsp;
+				<i class="glyphicon glyphicon-bullhorn"></i>
 				Список заявок
 			</div>
 			<div class="">
@@ -34,7 +34,7 @@
 					</table>
 				</div>
 				<div class="panel-body ticket-window">
-					<table class="table table-bordered table-striped text-center">
+					<table class="table table-bordered table-condensed table-striped text-center">
 						<colgroup>
 							<col class="col-xs-1">
 							<col class="col-xs-2">

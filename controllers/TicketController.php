@@ -160,7 +160,9 @@ class TicketController extends CController {
 				$template = 'new-ticket';
 				$this->data['nodes'] = generateOptions($nodes, $nodeid, false);
 
-				// дорисуем все остальные устройства выбранного узла, тчобы их можно было при необходимости выбрать
+				// дорисуем все устройства выбранного узла
+				// которые не были отмеченны в заявке,
+				// тчобы их можно было при необходимости выбрать
 				foreach ($dlist as $key => $value) {
 
 					if (!in_array($key, $devs)) {
@@ -280,9 +282,9 @@ class TicketController extends CController {
 				}
 
 				if ($my_role === Configuration::$ROLE_NSS) {
-					$this->data['buttons'] = CHtml::createLink('Открыть заявку', [
+					$this->data['buttons'] = CHtml::createLink('Открыть заявку',
+						"/ticket/start/$req_id/", [
 						'class' => 'btn btn-primary',
-						'href' => '/ticket/start/' . $req_id .'/',
 					]);
 				}
 			} break;
@@ -298,22 +300,24 @@ class TicketController extends CController {
 	public function actionStart() {
 
 		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
+		$role = get_param($this->authdata, 'role_id', -1);
 
 		$info = $this->model->getTicketInfo($ticket_id);
+		$errors = '';
 
 		if (!$info) {
-			$this->prepareError('Запрошенная заявка не найдена.');
-			$this->redirect();
+			$errors = 'Запрошенная заявка не найдена.';
 		} elseif ($info['status'] != STATUS_ACCEPT) {
-			$this->prepareError('Заявка должна быть утверждена главным инженером.');
-			$this->redirect();
+			$errors = 'Заявка должна быть утверждена главным инженером.';
+		} elseif ($role !== Configuration::$ROLE_NSS) {
+			$errors = 'Заявку может открыть только Начальник смены!';
 		}
 
 		$this->model->openTicket($ticket_id, get_param($this->authdata, 'id'));
-		$errors = CModel::getErrorList();
+		$errors .= CModel::getErrorList();
 		if ($errors) {
 			$this->prepareError($errors);
-		} else $this->prepareError('Статус заявки изменен. <br/> Заявка открыта.', 'alert-success');
+		} else $this->prepareError("Статус заявки изменен.\n Заявка открыта.", 'alert-success');
 
 		$this->redirect('/contents/');
 	}
@@ -498,7 +502,7 @@ class TicketController extends CController {
 			$this->prepareError('Заявка не нуждается в согласовании', 'alert-warning');
 			return;
 		} elseif ($depid !== $need) {
-			$this->prepareError('Заявку должен согласовывать <br/> руководитель другого цеха ', 'alert-warning');
+			$this->prepareError("Заявку должен согласовывать\n руководитель другого цеха", 'alert-warning');
 			return;
 		}
 

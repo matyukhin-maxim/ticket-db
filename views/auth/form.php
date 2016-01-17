@@ -4,7 +4,7 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading strong">Авторизация</div>
 			<div class="panel-body">
-				<form method="post" autocomplete="off" action="/auth/login/">
+				<form id="login-form" method="post" autocomplete="off" action="/auth/login/">
 					<fieldset>
 						<div class="form-group">
 							<input class="form-control" placeholder="Фамилия"
@@ -16,7 +16,7 @@
 							<input class="form-control" placeholder="Пароль"
 							       name="password" type="password" required autocomplete="off">
 						</div>
-						<button class="btn btn-primary btn-block" type="submit">Войти</button>
+						<button id="btn-login" class="btn btn-primary btn-block" type="button">Войти</button>
 					</fieldset>
 				</form>
 			</div>
