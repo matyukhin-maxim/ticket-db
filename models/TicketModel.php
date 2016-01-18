@@ -205,4 +205,10 @@ class TicketModel extends CModel {
 		$this->select('UPDATE tickets SET dt_open = now() WHERE id = :tid', ['tid' => $ticket_id]);
 		$this->setTicketStatus($ticket_id, STATUS_OPEN, $user_id);
 	}
+
+	public function completeTicket($ticket_id, $user_id) {
+
+		$this->select('UPDATE tickets SET dt_close = now() WHERE id = :tid', ['tid' => $ticket_id]);
+		$this->setTicketStatus($ticket_id, STATUS_COMPLETE, $user_id);
+	}
 }

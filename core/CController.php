@@ -76,6 +76,7 @@ class CController {
 			setcookie('status', nl2br($etext), time() + 10, '/');
 			setcookie('class', $eclass, time() + 10, '/');
 		}
+		return 0;
 	}
 
 	public function redirect($param = null) {

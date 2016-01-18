@@ -12,6 +12,7 @@ $(function () {
         self.toggleClass('active').blur();
         $('#result').val(self.filter('.active').data('agree') || 0);
         $('.reason').prop('disabled',  $('#result').val() <= 1).focus();
+        $('#save-btn').prop('disabled', $('.choice.active').length === 0);
     });
 
     $('#save-btn').click(function (e) {
@@ -24,4 +25,5 @@ $(function () {
     });
 
     $('.reason').prop('disabled',  $('#result').val() <= 1);
+    $('#save-btn').prop('disabled', 1);
 });

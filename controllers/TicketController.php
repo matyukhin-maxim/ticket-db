@@ -107,15 +107,16 @@ class TicketController extends CController {
 		// цех согласователь
 		$agree = get_param($ticket, 'agree');
 		$adepid = get_param($agree, 'department_id', -1);
-		$this->data['departments'] = generateOptions($departments, $adepid, 'Не требуется');
 		$adepname = get_param($dlist, $adepid, null); // Название цеха, кто должен согласовать
+		$ares = get_param($agree, 'result'); // null - пока не указанно; 0 - отказ; 1 - добро
+		$this->data['departments'] = generateOptions($departments, $adepid, 'Не требуется');
 
 		// пользователь создавший заявку
 		$uid = get_param($ticket, 'user_id');
 		$user = $this->model->getUserName($uid);
 		$this->data['t_user'] = get_param($user, 'fullname', '?');
 
-
+		// Информация по выбранному узлу
 		$nodes = $this->model->getNodes();
 		$nodeid = get_param($ticket, 'node_id');
 		$nlist = array_column($nodes, 'title', 'id');
@@ -155,6 +156,60 @@ class TicketController extends CController {
 
 		//$this->scripts[] = 'debug-reload';
 
+		/* AGREE FORM */
+		if ($agree) {
+			if ($ares === null) {
+				if ($my_role === Configuration::$ROLE_USER && $my_dep === $adepid) {
+					$this->data['panel_content'] = $this->renderPartial('form-agree');
+					$this->scripts[] = 'agree-ticket';
+				} else {
+					$this->data['panel_content'] = "<em>Ожидание решения руководителя цеха</em>";
+				}
+			} else {
+				$this->data['ag_res'] = 'Согласованно';
+				$this->data['ag_class'] = 'alert-success';
+				$this->data['ag_user'] = makeSortName(get_param($agree, 'fullname', '-'));
+				$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
+
+				$this->data['panel_content'] = $this->renderPartial('agree-info');
+			}
+		} else {
+			$this->data['panel_content'] = "<em>Не требуется</em>";
+		}
+		$this->data['panel_title'] = "Резолюция цеха $adepname";
+		$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+		/* AGREE FORM */
+
+		/* REVIEW FORM */
+		// форму рассмотрения нужно рисовать только в случае если согласование получено, либо оно не требуется вовсе
+		if (!$agree || $ares !== null) {
+			$this->data['panel_title'] = 'Резолюция главного инженера';
+
+			if (!$review) {
+				// Если результата соласования нет
+				if ($my_role === Configuration::$ROLE_ME) {
+					// Рисуем форму и подгружаем скрипт-обработчик
+					$this->data['panel_content'] = $this->renderPartial('form-review');
+					$this->scripts[] = 'review-ticket';
+				} else $this->data['panel_content'] = "<em>Ожидание...</em>";
+			} else {
+				// Покажем результат согласования ГИ
+				$this->data['ag_class'] = '';
+				$this->data['ag_res'] = get_param($review, 'result');
+				$this->data['ag_user'] = get_param($review, 'fullname');
+				$this->data['ag_date'] = sqldate2human(get_param($review, 'dt_stamp'));
+
+				$reason = get_param($review, 'reason', null);
+				$this->data['ag_reason'] = nl2br(html_entity_decode($reason)) ?: null;
+
+				$this->data['panel_content'] = $this->renderPartial('review-info');
+			}
+			$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+		}
+		/* REVIEW FORM */
+
+		$template = 'ticket-preview';
+
 		switch ($ticket_status) {
 			case STATUS_DRAFT : {
 				$template = 'new-ticket';
@@ -177,117 +232,93 @@ class TicketController extends CController {
 			}
 				break;
 			case STATUS_AGREE : {
-				$template = 'ticket-panel-agree';
 				$this->data['title'] = 'Согласование заявки';
 
-				$ares = get_param($agree, 'result', null);
-				// Проверка и защита от дурака
-				if (!$adepid || $ares) {
+				/** todo: Проверить возможность текущего статуса
+				 * Возможно согласование уже получено, или вовсе не требуется.
+				 * Следовательно заявка находится в статусе согласования не может
+				 *  */
+				if (!$adepid || $ares !== null) {
 					// Если id цеха, который должен согласовывать, не указан, или согласование уже получено (!= null)
 					// то статус у заявки неверный, и его желательно исправить
-					// (отправляем на согласование, представивщись Роботом
-					$this->model->setTicketStatus($req_id, STATUS_REVIEW, 0);
-					$this->prepareError('Ошибочный статус заявки');
-					$this->redirect('/');
-				} elseif ($my_dep === $adepid && $my_role === Configuration::$ROLE_USER) {
-					// Если согласовать должен цех авторизованного пользователя, то нарисуем форму и кнопку
-					// js скрипт перехватит нажатие кнопки сохранения и сделает всю грязную работу
-					$this->data['panel_title'] = "Согласование цеха $adepname";
-					$this->data['panel_content'] = $this->renderPartial('form-agree');
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
 
-					$this->scripts[] = 'agreement';
-				} else {
-					$this->data['panel_title'] = "Согласование цеха $adepname";
-					$this->data['panel_content'] = "<em>Ожидание решения руководителя цеха</em>";
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+					$this->prepareError('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
+					$template = 'incorrect-status';
+
+					// Я пока не уверен, что менять статус заяви автоматически - есть хорошо...
+					// $this->model->setTicketStatus($req_id, STATUS_REVIEW, 0);
 				}
+
+				// Если текущий пользователь - Руководитель, то добавим ему кнопку сохранения,
+				// чтобы он мог увековечить результат своего согласования
+				$this->data['buttons'] = CHtml::createButton('Сохранить', [
+					'class' => 'btn btn-primary',
+					'id' => 'save-btn',
+				]);
 
 			}
 				break;
 			case STATUS_REVIEW : {
-				$template = 'ticket-panel-review';
 				$this->data['title'] = 'Рассмотрение заявки';
 
-				if ($agree) {
-					// заполним информацию о том кто и когда согласовал
-					$this->data['ag_res'] = 'Согласованно';
-					$this->data['ag_class'] = 'alert-success';
-					$this->data['ag_user'] = makeSortName(get_param($agree, 'fullname', '-'));
-					$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
+				/** todo Проверить правильность текущего статуса
+				 * А именно: если должно быть согласование, то оно должно быть получено (result !== null)
+				 * Она не должна быть открытой или закрытой... Вобщем я хз как 100% быть уверенным
+				 */
 
-					$this->data['panel_title'] = "Резолюция цеха $adepname";
-					$this->data['panel_content'] = $this->renderPartial('agree-info');
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
-				} else {
-					$this->data['panel_title'] = "Согласование цеха";
-					$this->data['panel_content'] = "<em>Не требуется</em>";
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+				if ($agree && $ares === null) {
+					// Заявка должна быть согласована, но результата согласования нет
+					// соответственно в текущем статусе она быть не может
+
+					$this->prepareError('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
+					$template = 'incorrect-status';
+
+					//$this->model->setTicketStatus($req_id, $agree ? STATUS_AGREE : STATUS_DRAFT, 0);
 				}
 
 				if ($my_role === Configuration::$ROLE_ME) {
-
-					$this->data['panel_title'] = 'Резолюция главного инженера';
-					$this->data['panel_content'] = $this->renderPartial('form-review');
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
-
-					$this->scripts[] = 'review-ticket';
-				} else {
-					$this->data['panel_title'] = 'Резолюция главного инженера';
-					$this->data['panel_content'] = "<em> Ожидание... </em>";
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+					$this->data['buttons'] = CHtml::createButton('Сохранить', [
+						'class' => 'btn btn-primary',
+						'id' => 'save-btn',
+					]);
 				}
+
 			}
 				break;
 			case STATUS_ACCEPT : {
-				$template = 'ticket-panel-accept';
+				$template = 'ticket-preview';
 				$this->data['title'] = 'Обработка заявки';
 
-				if ($agree) {
-					// заполним информацию о том кто и когда согласовал
-					$this->data['ag_res'] = 'Согласованно';
-					$this->data['ag_class'] = 'alert-success';
-					$this->data['ag_user'] = makeSortName(get_param($agree, 'fullname', '-'));
-					$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
-
-					$this->data['panel_title'] = "Резолюция цеха $adepname";
-					$this->data['panel_content'] = $this->renderPartial('agree-info');
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
-				} else {
-					$this->data['panel_title'] = "Согласование цеха";
-					$this->data['panel_content'] = "<em>Не требуется</em>";
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
-				}
-
 				if (!$review) {
-					// Если информации о согласовании нет, то в этом статусе быть она не может
-					$this->prepareError('Некорректный статус заявки');
+					// Нет согласования главного инженера
+					$this->prepareError('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
+					$template = 'incorrect-status';
 
-					// понижаем статус
-					$this->model->setTicketStatus($req_id, $agree ? STATUS_REVIEW : STATUS_ACCEPT, 0);
-					$this->redirect('/'); // и к списку...
-				} else {
-					$this->data['panel_title'] = 'Резолюция главного инженера';
-
-					$this->data['ag_class'] = '';
-					$this->data['ag_res'] = get_param($review, 'result');
-					$this->data['ag_user'] = get_param($review, 'fullname');
-					$this->data['ag_date'] = sqldate2human(get_param($review, 'dt_stamp'));
-
-					$reason = get_param($review, 'reason', null);
-					$this->data['ag_reason'] = nl2br(html_entity_decode($reason)) ?: null;
-
-					$this->data['panel_content'] = $this->renderPartial('review-info');
-					$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+					//$this->model->setTicketStatus($req_id, STATUS_ACCEPT, 0);
 				}
 
 				if ($my_role === Configuration::$ROLE_NSS) {
 					$this->data['buttons'] = CHtml::createLink('Открыть заявку',
 						"/ticket/start/$req_id/", [
-						'class' => 'btn btn-primary',
-					]);
+							'class' => 'btn btn-primary',
+						]);
 				}
-			} break;
+			}
+				break;
+			case STATUS_OPEN : {
+				$template = 'ticket-preview';
+				$this->data['title'] = 'Прикрытие / Продление заявки';
+
+				//$this->data['buttons'] .= CHtml::createButton('Продлить заявку');
+				//$this->data['buttons'] .= CHtml::createButton('Прикрыть заявку');
+				$this->data['buttons'] = CHtml::createTag('div', ['class' => 'btn-group',],[
+					CHtml::createButton('Продлить заявку', ['id' => 'btn-prolong']),
+					CHtml::createButton('Прикрыть заявку', ['id' => 'btn-close', 'class' => 'btn btn-primary',]),
+				]);
+
+				$this->scripts[] = 'handle-open';
+			}
+				break;
 			default:
 				$template = 'incorrect-status';
 		}
@@ -493,17 +524,13 @@ class TicketController extends CController {
 		$need = get_param($agree, 'department_id'); // его id
 
 		if ($role !== Configuration::$ROLE_USER) {
-			$this->prepareError('Согласовывать заявки могут только руководители цехов', 'alert-warning');
-			return;
+			return $this->prepareError('Согласовывать заявки могут только руководители цехов', 'alert-warning');
 		} elseif (!$info) {
-			$this->prepareError('Запрошеная заявка не найдена');
-			return;
+			return $this->prepareError('Запрошеная заявка не найдена');
 		} elseif (!$agree) {
-			$this->prepareError('Заявка не нуждается в согласовании', 'alert-warning');
-			return;
+			return $this->prepareError('Заявка не нуждается в согласовании', 'alert-warning');
 		} elseif ($depid !== $need) {
-			$this->prepareError("Заявку должен согласовывать\n руководитель другого цеха", 'alert-warning');
-			return;
+			return $this->prepareError("Заявку должен согласовывать\n руководитель другого цеха", 'alert-warning');
 		}
 
 		$result = get_param($request, 'result', null);
@@ -549,18 +576,12 @@ class TicketController extends CController {
 		$tid = get_param($request, 'ticket_id');
 		$info = $this->model->getTicketInfo($tid);
 
-		/** @todo delete line below */
-		$role = Configuration::$ROLE_ME; // for debug
-
 		if ($role !== Configuration::$ROLE_ME) {
-			$this->prepareError('Согласовывать заявки может только главный инженер', 'alert-warning');
-			return;
+			return $this->prepareError('Согласовывать заявки может только главный инженер', 'alert-warning');
 		} elseif (!$info) {
-			$this->prepareError('Запрошеная заявка не найдена');
-			return;
+			return $this->prepareError('Запрошеная заявка не найдена');
 		} elseif (get_param($info, 'status') != STATUS_REVIEW) {
-			$this->prepareError('Неправильный статус рассматриваемой заявки');
-			return;
+			return $this->prepareError('Неправильный статус рассматриваемой заявки');
 		}
 
 		$result = get_param($request, 'result', null);
@@ -579,4 +600,30 @@ class TicketController extends CController {
 		}
 	}
 
+	public function ajaxComplete() {
+
+
+		$role   = get_param($this->authdata, 'role_id');
+		$me     = get_param($this->authdata, 'id');
+		$depid  = get_param($this->authdata, 'depid');
+		$ticket_id = filter_input(INPUT_POST, 'ticket', FILTER_VALIDATE_INT);
+
+		$info = $this->model->getTicketInfo($ticket_id);
+		if (!$info) {
+			return $this->prepareError('Запрошеная заявка не найдена');
+		} elseif (get_param($info, 'status') != STATUS_OPEN) {
+			return $this->prepareError('Нельзя прикрыть заявку, которая не открыта', 'alert-warning');
+		} elseif ($role !== Configuration::$ROLE_USER || get_param($info, 'department_id') !== $depid) {
+			return $this->prepareError('Прикрыть заявку может руководитель цеха, который создал ее.');
+		}
+
+		// Если ошибок нет, то переводим ее в статус закрытая, установив дату акрытия
+		$this->model->completeTicket($ticket_id, $me);
+
+		if (count($this->model->getErrors())) {
+			echo CModel::getErrorList();
+		} else {
+			$this->prepareError('Заявка прикрыта', 'alert-info');
+		}
+	}
 }

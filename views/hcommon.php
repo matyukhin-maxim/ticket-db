@@ -90,7 +90,7 @@
 </nav>
 
 <!-- Begin page content -->
-<div class="container-fluid wrapper">
+<div class="container wrapper">
 
 	<!-- ajax debug block -->
 	<div id="response"></div>
