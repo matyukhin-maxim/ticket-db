@@ -53,6 +53,8 @@ $(function() {
         self.attr('title', $.trim(self.text()));
     });
 
+    $('[data-toggle="popover"]').popover();
+
     showPopup();
 
 });
