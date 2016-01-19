@@ -302,6 +302,7 @@ class TicketController extends CController {
 
 				break;
 			case STATUS_REVIEW :
+				$template = 'ticket-preview';
 				$this->data['title'] = 'Рассмотрение заявки';
 
 				/** todo Проверить правильность текущего статуса

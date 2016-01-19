@@ -303,6 +303,6 @@ textarea.reason {
     text-align: center;
 }
 
-.compact, .compact [class*="col-"] {
+.compact, .compact > [class*="col-"] {
     padding: 7px;
 }
