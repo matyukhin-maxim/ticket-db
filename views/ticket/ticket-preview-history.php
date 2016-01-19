@@ -1,9 +1,10 @@
 <div class="row">
-	<div class="col-sm-12">
+	<div class="col-sm-9">
 		<div class="panel panel-default">
 			<div class="panel-heading strong">
 				<a href="/contents/" class="close" title="Закрыть">&times;</a>
 				<?= $title; ?>
+				<input type="hidden" value="<?= $t_id; ?>" id="tid">
 			</div>
 			<div class="panel-body">
 				<table class="table table-bordered text-center">
@@ -33,7 +34,7 @@
 					</tr>
 				</table>
 				<div class="row form-group no-pad">
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<div class="row">
 							<div class="col-sm-6">
 								<label class="control-label">Дата и время начала работ :</label>
@@ -41,7 +42,7 @@
 	                                <span class="input-group-addon hidden-sm hidden-xs">
 	                                    <i class="glyphicon glyphicon-calendar"></i>
 	                                </span>
-									<input id="sdate" type="text" class="form-control" disabled
+									<input id="sdate" type="text" class="form-control" readonly
 									       value="<?= $tstart; ?>"/>
 								</div>
 							</div>
@@ -51,14 +52,14 @@
                                     <span class="input-group-addon hidden-sm hidden-xs">
 	                                    <i class="glyphicon glyphicon-calendar"></i>
                                     </span>
-									<input id="edate" type="text" class="form-control" disabled
+									<input id="edate" type="text" class="form-control" readonly
 									       value="<?= $tstop; ?>"/>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="col-xs-12">
 									<label class="control-label">Узел :</label>
-									<input type="text" class="form-control" disabled value="<?= $nodename; ?>">
+									<input type="text" class="form-control" readonly value="<?= $nodename; ?>">
 								</div>
 								<div class="col-xs-12">
 									<label class="control-label">Механизмы :</label>
@@ -66,9 +67,6 @@
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-md-6">
-						<?= $resolutions; ?>
 					</div>
 				</div>
 				<div class="form-group no-pad">
@@ -82,12 +80,15 @@
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="pull-right">
-							<a href="/contents/" class="btn btn-default">Закрыть</a>
 							<?= $buttons; ?>
+							<a href="/contents/" class="btn btn-default">Закрыть</a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="col-sm-3">
+		dsasd
 	</div>
 </div>

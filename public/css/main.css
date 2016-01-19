@@ -302,3 +302,7 @@ textarea.reason {
 .table input {
     text-align: center;
 }
+
+.compact {
+    padding: 7px;
+}

@@ -29,7 +29,7 @@ $(function () {
         $('#dev-cnt').text($('.dev-check:checked').length);
     }
 
-    $('button.bt-save').click(function(e) {
+    $('button.btn-save').click(function(e) {
         e.preventDefault();
         var btn = $(e.target);
 

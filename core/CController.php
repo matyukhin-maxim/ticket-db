@@ -95,7 +95,7 @@ class CController {
 			return;
 		}
 
-		$location = get_param($param, 'location', '');
+		$location = get_param($param, 'location', '/');
 		if (get_param($param, 'back') === 1)
 			$location = get_param($_SERVER, 'HTTP_REFERER', $location);
 		if (get_param($param, 'soft') === 1) {

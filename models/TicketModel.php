@@ -37,9 +37,9 @@ class TicketModel extends CModel {
 	public function saveTicket($arguments) {
 
 		$query = "REPLACE INTO tickets
-			(id, dt_create, number, dt_start, dt_stop, user_id, department_id, node_id, message)
+			(id, dt_create, number, dt_start, dt_stop, user_id, department_id, node_id, message, parent_id)
 			VALUES
-  			(:tid, :dt_create, :tnumber, :dt_start, :dt_stop, :uid, :depid, :tnode, :tmessage)";
+  			(:tid, :dt_create, :tnumber, :dt_start, :dt_stop, :uid, :depid, :tnode, :tmessage, :parent_id)";
 
 		$this->startTransaction();
 
@@ -54,6 +54,7 @@ class TicketModel extends CModel {
 			'uid' => get_param($arguments, 'user'),
 			'depid' => get_param($arguments, 'depid'),
 			'dt_create' => get_param($arguments, 't_cdate'),
+			'parent_id' => get_param($arguments, 'parent', null),
 		]);
 
 		// получаем идентификатор созданного/измененного тикета
@@ -210,5 +211,32 @@ class TicketModel extends CModel {
 
 		$this->select('UPDATE tickets SET dt_close = now() WHERE id = :tid', ['tid' => $ticket_id]);
 		$this->setTicketStatus($ticket_id, STATUS_COMPLETE, $user_id);
+	}
+
+	public function getTicketHistory($ticket_id, $need = null, $last = false) {
+
+		$cond = '';
+		$parameters = ['tid' => $ticket_id,];
+		if ($need) {
+			$cond = "AND h.status_id = :status";
+			$parameters['status'] = $need;
+		}
+
+		$query = "
+		SELECT
+		  h.dt_stamp,
+		  s.human,
+		  u.fullname
+		FROM history h
+		  LEFT JOIN states s ON h.status_id = s.id
+		  LEFT JOIN users u ON h.user_id = u.id
+		WHERE h.ticket_id = :tid
+		      AND h.deleted = 0
+		      $cond
+		ORDER BY h.dt_stamp, s.id";
+
+		$data = $this->select($query, $parameters);
+
+		return $last ? array_pop($data) : $data;
 	}
 }

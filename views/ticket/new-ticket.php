@@ -20,6 +20,7 @@
 								<input type="text" class="form-control text-center" name="t_number" readonly
 								       value="<?= $t_number; ?>">
 								<input type="hidden" name="ticket_id" value="<?= $t_id; ?>">
+								<input type="hidden" name="parent" value="<?= $parent; ?>">
 							</td>
 							<td>
 								<input id="dcurrent" type="text" class="form-control text-center" name="t_cdate"
@@ -99,13 +100,8 @@
 					<div class="col-xs-12">
 						<div class="pull-right">
 							<div class="btn-toolbar">
-								<?= $button_delete; ?>
-								<button class="btn btn-primary bt-save" type="button" data-confirm="1">
-									Отправить на согласование
-								</button>
-								<button class="btn btn-default strong bt-save" type="button"
-								        title="Сохранить заявку в качестве черновика">Сохранить черновик
-								</button>
+								<?= $buttons; ?>
+								<a href="/contents/" class="btn btn-default" title="Без сохранения">Закрыть</a>
 							</div>
 						</div>
 					</div>
