@@ -19,8 +19,8 @@
 				Список заявок
 			</div>
 			<div class="">
-				<div class="panel-body no-pad table-header">
-					<table class="table no-pad">
+				<div class="panel-body no-pad">
+					<table class="table table-condensed no-pad">
 						<thead>
 						<tr>
 							<th class="col-xs-1">#</th>
@@ -28,7 +28,7 @@
 							<th class="col-xs-1">Цех</th>
 							<th class="col-xs-2">Период работ</th>
 							<th class="col-xs-4">Узел</th>
-							<th class="col-xs-2">Статус</th>
+							<th class="col-xs-2"></th>
 						</tr>
 						</thead>
 					</table>

@@ -48,17 +48,11 @@ class ContentsController extends CController {
 
 	public function actionIndex() {
 
-
 		$this->render('list');
 	}
 
 	public function ajaxCount() {
 
-		/*
-		echo json_encode(array_map(function ($x) {
-			return mt_rand(-10, 5);
-		}, range(1, count($this->menu))));
-		*/
 		$udep = get_param($this->authdata, 'depid', -1);
 		echo json_encode($this->model->getCounter($udep));
 	}
@@ -75,19 +69,31 @@ class ContentsController extends CController {
 			]
 		]);
 
-		$ticketlist = $this->model->getTicketListByStatus($status, get_param($this->authdata, 'depid'));
+		$dep_id = get_param($this->authdata, 'depid', -1);
+		$ticketlist = $this->model->getTicketListByStatus($status, $dep_id);
 		if (count($ticketlist) == 0) echo $this->renderPartial('no-ticket');
 		foreach ($ticketlist as $ticket) {
 
+			$tid = get_param($ticket, 'id');
 			$this->data['tn'] = get_param($ticket, 'number');
 			$this->data['dcreate'] = get_param($ticket, 'dc');
 			$this->data['tdepartment'] = get_param($ticket, 'dname');
 			// чтобы на разых экранах время не "упрыгивало" от даты на новую строку, разменим обычный пробел - неразрывным
 			$this->data['twork'] = str_replace(' ', '&nbsp;', join('<br/>', get_array_part($ticket, 'dstart dstop')));
 			$this->data['tnode'] = get_param($ticket, 'nodename');
-			$this->data['tstatus'] = 'Черновик';
-			$this->data['tid'] = get_param($ticket, 'id');
+			$this->data['tid'] = $tid;
 
+			$this->data['textra'] = CHtml::createLink('Просмотр', "/ticket/edit/$tid/", [
+				'class' => 'btn btn-default -active btn-block',
+			    'title' => 'Открыть заявку',
+			]);
+			$this->data['tclass'] = '';
+			switch ($status) {
+				case STATUS_AGREE:
+					$this->data['tclass'] = get_param($ticket, 'adep') === $dep_id ? 'alert-warning strong' : '';
+					break;
+				default:
+			}
 			echo $this->renderPartial('ticket-row');
 		}
 	}

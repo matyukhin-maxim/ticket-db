@@ -26,10 +26,11 @@ class ContentsModel extends CModel {
 		  date_format(t.dt_create, '%d.%m.%Y') dc,
 		  date_format(t.dt_start, '%d.%m.%Y %H:%i') dstart,
 		  date_format(t.dt_stop, '%d.%m.%Y %H:%i') dstop,
-		  n.nodename, t.status
+		  n.nodename, t.status, a.department_id adep
 		FROM tickets t
 		  LEFT JOIN departments d ON t.department_id = d.id
 		  LEFT JOIN nodes n ON t.node_id = n.id
+		  LEFT JOIN agreements a on t.id = a.ticket_id
 		WHERE t.deleted = 0
 		  AND t.status = :pstate
 		  $depcondition
@@ -52,5 +53,33 @@ class ContentsModel extends CModel {
 		WHERE o.town = :depid) q ON st.id = q.status', [
 			'depid' => $udep,
 		]);
+	}
+
+	public function _getCounter($udep = 0) {
+
+		$data = $this->select('
+		SELECT
+			t.status,
+			t.department_id dep,
+			count(*) cnt
+		FROM tickets t
+		WHERE t.deleted = 0
+		GROUP BY 1, 2');
+
+		$result = [];
+		foreach ($data as $row) {
+			$status = intval(get_param($row, 'status'));
+			$mult = intval(get_param($row, 'dep') == $udep);
+			$cnt = get_param($row, 'cnt');
+			$result[$status] += $status !== STATUS_DRAFT ? $cnt : $cnt * $mult;
+		}
+
+		$result += array_fill_keys(range(1, 8), 0);
+
+		$out = [];
+		foreach ($result as $item => $value) {
+			$out[] = ['id' => $item, 'cnt' => $value];
+		}
+		return array_combine(array_keys($result), array_values($result));
 	}
 }
