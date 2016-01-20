@@ -37,9 +37,6 @@ class TicketController extends CController {
 				'soft' => 1,
 				'delay' => 5,
 			]);
-
-			$this->scripts[] = 'ticket-validate';
-
 			$this->render('');
 			return;
 		}
@@ -59,6 +56,19 @@ class TicketController extends CController {
 		$nodes = $this->model->getNodes();
 		$this->data['nodes'] = generateOptions($nodes, null, false);
 
+		$this->data['buttons'] = join(PHP_EOL, [
+			CHtml::createButton('Сохранить черновик', [
+				'class' => 'btn btn-default btn-save strong',
+				'data-confirm' => 0,
+				'title' => 'Сохранить заявку в качестве черновика',
+			]),
+			CHtml::createButton('Отправить на согласование', [
+				'class' => 'btn btn-primary btn-save',
+				'data-confirm' => 1,
+			]),
+		]);
+
+		$this->scripts[] = 'ticket-validate';
 		$this->render('new-ticket');
 	}
 
@@ -89,6 +99,8 @@ class TicketController extends CController {
 				$this->redirect('/contents/');
 			}
 		}
+
+		//var_dump($this->model->getTicketHistory($req_id));
 
 		$this->data['title'] = 'Редактирование заявки ';
 		$this->data['t_number'] = get_param($ticket, 'number');
@@ -135,11 +147,13 @@ class TicketController extends CController {
 
 		if ($ticket_status === STATUS_DRAFT) {
 			// кнопка удаления заявки доступна только из черновика
-			$this->data['buttons'] = CHtml::createLink('Удалить', "/ticket/delete/$req_id/", ['class' => 'btn btn-danger',]);
-			$this->data['buttons'] .= CHtml::createButton('Сохранить черновик', [
-				'class' => 'btn btn-default btn-save',
-				'data-confirm' => 0,
-				'title' => 'Сохранить заявку в качестве черновика',
+			$this->data['buttons'] = join(PHP_EOL, [
+				CHtml::createLink('Удалить', "/ticket/delete/$req_id/", ['class' => 'btn btn-danger',]),
+				CHtml::createButton('Сохранить черновик', [
+					'class' => 'btn btn-default btn-save',
+					'data-confirm' => 0,
+					'title' => 'Сохранить заявку в качестве черновика',
+				])
 			]);
 		}
 
@@ -200,8 +214,8 @@ class TicketController extends CController {
 					$this->data['panel_content'] = "<em>Ожидание решения руководителя цеха</em>";
 				}
 			} else {
-				$this->data['ag_res'] = 'Согласованно';
-				$this->data['ag_class'] = 'alert-success strong';
+				$this->data['ag_res'] = get_param($agree, 'result') ? 'Согласованно' : 'Отказанно';
+				$this->data['ag_class'] = 'strong';
 				$this->data['ag_user'] = makeSortName(get_param($agree, 'fullname', '-'));
 				$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
 
@@ -241,6 +255,24 @@ class TicketController extends CController {
 			$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
 		}
 		/* REVIEW FORM */
+
+
+		//$this->scripts[] = 'debug-reload';
+
+		if ($ticket_status >= STATUS_OPEN) {
+			// Панелька исполнителей
+			$history = $this->model->getTicketHistory($req_id, [STATUS_OPEN, STATUS_COMPLETE, STATUS_CLOSE]);
+			$items = '';
+			foreach ($history as $action) {
+				$items .= CHtml::createTag('li', ['class' => 'list-group-item clearfix'], [
+					CHtml::createTag('div', ['class' => 'col-xs-4 strong'], get_param($action, 'action')),
+					CHtml::createTag('div', ['class' => 'col-xs-4'], makeSortName(get_param($action, 'fullname'))),
+					CHtml::createTag('div', ['class' => 'col-xs-4'], sqldate2human(get_param($action, 'dt_stamp'))),
+				]);
+			}
+
+			$this->data['resolutions'] .= CHtml::createTag('ul', ['class' => 'list-group text-center'], $items);
+		}
 
 		$template = 'ticket-preview';
 
@@ -291,7 +323,7 @@ class TicketController extends CController {
 
 				// Если текущий пользователь - Руководитель, то добавим ему кнопку сохранения,
 				// чтобы он мог увековечить результат своего согласования
-				if ($my_role === Configuration::$ROLE_USER && $my_dep === $tdepid) {
+				if ($my_role === Configuration::$ROLE_USER && $my_dep === $adepid) {
 
 					$this->data['buttons'] = CHtml::createButton('Сохранить', [
 						'class' => 'btn btn-primary',
@@ -302,7 +334,6 @@ class TicketController extends CController {
 
 				break;
 			case STATUS_REVIEW :
-				$template = 'ticket-preview';
 				$this->data['title'] = 'Рассмотрение заявки';
 
 				/** todo Проверить правильность текущего статуса
@@ -329,8 +360,6 @@ class TicketController extends CController {
 
 				break;
 			case STATUS_ACCEPT :
-
-				$template = 'ticket-preview';
 				$this->data['title'] = 'Обработка заявки';
 
 				if (!$review) {
@@ -349,8 +378,6 @@ class TicketController extends CController {
 
 				break;
 			case STATUS_OPEN :
-
-				$template = 'ticket-preview';
 				$this->data['title'] = 'Прикрытие / Продление заявки';
 
 				if ($my_role === Configuration::$ROLE_USER && $my_dep === $tdepid) {
@@ -371,26 +398,18 @@ class TicketController extends CController {
 
 				$this->data['panel_content'] = $this->renderPartial('agree-info');
 				$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
+
 				break;
 			case STATUS_COMPLETE :
-
-				$template = 'ticket-preview';
 				$this->data['title'] = 'Закрытие заявки';
 
 				// Добавим панельку с информацией о том, кто открыл заявку
-				$h_open = $this->model->getTicketHistory($req_id, STATUS_OPEN, true);
-				$this->data['panel_title'] = 'Исполнение заявки';
-				$this->data['ag_res'] = 'Заявку открыл';
-				$this->data['ag_class'] = '';
-				$this->data['ag_user'] = makeSortName(get_param($h_open, 'fullname', '?'));
-				$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
 
-				$this->data['panel_content'] = $this->renderPartial('agree-info');
-				$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
-
-				$this->data['buttons'] = CHtml::createLink('Закрать заявку', "/ticket/close/$req_id/", [
-					'class' => 'btn btn-primary strong',
-				]);
+				if ($my_role === Configuration::$ROLE_NSS) {
+					$this->data['buttons'] = CHtml::createLink('Закрыть заявку', "/ticket/close/$req_id/", [
+						'class' => 'btn btn-primary strong',
+					]);
+				}
 
 				break;
 			case STATUS_REJECT :
@@ -425,7 +444,9 @@ class TicketController extends CController {
 			$errors = 'Заявку может открыть только Начальник смены!';
 		}
 
-		$this->model->openTicket($ticket_id, get_param($this->authdata, 'id'));
+		$ok = $this->model->openTicket($ticket_id);
+		if ($ok) $this->model->setTicketStatus($ticket_id, STATUS_OPEN);
+
 		$errors .= CModel::getErrorList();
 		if ($errors) {
 			$this->prepareError($errors);
@@ -629,10 +650,10 @@ class TicketController extends CController {
 
 		$result = get_param($request, 'result', null);
 
-		$this->model->setAgreement($tid, $need, $me, $result, get_param($request, 'agree-text'));
+		$ok = $this->model->setAgreement($tid, $need, $me, $result, get_param($request, 'agree-text'));
 		if ($result !== null) {
 			// если получили согласование или отказ, то нужно установить новый статус заявки
-			$this->model->setTicketStatus($tid, $result === 1 ? STATUS_REVIEW : STATUS_REJECT, $me);
+			if ($ok) $this->model->setTicketStatus($tid, $result === 1 ? STATUS_REVIEW : STATUS_REJECT, $me);
 		}
 
 		if (count($this->model->getErrors())) {
@@ -681,10 +702,10 @@ class TicketController extends CController {
 		$result = get_param($request, 'result', null);
 
 		if ($result !== null) {
-			$this->model->setConfirmation($tid, $me, $result, get_param($request, 'agree-text'));
+			$ok = $this->model->setConfirmation($tid, $me, $result, get_param($request, 'agree-text'));
 
 			// в зависимости от результата рассмотрения, установим новый статус заявки
-			$this->model->setTicketStatus($tid, $result === 3 ? STATUS_REJECT : STATUS_ACCEPT, $me);
+			if ($ok) $this->model->setTicketStatus($tid, $result === 3 ? STATUS_REJECT : STATUS_ACCEPT, $me);
 		}
 
 		if (count($this->model->getErrors())) {
@@ -712,12 +733,35 @@ class TicketController extends CController {
 		}
 
 		// Если ошибок нет, то переводим ее в статус закрытая, установив дату закрытия
-		$this->model->completeTicket($ticket_id, $me);
+		$ok = $this->model->completeTicket($ticket_id);
+		if ($ok) $this->model->setTicketStatus($ticket_id, STATUS_COMPLETE);
 
 		if (count($this->model->getErrors())) {
 			echo CModel::getErrorList();
 		} else {
 			$this->prepareError('Заявка прикрыта', 'alert-info');
 		}
+	}
+
+	public function actionClose() {
+
+		$role = get_param($this->authdata, 'role_id');
+		$me = get_param($this->authdata, 'id');
+		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
+
+		$info = $this->model->getTicketInfo($ticket_id);
+		if (!$info) {
+			$this->prepareError('Запрошеная заявка не найдена');
+		} elseif (get_param($info, 'status') != STATUS_COMPLETE) {
+			$this->prepareError('Закрыть можно только прикрытую заявку', 'alert-warning');
+		} elseif ($role !== Configuration::$ROLE_NSS) {
+			$this->prepareError('Не достаточно прав для выполнения операции.');
+		}
+
+		$ok = $this->model->closeTicket($ticket_id);
+		if ($ok) $this->model->setTicketStatus($ticket_id, STATUS_CLOSE);
+
+		$this->prepareError('Заявка закрыта.', 'alert-info');
+		$this->redirect(['back' => 1]);
 	}
 }

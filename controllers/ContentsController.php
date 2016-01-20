@@ -59,7 +59,7 @@ class ContentsController extends CController {
 			return mt_rand(-10, 5);
 		}, range(1, count($this->menu))));
 		*/
-		$udep = get_param($this->authdata, 'depid', 0);
+		$udep = get_param($this->authdata, 'depid', -1);
 		echo json_encode($this->model->getCounter($udep));
 	}
 

@@ -48,7 +48,7 @@ class CModel {
 		return join('<br/>', self::$errorlist);
 	}
 
-	protected function select($query, $param = array()) {
+	protected function select($query, $param = array(), &$rowCount = null) {
 
 		if (!self::isConnected()) {
 			self::$errorlist[] = 'Связь с БД не установлена.';
@@ -117,6 +117,7 @@ class CModel {
 			$emsg = get_param($error, 2);
 			self::$errorlist[] = "MySQL error [$ecode]: " . ($emsg ? $emsg : 'Invalid params');
 		}
+		$rowCount = $sth->rowCount();
 		return $sth->fetchAll();
 	}
 

@@ -15,22 +15,20 @@ $(function () {
 
         $('.menu > li').removeClass('active');
         self.closest('li').addClass('active');
-        var ttype = self.data('type');
+        var type = self.data('type');
 
-        $('#ticket-list').html('<tr class="warning strong"><td colspan="6">Загрузка...</td></tr>');
-        $.post('/contents/list/', {type: ttype},
-        function (data) {
-            $('#ticket-list').html(data);
-        });
-        //askCount();
-    });//.filter(':first').trigger('click');
+        $.post('/contents/list/', {type: type},
+            function (data) {
+                $('#ticket-list').html(data);
+            });
+        askCount();
+    });
 
     function askCount() {
         $.post('/contents/count/', null,
             function (data) {
                 $.each(data, function (idx, row) {
                     row.cnt = row.cnt <= 0 ? '' : row.cnt;
-                    //var item = $('#menu-' + row.id).find('.item-cnt');
                     var item = $('.menu-item[data-type="' + row.id + '"] > .item-cnt');
                     if (item.text() != row.cnt) {
                         item.closest('li').stop().effect('highlight', {color:"#dff0d8"}, 4000);
@@ -39,6 +37,9 @@ $(function () {
                 });
             }, 'json');
     }
-    //setInterval(askCount, 10000);
+
+    setInterval(function() {
+        //$('.active .menu-item').trigger('click');
+    }, 60000);
     $('.menu-item').eq(last % $('.menu-item').length).trigger('click');
 });

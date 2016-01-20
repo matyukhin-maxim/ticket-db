@@ -21,9 +21,7 @@ class CHtml {
 		if (!count($content)) return $result . '/>' . PHP_EOL; // <input type="text"/>
 
 		$result .= '>' . PHP_EOL;
-		foreach ($content as $item) {
-			$result .= $item . PHP_EOL;
-		}
+		$result .= join(PHP_EOL, $content);
 		$result .= '</' . $tagName . '>' . PHP_EOL;
 
 		return $result;

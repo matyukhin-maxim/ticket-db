@@ -2,12 +2,12 @@
 
 define('STATUS_DRAFT'     , 1); // Черновик
 define('STATUS_AGREE'     , 2); // Согласование цеха
-define('STATUS_REVIEW'    , 8); // рассмотрение ГИ
-define('STATUS_ACCEPT'    , 3); // Разрешенная ГИ
-define('STATUS_OPEN'      , 4); // Открыта ННСом
-define('STATUS_COMPLETE'  , 5); // Прикрыта (исполнена)
-define('STATUS_REJECT'    , 6); // Отказана (цехом или ГИ)
-define('STATUS_CLOSE'     , 7); // закрыта
+define('STATUS_REVIEW'    , 3); // рассмотрение ГИ
+define('STATUS_ACCEPT'    , 4); // Разрешенная ГИ
+define('STATUS_OPEN'      , 5); // Открыта ННСом
+define('STATUS_COMPLETE'  , 6); // Прикрыта (исполнена)
+define('STATUS_REJECT'    , 7); // Отказана (цехом или ГИ)
+define('STATUS_CLOSE'     , 8); // закрыта
 
 class Configuration {
 

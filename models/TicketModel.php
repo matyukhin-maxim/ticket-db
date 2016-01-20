@@ -149,10 +149,10 @@ class TicketModel extends CModel {
 
 	public function deleteDraft($ticket_id) {
 
-		$sth = $this->getDB()->prepare('UPDATE tickets SET deleted = 1 WHERE id = :tid');
-		$sth->execute(['tid' => $ticket_id,]);
+		$cnt = 0;
+		$this->select('UPDATE tickets SET deleted = 1 WHERE id = :tid', ['tid' => $ticket_id], $cnt);
 
-		return $sth->rowCount();
+		return $cnt === 1;
 	}
 
 	public function setTicketStatus($ticket_id, $status, $user_id = null) {
@@ -178,6 +178,7 @@ class TicketModel extends CModel {
 
 	public function setAgreement($ticket_id, $dep, $user_id, $result, $reason) {
 
+		$cnt = 0;
 		$this->select('REPLACE INTO agreements
 			(ticket_id, department_id, dt_stamp, user_id, result, reason)
 			VALUES (:tid, :depid, now(), :uid, :result, :reason) ', [
@@ -186,11 +187,14 @@ class TicketModel extends CModel {
 			'uid' => $user_id,
 			'result' => $result,
 			'reason' => $reason,
-		]);
+		], $cnt);
+
+		return $cnt > 0;
 	}
 
 	public function setConfirmation($ticket_id, $user_id, $result, $reason) {
 
+		$cnt = 0;
 		$this->select('REPLACE INTO resolutions
 			(ticket_id, dt_stamp, user_id, result, reason)
 			VALUES (:tid, now(), :uid, :result, :reason) ', [
@@ -198,19 +202,33 @@ class TicketModel extends CModel {
 			'uid' => $user_id,
 			'result' => $result,
 			'reason' => $reason,
-		]);
+		], $cnt);
+
+		return $cnt > 0;  // Если запись добавилась или обновилсь
 	}
 
-	public function openTicket($ticket_id, $user_id) {
+	public function openTicket($ticket_id) {
 
-		$this->select('UPDATE tickets SET dt_open = now() WHERE id = :tid', ['tid' => $ticket_id]);
-		$this->setTicketStatus($ticket_id, STATUS_OPEN, $user_id);
+		$cnt = 0;
+		$this->select('UPDATE tickets SET dt_open = now() WHERE id = :tid', ['tid' => $ticket_id], $cnt);
+		return $cnt === 1;
+		//$this->setTicketStatus($ticket_id, STATUS_OPEN, $user_id);
 	}
 
-	public function completeTicket($ticket_id, $user_id) {
+	public function closeTicket($ticket_id) {
 
-		$this->select('UPDATE tickets SET dt_close = now() WHERE id = :tid', ['tid' => $ticket_id]);
-		$this->setTicketStatus($ticket_id, STATUS_COMPLETE, $user_id);
+		$cnt = 0;
+		$this->select('UPDATE tickets SET dt_close = now() WHERE id = :tid', ['tid' => $ticket_id], $cnt);
+		return $cnt === 1;
+		//$this->setTicketStatus($ticket_id, STATUS_CLOSE, $user_id);
+	}
+
+	public function completeTicket($ticket_id) {
+
+		$ok = 0;
+		$this->select('UPDATE tickets SET dt_close = now() WHERE id = :tid', ['tid' => $ticket_id], $ok);
+		return $ok !== 0;
+		//$this->setTicketStatus($ticket_id, STATUS_COMPLETE, $user_id);
 	}
 
 	public function getTicketHistory($ticket_id, $need = null, $last = false) {
@@ -218,14 +236,15 @@ class TicketModel extends CModel {
 		$cond = '';
 		$parameters = ['tid' => $ticket_id,];
 		if ($need) {
-			$cond = "AND h.status_id = :status";
+			$need = is_array($need) ? $need : [$need];
+			$cond = "AND h.status_id in :status";
 			$parameters['status'] = $need;
 		}
 
 		$query = "
 		SELECT
 		  h.dt_stamp,
-		  s.human,
+		  s.action,
 		  u.fullname
 		FROM history h
 		  LEFT JOIN states s ON h.status_id = s.id

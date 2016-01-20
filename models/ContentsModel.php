@@ -39,18 +39,17 @@ class ContentsModel extends CModel {
 	public function getCounter($udep = 0) {
 
 		return $this->select('
-        SELECT s.id, ifnull(o.cnt, 0) cnt
-        FROM states s
-          LEFT JOIN (
-              SELECT
-                status,
-                if(t.status = 1, t.department_id, :depid) town,
-                count(*)                                  cnt
-              FROM tickets t
-              WHERE t.deleted = 0
-              GROUP BY t.status, 2
-            ) o ON s.id = o.status
-        WHERE o.town = :depid', [
+        SELECT st.id, ifnull(q.cnt,0) cnt
+		FROM states st LEFT JOIN (
+		SELECT o.status, o.cnt FROM (
+		SELECT
+			status,
+			if(t.status = 1, t.department_id, :depid) town,
+			count(*)                                  cnt
+		FROM tickets t
+		WHERE t.deleted = 0
+		GROUP BY t.status, 2) o
+		WHERE o.town = :depid) q on st.id = q.status', [
 			'depid' => $udep,
 		]);
 	}
