@@ -49,7 +49,7 @@ class ContentsModel extends CModel {
 		FROM tickets t
 		WHERE t.deleted = 0
 		GROUP BY t.status, 2) o
-		WHERE o.town = :depid) q on st.id = q.status', [
+		WHERE o.town = :depid) q ON st.id = q.status', [
 			'depid' => $udep,
 		]);
 	}

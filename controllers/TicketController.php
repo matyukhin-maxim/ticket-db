@@ -417,6 +417,15 @@ class TicketController extends CController {
 
 				$template = 'ticket-preview-history';
 				$this->data['title'] = 'Просмотр заявки';
+				$this->data['history'] = '';
+				$log = $this->model->getTicketHistory($req_id);
+				foreach ($log as $action) {
+					$this->data['history'] .= CHtml::createTag('li', ['class' => 'list-group-item clearfix'], [
+						CHtml::createTag('div', ['class' => 'col-xs-12 strong text-center'], get_param($action, 'action')),
+						CHtml::createTag('div', ['class' => 'col-xs-6'], makeSortName(get_param($action, 'fullname'))),
+						CHtml::createTag('em', ['class' => 'col-xs-6 text-right text-muted'], sqldate2human(get_param($action, 'dt_stamp'))),
+					]);
+				}
 
 				break;
 			default:

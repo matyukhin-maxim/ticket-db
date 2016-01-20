@@ -168,7 +168,7 @@ function date2mysql($userDate) {
  * Преобрразование даты выбранной из mysql базы
  * в нужный формат
  *
- * @param string $dbdate  database date
+ * @param string $dbdate database date
  * @param string $format
  * @return string
  */
@@ -187,7 +187,7 @@ function sqldate2human($dbdate, $format = "d.m.Y H:i") {
  */
 function makeSortName($fullname) {
 
-	$parts = preg_split('/\s+/',$fullname);
+	$parts = preg_split('/\s+/', $fullname);
 	$result = '';
 	foreach ($parts as $next) $result .= ' ' . ($result ? mb_substr($next, 0, 1) . '.' : $next);
 	return trim($result);

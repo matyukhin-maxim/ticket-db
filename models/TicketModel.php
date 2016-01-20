@@ -122,12 +122,12 @@ class TicketModel extends CModel {
 
 		$row = $this->select("
 			SELECT dt_stamp, u.fullname, r.reason,
-        case r.result
-          when 1 then 'Разрешено'
-          when 2 then 'Разрешено при условии'
-          when 3 then 'Отказано'
-          else '-'
-        end result
+        CASE r.result
+          WHEN 1 THEN 'Разрешено'
+          WHEN 2 THEN 'Разрешено при условии'
+          WHEN 3 THEN 'Отказано'
+          ELSE '-'
+        END result
 			FROM resolutions r
 			  LEFT JOIN users u ON r.user_id = u.id
 			WHERE r.ticket_id = :tid AND r.deleted = 0", [

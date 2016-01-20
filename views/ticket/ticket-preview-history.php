@@ -89,6 +89,11 @@
 		</div>
 	</div>
 	<div class="col-sm-4">
-		<?= $resolutions; ?>
+		<div class="panel panel-default">
+			<div class="panel-heading strong">История заявки</div>
+			<div class="panel-body">
+				<ul class="list-group"><?= $history ?></ul>
+			</div>
+		</div>
 	</div>
 </div>

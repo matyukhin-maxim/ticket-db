@@ -1,6 +1,6 @@
 <div class="device-box <?= $dev_class; ?>">
 	<label>
-		<button type="button" class="btn btn-default btn-ls btn-check" data-checked="<?= $mark?>">
+		<button type="button" class="btn btn-default btn-ls btn-check" data-checked="<?= $mark ?>">
 			<i class="glyphicon"></i>
 		</button>
 		<input type="checkbox" class="dev-check" name="devices[]" value="<?= $dev_id; ?>"/>

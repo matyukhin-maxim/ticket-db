@@ -31,7 +31,7 @@ class CHtml {
 
 		if (!$options) $options = [];
 		$options['class'] = get_param($options, 'class', 'btn btn-default');
-		$options['type']  = get_param($options, 'type', 'button');
+		$options['type'] = get_param($options, 'type', 'button');
 
 		return self::createTag('button', $options, $text);
 	}

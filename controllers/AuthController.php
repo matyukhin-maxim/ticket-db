@@ -36,7 +36,7 @@ class AuthController extends CController {
 		$this->authdata = $this->model->setAuthenticate($login, $password);
 		if (!$this->authdata) {
 			$this->prepareError("Ошибка авторизации.\nПользователь или пароль указаны неверно.");
-		} elseif(!get_param($this->authdata, 'rolename')) {
+		} elseif (!get_param($this->authdata, 'rolename')) {
 			$this->prepareError("Роль пользователя не определена.\nОбратитесь в отдел АСУ.", 'alert-warning');
 		} else {
 			Session::set('auth', $this->authdata);
