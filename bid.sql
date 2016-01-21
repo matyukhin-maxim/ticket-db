@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50621
 File Encoding         : 65001
 
-Date: 2016-01-20 17:14:48
+Date: 2016-01-21 21:37:47
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,12 +33,10 @@ CREATE TABLE `agreements` (
 -- ----------------------------
 -- Records of agreements
 -- ----------------------------
-INSERT INTO `agreements` VALUES ('1', '10', '2016-01-20 11:02:59', '1', '1', null, '0');
-INSERT INTO `agreements` VALUES ('2', '10', '2016-01-20 12:34:47', '1', '1', null, '0');
-INSERT INTO `agreements` VALUES ('3', '1', '2016-01-20 12:36:24', '4', '1', null, '0');
-INSERT INTO `agreements` VALUES ('4', '10', null, null, null, null, '0');
-INSERT INTO `agreements` VALUES ('5', '1', '2016-01-20 14:10:47', '4', '1', null, '0');
-INSERT INTO `agreements` VALUES ('6', '1', '2016-01-20 17:11:55', '4', '1', null, '0');
+INSERT INTO `agreements` VALUES ('3', '10', null, null, null, null, '1');
+INSERT INTO `agreements` VALUES ('6', '10', null, null, null, null, '0');
+INSERT INTO `agreements` VALUES ('7', '12', null, null, null, null, '0');
+INSERT INTO `agreements` VALUES ('8', '3', null, null, null, null, '0');
 
 -- ----------------------------
 -- Table structure for `departments`
@@ -2561,27 +2559,6 @@ INSERT INTO `devices` VALUES ('2704', '47', 'Яч.9 -  Л201', '0');
 INSERT INTO `devices` VALUES ('2705', '45', 'Яч.9 - ШСВ', '0');
 
 -- ----------------------------
--- Table structure for `grants`
--- ----------------------------
-DROP TABLE IF EXISTS `grants`;
-CREATE TABLE `grants` (
-  `id` varchar(50) NOT NULL,
-  `deleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of grants
--- ----------------------------
-INSERT INTO `grants` VALUES ('TICKET_ACCEPT', '0');
-INSERT INTO `grants` VALUES ('TICKET_AGREE', '0');
-INSERT INTO `grants` VALUES ('TICKET_CLOSE', '0');
-INSERT INTO `grants` VALUES ('TICKET_CONFIRM', '0');
-INSERT INTO `grants` VALUES ('TICKET_CREATE', '0');
-INSERT INTO `grants` VALUES ('TICKET_OPEN', '0');
-INSERT INTO `grants` VALUES ('TICKET_REJECT', '0');
-
--- ----------------------------
 -- Table structure for `history`
 -- ----------------------------
 DROP TABLE IF EXISTS `history`;
@@ -2593,51 +2570,31 @@ CREATE TABLE `history` (
   `status_id` int(5) NOT NULL DEFAULT '1' COMMENT 'Новый статус заявки',
   `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Пометка удаления',
   PRIMARY KEY (`id`,`ticket_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COMMENT='Полная история жизненного цикла заявки';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='Полная история жизненного цикла заявки';
 
 -- ----------------------------
 -- Records of history
 -- ----------------------------
-INSERT INTO `history` VALUES ('1', '1', '4', '2016-01-20 11:02:16', '1', '0');
-INSERT INTO `history` VALUES ('2', '1', '4', '2016-01-20 11:02:16', '2', '0');
-INSERT INTO `history` VALUES ('3', '1', '1', '2016-01-20 11:02:59', '3', '0');
-INSERT INTO `history` VALUES ('4', '1', '3', '2016-01-20 11:03:21', '4', '0');
-INSERT INTO `history` VALUES ('5', '1', '2', '2016-01-20 11:04:45', '5', '0');
-INSERT INTO `history` VALUES ('6', '2', '4', '2016-01-20 11:05:15', '1', '0');
-INSERT INTO `history` VALUES ('7', '2', '4', '2016-01-20 11:05:15', '2', '0');
-INSERT INTO `history` VALUES ('8', '1', '4', '2016-01-20 11:05:15', '6', '0');
-INSERT INTO `history` VALUES ('9', '3', '1', '2016-01-20 12:31:57', '1', '0');
-INSERT INTO `history` VALUES ('10', '3', '1', '2016-01-20 12:34:29', '1', '0');
-INSERT INTO `history` VALUES ('11', '3', '1', '2016-01-20 12:34:29', '2', '0');
-INSERT INTO `history` VALUES ('12', '2', '1', '2016-01-20 12:34:48', '3', '0');
-INSERT INTO `history` VALUES ('13', '2', '3', '2016-01-20 12:35:19', '4', '0');
-INSERT INTO `history` VALUES ('14', '3', '4', '2016-01-20 12:36:24', '3', '0');
-INSERT INTO `history` VALUES ('15', '3', '3', '2016-01-20 12:37:01', '4', '0');
-INSERT INTO `history` VALUES ('16', '2', '2', '2016-01-20 12:41:23', '5', '0');
-INSERT INTO `history` VALUES ('17', '3', '2', '2016-01-20 12:41:43', '5', '0');
-INSERT INTO `history` VALUES ('18', '4', '4', '2016-01-20 12:56:59', '1', '0');
-INSERT INTO `history` VALUES ('19', '5', '1', '2016-01-20 12:57:45', '1', '0');
-INSERT INTO `history` VALUES ('20', '5', '1', '2016-01-20 14:09:59', '1', '0');
-INSERT INTO `history` VALUES ('21', '5', '1', '2016-01-20 14:09:59', '2', '0');
-INSERT INTO `history` VALUES ('22', '5', '4', '2016-01-20 14:10:47', '3', '0');
-INSERT INTO `history` VALUES ('23', '2', '4', '2016-01-20 14:49:55', '6', '0');
-INSERT INTO `history` VALUES ('24', '6', '1', '2016-01-20 14:51:06', '1', '0');
-INSERT INTO `history` VALUES ('25', '6', '1', '2016-01-20 14:51:06', '2', '0');
-INSERT INTO `history` VALUES ('26', '3', '1', '2016-01-20 14:51:06', '6', '0');
-INSERT INTO `history` VALUES ('27', '7', '1', '2016-01-20 14:55:25', '1', '0');
-INSERT INTO `history` VALUES ('28', '7', '1', '2016-01-20 14:55:25', '3', '0');
-INSERT INTO `history` VALUES ('29', '7', '3', '2016-01-20 14:55:51', '4', '0');
-INSERT INTO `history` VALUES ('30', '7', '2', '2016-01-20 14:56:21', '5', '0');
-INSERT INTO `history` VALUES ('31', '8', '1', '2016-01-20 14:57:14', '1', '0');
-INSERT INTO `history` VALUES ('32', '8', '1', '2016-01-20 14:57:14', '3', '0');
-INSERT INTO `history` VALUES ('33', '7', '1', '2016-01-20 14:57:14', '6', '0');
-INSERT INTO `history` VALUES ('34', '4', '4', '2016-01-20 16:49:35', '-1', '0');
-INSERT INTO `history` VALUES ('35', '4', '4', '2016-01-20 17:11:49', '1', '0');
-INSERT INTO `history` VALUES ('36', '4', '4', '2016-01-20 17:11:49', '2', '0');
-INSERT INTO `history` VALUES ('37', '6', '4', '2016-01-20 17:11:55', '3', '0');
-INSERT INTO `history` VALUES ('38', '6', '3', '2016-01-20 17:12:28', '4', '0');
-INSERT INTO `history` VALUES ('39', '8', '3', '2016-01-20 17:12:42', '7', '0');
-INSERT INTO `history` VALUES ('40', '5', '3', '2016-01-20 17:12:53', '4', '0');
+INSERT INTO `history` VALUES ('1', '3', '4', '2016-01-21 15:14:37', '1', '0');
+INSERT INTO `history` VALUES ('2', '4', '4', '2016-01-21 15:31:09', '1', '0');
+INSERT INTO `history` VALUES ('3', '4', '4', '2016-01-21 15:31:09', '3', '0');
+INSERT INTO `history` VALUES ('4', '4', '3', '2016-01-21 15:33:32', '4', '0');
+INSERT INTO `history` VALUES ('5', '4', '2', '2016-01-21 15:33:47', '5', '0');
+INSERT INTO `history` VALUES ('6', '5', '4', '2016-01-21 15:35:57', '1', '0');
+INSERT INTO `history` VALUES ('7', '5', '4', '2016-01-21 15:35:57', '3', '0');
+INSERT INTO `history` VALUES ('8', '4', '4', '2016-01-21 15:35:57', '6', '0');
+INSERT INTO `history` VALUES ('9', '4', '2', '2016-01-21 15:36:21', '8', '0');
+INSERT INTO `history` VALUES ('10', '3', '4', '2016-01-21 15:40:56', '1', '0');
+INSERT INTO `history` VALUES ('11', '6', '4', '2016-01-21 15:41:42', '1', '0');
+INSERT INTO `history` VALUES ('12', '6', '4', '2016-01-21 15:41:42', '2', '0');
+INSERT INTO `history` VALUES ('13', '7', '4', '2016-01-21 15:42:04', '1', '0');
+INSERT INTO `history` VALUES ('14', '7', '4', '2016-01-21 15:42:04', '2', '0');
+INSERT INTO `history` VALUES ('15', '8', '4', '2016-01-21 15:42:23', '1', '0');
+INSERT INTO `history` VALUES ('16', '8', '4', '2016-01-21 15:42:23', '2', '0');
+INSERT INTO `history` VALUES ('17', '5', '3', '2016-01-21 17:16:04', '4', '0');
+INSERT INTO `history` VALUES ('18', '5', '2', '2016-01-21 17:16:15', '5', '0');
+INSERT INTO `history` VALUES ('19', '5', '4', '2016-01-21 17:16:35', '6', '0');
+INSERT INTO `history` VALUES ('20', '5', '2', '2016-01-21 17:16:47', '8', '0');
 
 -- ----------------------------
 -- Table structure for `nodes`
@@ -2787,13 +2744,8 @@ CREATE TABLE `resolutions` (
 -- ----------------------------
 -- Records of resolutions
 -- ----------------------------
-INSERT INTO `resolutions` VALUES ('1', '2016-01-20 11:03:21', '3', '2', 'Откат', '0');
-INSERT INTO `resolutions` VALUES ('2', '2016-01-20 12:35:19', '3', '1', null, '0');
-INSERT INTO `resolutions` VALUES ('3', '2016-01-20 12:37:01', '3', '1', null, '0');
-INSERT INTO `resolutions` VALUES ('5', '2016-01-20 17:12:53', '3', '2', 'Надо', '0');
-INSERT INTO `resolutions` VALUES ('6', '2016-01-20 17:12:28', '3', '1', null, '0');
-INSERT INTO `resolutions` VALUES ('7', '2016-01-20 14:55:50', '3', '1', null, '0');
-INSERT INTO `resolutions` VALUES ('8', '2016-01-20 17:12:42', '3', '3', 'Ну вот так вот я захотел', '0');
+INSERT INTO `resolutions` VALUES ('4', '2016-01-21 15:33:32', '3', '2', 'Быстро как ветер', '0');
+INSERT INTO `resolutions` VALUES ('5', '2016-01-21 17:16:04', '3', '1', null, '0');
 
 -- ----------------------------
 -- Table structure for `roles`
@@ -2804,7 +2756,7 @@ CREATE TABLE `roles` (
   `rolename` varchar(30) NOT NULL COMMENT 'Название роли',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='Роли пользователя';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='Роли пользователя';
 
 -- ----------------------------
 -- Records of roles
@@ -2812,7 +2764,6 @@ CREATE TABLE `roles` (
 INSERT INTO `roles` VALUES ('1', 'НАЧАЛЬНИК СМЕНЫ СТАНЦИИ', '0');
 INSERT INTO `roles` VALUES ('2', 'ГЛАВНЫЙ ИНЖЕНЕР', '0');
 INSERT INTO `roles` VALUES ('3', 'РУКОВОДИТЕЛЬ', '0');
-INSERT INTO `roles` VALUES ('15', 'АДМИНИСТРАТОР', '0');
 
 -- ----------------------------
 -- Table structure for `states`
@@ -2823,19 +2774,20 @@ CREATE TABLE `states` (
   `description` varchar(50) NOT NULL COMMENT 'Описание статуса',
   `action` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of states
 -- ----------------------------
-INSERT INTO `states` VALUES ('1', 'Черновик', 'Создал / Сохранил');
+INSERT INTO `states` VALUES ('1', 'Черновик', 'Сохранил');
 INSERT INTO `states` VALUES ('2', 'На согласовании цеха', 'Отправил на согласование цеха');
-INSERT INTO `states` VALUES ('3', 'Согласование ГИ', 'Отправил на расмотрение ГИ');
+INSERT INTO `states` VALUES ('3', 'Согласование ГИ', 'Направил главному инженеру');
 INSERT INTO `states` VALUES ('4', 'Разрешенная', 'Разрешил выполнение');
 INSERT INTO `states` VALUES ('5', 'Открытая', 'Открыл заявку');
 INSERT INTO `states` VALUES ('6', 'Прикрытая', 'Прикрыл заявку');
-INSERT INTO `states` VALUES ('7', 'Отказанная', 'Отверг заявку');
+INSERT INTO `states` VALUES ('7', 'Отказанная', 'Отклонил заявку');
 INSERT INTO `states` VALUES ('8', 'Закрытая', 'Закрыл заявку');
+INSERT INTO `states` VALUES ('10', 'Архив', 'Перемещена в архив');
 
 -- ----------------------------
 -- Table structure for `tickets`
@@ -2863,14 +2815,12 @@ CREATE TABLE `tickets` (
 -- ----------------------------
 -- Records of tickets
 -- ----------------------------
-INSERT INTO `tickets` VALUES ('1', '00001', '2016-01-20 00:00:00', '1', '4', '2016-01-20 00:00:00', '2016-01-20 00:00:00', '37', 'Сколько оно может не работать?', '2016-01-20 11:04:45', null, '6', '2016-01-20 11:02:16', null, '0');
-INSERT INTO `tickets` VALUES ('2', '00002', '2016-01-20 00:00:00', '1', '4', '2016-01-20 00:00:00', '2016-01-31 02:00:00', '37', '[Продление заявки #00001]&#13;&#10;Сколько оно может не работать?', '2016-01-20 12:41:23', '2016-01-20 14:49:55', '6', '2016-01-20 11:05:14', '1', '0');
-INSERT INTO `tickets` VALUES ('3', '00003', '2016-01-20 00:00:00', '10', '1', '2016-01-20 00:00:00', '2016-01-20 00:00:00', '6', 'Так надо', '2016-01-20 12:41:43', null, '6', '2016-01-20 12:34:29', null, '0');
-INSERT INTO `tickets` VALUES ('4', '00004', '2016-01-20 00:00:00', '1', '4', '2016-01-20 00:00:00', '2016-01-20 00:00:00', '3', '3213131', null, null, '2', '2016-01-20 17:11:48', null, '0');
-INSERT INTO `tickets` VALUES ('5', '00005', '2016-01-20 00:00:00', '10', '1', '2016-01-20 00:00:00', '2016-01-20 00:00:00', '26', 'фывфывфыв', null, null, '4', '2016-01-20 14:09:59', null, '0');
-INSERT INTO `tickets` VALUES ('6', '00006', '2016-01-20 00:00:00', '10', '1', '2016-01-20 00:00:00', '2016-01-20 00:00:00', '6', '[Продление заявки #00003]&#13;&#10;Так надо', null, null, '4', '2016-01-20 14:51:06', '3', '0');
-INSERT INTO `tickets` VALUES ('7', '00007', '2016-01-20 00:00:00', '10', '1', '2016-01-20 00:00:00', '2016-01-20 00:00:00', '1', '313132', '2016-01-20 14:56:21', null, '6', '2016-01-20 14:55:25', null, '0');
-INSERT INTO `tickets` VALUES ('8', '00008', '2016-01-20 00:00:00', '10', '1', '2016-01-20 00:00:00', '2016-01-31 00:00:00', '1', '[Продление заявки #00007]&#13;&#10;313132', null, null, '7', '2016-01-20 14:57:13', '7', '0');
+INSERT INTO `tickets` VALUES ('3', '00001', '2016-01-21 00:00:00', '1', '4', '2016-01-21 00:00:00', '2016-01-21 00:00:00', '1', 'Починить', null, null, '1', '2016-01-21 15:40:55', null, '0');
+INSERT INTO `tickets` VALUES ('4', '00002', '2016-01-21 00:00:00', '1', '4', '2016-01-21 00:00:00', '2016-01-21 00:00:00', '1', 'Туц тац туц', '2016-01-21 15:33:47', '2015-01-21 15:36:21', '10', '2016-01-21 15:31:08', null, '0');
+INSERT INTO `tickets` VALUES ('5', '00003', '2016-01-21 00:00:00', '1', '4', '2016-01-21 00:00:00', '2016-01-31 00:00:00', '1', '[Продление заявки #00002]&#13;&#10;Туц тац туц', '2016-01-21 17:16:15', '2015-01-21 17:16:47', '8', '2016-01-21 15:35:57', '4', '0');
+INSERT INTO `tickets` VALUES ('6', '00004', '2016-01-21 00:00:00', '1', '4', '2016-01-21 00:00:00', '2016-01-21 00:00:00', '7', '123', null, null, '2', '2016-01-21 15:41:42', null, '0');
+INSERT INTO `tickets` VALUES ('7', '00005', '2016-01-21 00:00:00', '1', '4', '2016-01-21 00:00:00', '2016-01-21 00:00:00', '23', 'доор', null, null, '2', '2016-01-21 15:42:04', null, '0');
+INSERT INTO `tickets` VALUES ('8', '00006', '2016-01-21 00:00:00', '1', '4', '2016-01-21 00:00:00', '2016-01-21 00:00:00', '16', 'фы&#13;&#10;ячсм&#13;&#10;уккк', null, null, '2', '2016-01-21 15:42:23', null, '0');
 
 -- ----------------------------
 -- Table structure for `ticket_device`
@@ -2886,20 +2836,21 @@ CREATE TABLE `ticket_device` (
 -- ----------------------------
 -- Records of ticket_device
 -- ----------------------------
-INSERT INTO `ticket_device` VALUES ('1', '731', '0');
-INSERT INTO `ticket_device` VALUES ('1', '766', '0');
-INSERT INTO `ticket_device` VALUES ('2', '731', '0');
-INSERT INTO `ticket_device` VALUES ('2', '766', '0');
-INSERT INTO `ticket_device` VALUES ('3', '2038', '0');
-INSERT INTO `ticket_device` VALUES ('4', '435', '0');
-INSERT INTO `ticket_device` VALUES ('4', '441', '0');
-INSERT INTO `ticket_device` VALUES ('4', '1315', '0');
-INSERT INTO `ticket_device` VALUES ('5', '1047', '0');
-INSERT INTO `ticket_device` VALUES ('6', '2038', '0');
-INSERT INTO `ticket_device` VALUES ('7', '342', '0');
-INSERT INTO `ticket_device` VALUES ('7', '346', '0');
-INSERT INTO `ticket_device` VALUES ('7', '350', '0');
-INSERT INTO `ticket_device` VALUES ('8', '346', '0');
+INSERT INTO `ticket_device` VALUES ('3', '346', '0');
+INSERT INTO `ticket_device` VALUES ('3', '350', '0');
+INSERT INTO `ticket_device` VALUES ('4', '373', '0');
+INSERT INTO `ticket_device` VALUES ('4', '376', '0');
+INSERT INTO `ticket_device` VALUES ('5', '478', '0');
+INSERT INTO `ticket_device` VALUES ('5', '484', '0');
+INSERT INTO `ticket_device` VALUES ('6', '2039', '0');
+INSERT INTO `ticket_device` VALUES ('6', '2361', '0');
+INSERT INTO `ticket_device` VALUES ('7', '149', '0');
+INSERT INTO `ticket_device` VALUES ('7', '178', '0');
+INSERT INTO `ticket_device` VALUES ('7', '535', '0');
+INSERT INTO `ticket_device` VALUES ('7', '549', '0');
+INSERT INTO `ticket_device` VALUES ('8', '868', '0');
+INSERT INTO `ticket_device` VALUES ('8', '870', '0');
+INSERT INTO `ticket_device` VALUES ('8', '872', '0');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -2923,3 +2874,14 @@ INSERT INTO `users` VALUES ('1', 'ЦТАИ', 'Коник Дмитрий Юрье
 INSERT INTO `users` VALUES ('2', 'nss', 'Болонев Евгений Леонидович', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', '1', '1', '0');
 INSERT INTO `users` VALUES ('3', 'me', 'Сурнин Эдуард Генадьевич', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', '2', '8', '0');
 INSERT INTO `users` VALUES ('4', 'КТЦ', 'Карпов Сергей Николаевич', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', '3', '1', '0');
+
+-- ----------------------------
+-- Event structure for `archiver`
+-- ----------------------------
+DROP EVENT IF EXISTS `archiver`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` EVENT `archiver` ON SCHEDULE EVERY 1 DAY STARTS '2016-01-22 00:00:00' ON COMPLETION NOT PRESERVE ENABLE DO update tickets t 
+	set status = 10 
+where datediff(now(), t.dt_close) > 60
+;;
+DELIMITER ;
