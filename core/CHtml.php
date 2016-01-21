@@ -29,7 +29,6 @@ class CHtml {
 
 	public static function createButton($text, $options = null) {
 
-		if (!$options) $options = [];
 		$options['class'] = get_param($options, 'class', 'btn btn-default');
 		$options['type'] = get_param($options, 'type', 'button');
 
@@ -37,9 +36,15 @@ class CHtml {
 	}
 
 	public static function createLink($text, $href = '#', $options = null) {
-		if (!$options) $options = [];
+
 		$options['href'] = $href;
 
 		return self::createTag('a', $options, $text);
+	}
+
+	public static function createOption($title, $value, $options = null) {
+		$options['value'] = $value;
+
+		return self::createTag('option', $options, $title);
 	}
 }

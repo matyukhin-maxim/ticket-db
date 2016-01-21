@@ -8,9 +8,9 @@ class AuthModel extends CModel {
 		SELECT
 			u.id, u.fullname, u.role_id, u.department_id depid,
 			u.login, r.rolename, d.name depname
-		FROM users u
-		LEFT JOIN roles r ON u.role_id = r.id
-		LEFT JOIN departments d ON d.id = u.department_id
+		FROM bid.users u
+		LEFT JOIN bid.roles r ON u.role_id = r.id
+		LEFT JOIN bid.departments d ON d.id = u.department_id
 		WHERE u.deleted = 0
 			AND u.login = :login
 			AND u.pwd_hash = :password', [

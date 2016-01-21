@@ -15,7 +15,7 @@ class Configuration {
 		'host' => 'localhost',
 		'user' => 'root',
 		'pass' => 'fell1x',
-		'base' => 'bid',
+		'base' => '',
 	];
 
 	public static $scriptList = [
@@ -38,5 +38,7 @@ class Configuration {
 	public static $ROLE_NSS   = "1";
 	public static $ROLE_ME    = "2";
 	public static $ROLE_USER  = "3";
+
+	public static $passkey = 'qicjlG528b5SOE63cGsFeXKmiZ02Kl32';
 
 }

@@ -50,11 +50,22 @@ class TicketController extends CController {
 		$this->data['t_id'] = null;
 		$this->data['parent'] = null;
 
-		$departments = $this->model->getDepartments();
-		$this->data['departments'] = generateOptions($departments, null, 'Не требуется');
 
-		$nodes = $this->model->getNodes();
-		$this->data['nodes'] = generateOptions($nodes, null, false);
+		$this->render('', false);
+		$my_dep = intval(get_param($this->authdata, 'depid', -1));
+
+		// Список отделов с заблокировкой текущего цеха
+		$departments = array_column($this->model->getDepartments(), 'title', 'id');
+		$this->data['departments'] = CHtml::createOption('Не требуется', null);
+		foreach ($departments as $id => $title) {
+			$param = [];
+			if ($id === $my_dep) $param['disabled'] = true;
+			$this->data['departments'] .= CHtml::createOption($title, $id, $param);
+		}
+
+		// Список узлов
+		$nodes = array_column($this->model->getNodes(), 'title', 'id');
+		foreach($nodes as $id => $title) $this->data['nodes'] .= CHtml::createOption($title, $id);
 
 		$this->data['buttons'] = join(PHP_EOL, [
 			CHtml::createButton('Сохранить черновик', [
@@ -100,8 +111,6 @@ class TicketController extends CController {
 			}
 		}
 
-		//var_dump($this->model->getTicketHistory($req_id));
-
 		$this->data['title'] = 'Редактирование заявки ';
 		$this->data['t_number'] = get_param($ticket, 'number');
 		$this->data['t_cdate'] = sqldate2human(get_param($ticket, 'dt_create'), 'd.m.Y');
@@ -121,7 +130,17 @@ class TicketController extends CController {
 		$adepid = get_param($agree, 'department_id', -1);
 		$adepname = get_param($deplist, $adepid, null); // Название цеха, кто должен согласовать
 		$ares = get_param($agree, 'result'); // null - пока не указанно; 0 - отказ; 1 - добро
-		$this->data['departments'] = generateOptions($departments, $adepid, 'Не требуется');
+
+		//$this->data['departments'] = generateOptions($departments, $adepid, 'Не требуется');
+		// Список отделов с заблокировкой текущего цеха и отметкой выбранного
+		$this->data['departments'] = CHtml::createTag('option', ['value'=>''], 'Не требуется');
+		foreach ($deplist as $id => $title) {
+			$param = [];
+			$param['value'] = $id;
+			if ($id === $my_dep) $param['disabled'] = true;
+			if ($id === $my_dep) $param['selected'] = true;
+			$this->data['departments'] .= CHtml::createTag('option', $param, $title);
+		}
 
 		// пользователь создавший заявку
 		$uid = get_param($ticket, 'user_id');
@@ -388,17 +407,6 @@ class TicketController extends CController {
 					$this->scripts[] = 'handle-open';
 				}
 
-				// Добавим панельку с информацией о том, кто открыл заявку
-				$h_open = $this->model->getTicketHistory($req_id, STATUS_OPEN, true);
-				$this->data['panel_title'] = 'Исполнение заявки';
-				$this->data['ag_res'] = 'Заявку открыл';
-				$this->data['ag_class'] = '';
-				$this->data['ag_user'] = makeSortName(get_param($h_open, 'fullname', '?'));
-				$this->data['ag_date'] = sqldate2human(get_param($agree, 'dt_stamp'));
-
-				$this->data['panel_content'] = $this->renderPartial('agree-info');
-				$this->data['resolutions'] .= $this->renderPartial('resolution-panel');
-
 				break;
 			case STATUS_COMPLETE :
 				$this->data['title'] = 'Закрытие заявки';
@@ -593,7 +601,7 @@ class TicketController extends CController {
 			$parent = get_param($info, 'parent', null);
 			if (get_param($info, 'parent')) $this->model->setTicketStatus($parent, STATUS_COMPLETE, $user_id);
 
-		} else $this->prepareError('Ошибка создания заявки.');
+		} else $this->prepareError('Ошибка создания заявки.' . PHP_EOL . CModel::getErrorList());
 	}
 
 	public function ajaxDevices() {
@@ -755,7 +763,6 @@ class TicketController extends CController {
 	public function actionClose() {
 
 		$role = get_param($this->authdata, 'role_id');
-		$me = get_param($this->authdata, 'id');
 		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
 
 		$info = $this->model->getTicketInfo($ticket_id);
@@ -773,4 +780,5 @@ class TicketController extends CController {
 		$this->prepareError('Заявка закрыта.', 'alert-info');
 		$this->redirect(['back' => 1]);
 	}
+
 }

@@ -27,10 +27,10 @@ class ContentsModel extends CModel {
 		  date_format(t.dt_start, '%d.%m.%Y %H:%i') dstart,
 		  date_format(t.dt_stop, '%d.%m.%Y %H:%i') dstop,
 		  n.nodename, t.status, a.department_id adep
-		FROM tickets t
-		  LEFT JOIN departments d ON t.department_id = d.id
-		  LEFT JOIN nodes n ON t.node_id = n.id
-		  LEFT JOIN agreements a on t.id = a.ticket_id
+		FROM bid.tickets t
+		  LEFT JOIN bid.departments d ON t.department_id = d.id
+		  LEFT JOIN bid.nodes n ON t.node_id = n.id
+		  LEFT JOIN bid.agreements a on t.id = a.ticket_id
 		WHERE t.deleted = 0
 		  AND t.status = :pstate
 		  $depcondition
@@ -41,13 +41,13 @@ class ContentsModel extends CModel {
 
 		return $this->select('
         SELECT st.id, ifnull(q.cnt,0) cnt
-		FROM states st LEFT JOIN (
+		FROM bid.states st LEFT JOIN (
 		SELECT o.status, o.cnt FROM (
 		SELECT
 			status,
 			if(t.status = 1, t.department_id, :depid) town,
 			count(*)                                  cnt
-		FROM tickets t
+		FROM bid.tickets t
 		WHERE t.deleted = 0
 		GROUP BY t.status, 2) o
 		WHERE o.town = :depid) q ON st.id = q.status', [
@@ -62,7 +62,7 @@ class ContentsModel extends CModel {
 			t.status,
 			t.department_id dep,
 			count(*) cnt
-		FROM tickets t
+		FROM bid.tickets t
 		WHERE t.deleted = 0
 		GROUP BY 1, 2');
 
