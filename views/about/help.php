@@ -6,11 +6,10 @@
 
 			<h1>Журнал заявок НГРЭС</h1>
 			<blockquote>
-				Тут должен быть какойто умный текст, но я еще не придумал его.
+				ТУТ ПОЗЖЕ БУДЕТ ИНСТРУКЦИЯ
 			</blockquote>
 
 			<br/><br/><br/>
-			<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 		</div>
 	</div>
 </div>

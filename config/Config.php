@@ -8,6 +8,7 @@ define('STATUS_OPEN'      , 5); // Открыта ННСом
 define('STATUS_COMPLETE'  , 6); // Прикрыта (исполнена)
 define('STATUS_REJECT'    , 7); // Отказана (цехом или ГИ)
 define('STATUS_CLOSE'     , 8); // закрыта
+define('STATUS_ARCHIVE'   ,10); // закрыта
 
 class Configuration {
 
@@ -26,7 +27,7 @@ class Configuration {
 		'lib/moment.min',
 		'lib/i18n/moment-ru',               // rus moment.js
 		'lib/bootstrap-select.min',
-		'lib/bootstrap-datetimepicker.min', // date & time picker
+		'lib/bootstrap-datetimepicker', // date & time picker
 		'lib/i18n/defaults-ru_RU',          // rus selectpicker
 		'lib/ie10-viewport-bug-workaround', // IE10 viewport hack for Surface/desktop Windows 8 bug
 		'common',
