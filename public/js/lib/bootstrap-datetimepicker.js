@@ -1185,9 +1185,9 @@
                 if (input.prop('disabled') || (!options.ignoreReadonly && input.prop('readonly')) || widget) {
                     return picker;
                 }
-                if (input.val() !== undefined && input.val().trim().length !== 0) {
-                    setValue(parseInputDate(input.val().trim()));
-                } else if (options.useCurrent && unset && ((input.is('input') && input.val().trim().length === 0) || options.inline)) {
+                if (input.val() !== undefined && $.trim(input.val()).length !== 0) {
+                    setValue(parseInputDate($.trim(input.val())));
+                } else if (options.useCurrent && unset && ((input.is('input') && $.trim(input.val()).length === 0) || options.inline)) {
                     currentMoment = getMoment();
                     if (typeof options.useCurrent === 'string') {
                         currentMoment = useCurrentGranularity[options.useCurrent](currentMoment);
@@ -1301,7 +1301,7 @@
             },
 
             change = function (e) {
-                var val = $(e.target).val().trim(),
+                var val = $.trim($(e.target).val()),
                     parsedDate = val ? parseInputDate(val) : null;
                 setValue(parsedDate);
                 e.stopImmediatePropagation();
@@ -1761,7 +1761,7 @@
 
             options.defaultDate = parsedDate;
 
-            if ((options.defaultDate && options.inline) || input.val().trim() === '') {
+            if ((options.defaultDate && options.inline) || $.trim(input.val()) === '') {
                 setValue(options.defaultDate);
             }
             return picker;
@@ -1907,12 +1907,9 @@
                 throw new TypeError('viewMode() expects a string parameter');
             }
 
-            //if (viewModes.indexOf(viewMode) === -1) {
-            //    throw new TypeError('viewMode() parameter must be one of (' + viewModes.join(', ') + ') value');
-            //}
-
-            alert(typeof viewMode);
-            alert(typeof viewModes);
+            if (viewModes.indexOf(viewMode) === -1) {
+                throw new TypeError('viewMode() parameter must be one of (' + viewModes.join(', ') + ') value');
+            }
 
             options.viewMode = viewMode;
             currentViewMode = Math.max(viewModes.indexOf(viewMode), minViewModeNumber);
@@ -2340,8 +2337,9 @@
         if (input.prop('disabled')) {
             picker.disable();
         }
-        if (input.is('input') && input.val().trim().length !== 0) {
-            setValue(parseInputDate(input.val().trim()));
+
+        if (input.is('input') && $.trim(input.val()).length !== 0) {
+            setValue(parseInputDate($.trim(input.val())));
         }
         else if (options.defaultDate && input.attr('placeholder') === undefined) {
             setValue(options.defaultDate);
