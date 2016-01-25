@@ -68,5 +68,9 @@
 		printf(PHP_EOL . '<script type="text/javascript" src="%s"></script>', "/public/js/$filename.js");
 } ?>
 
+<!--[if lt IE 9]>
+<script src="/public/js/lib/browser.js"></script>
+<![endif]-->
+
 </body>
 </html>

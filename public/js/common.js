@@ -55,6 +55,8 @@ $(function() {
 
     $('[data-toggle="popover"]').popover();
 
+    $('.badge:empty').hide();
+
     showPopup();
 
 });

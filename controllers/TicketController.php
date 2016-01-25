@@ -52,14 +52,14 @@ class TicketController extends CController {
 
 
 		$this->render('', false);
-		$my_dep = intval(get_param($this->authdata, 'depid', -1));
+		$my_dep = get_param($this->authdata, 'depid', -1);
 
 		// Список отделов с заблокировкой текущего цеха
 		$departments = array_column($this->model->getDepartments(), 'title', 'id');
 		$this->data['departments'] = CHtml::createOption('Не требуется', null);
 		foreach ($departments as $id => $title) {
 			$param = [];
-			if ($id === $my_dep) $param['disabled'] = true;
+			if ($id == $my_dep) $param['disabled'] = true;
 			$this->data['departments'] .= CHtml::createOption($title, $id, $param);
 		}
 
@@ -137,8 +137,8 @@ class TicketController extends CController {
 		foreach ($deplist as $id => $title) {
 			$param = [];
 			$param['value'] = $id;
-			if ($id === $my_dep) $param['disabled'] = true;
-			if ($id === $my_dep) $param['selected'] = true;
+			if ($id == $my_dep) $param['disabled'] = true;
+			if ($id == $adepid) $param['selected'] = true;
 			$this->data['departments'] .= CHtml::createTag('option', $param, $title);
 		}
 

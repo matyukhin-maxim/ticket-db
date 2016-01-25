@@ -34,7 +34,7 @@
 					</table>
 				</div>
 				<div class="panel-body ticket-window">
-					<table class="table table-bordered table-condensed table-striped text-center">
+					<table class="table table-bordered table-condensed table-hover text-center">
 						<colgroup>
 							<col class="col-xs-1">
 							<col class="col-xs-2">

@@ -35,11 +35,13 @@ $(function () {
                         item.text(row.cnt);
                     }
                 });
+                //$('.badge:empty').hide();
+                //$('.badge(:not(empty))').show();
             }, 'json');
     }
 
     setInterval(function() {
-        $('.active .menu-item').trigger('click');
-    }, 5 * 60 * 1000);
+        //$('.active .menu-item').trigger('click');
+    }, 5000);
     $('.menu-item').eq(last % $('.menu-item').length).trigger('click');
 });

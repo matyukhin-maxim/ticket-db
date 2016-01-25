@@ -14,8 +14,8 @@
 	<!--[if lt IE 9]>
 	<script src="/public/js/lib/html5shiv.min.js"></script>
 	<script src="/public/js/lib/respond.min.js"></script>
+	<script src="/public/js/lib/es5-shim.js"></script>
 	<![endif]-->
-	<script src="/public/js/lib/css3-mediaqueries.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
