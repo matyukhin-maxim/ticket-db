@@ -562,13 +562,13 @@ class TicketController extends CController {
 				'flags' => FILTER_REQUIRE_ARRAY,
 			],
 			't_number' => FILTER_SANITIZE_STRING,
-			//'t_cdate' => [
-			//	'filter' => FILTER_VALIDATE_REGEXP,
-			//	'options' => [
-			//		'regexp' => '/^(\d{2}\.){2}\d{4}$/',
-			//		'default' => date('d.m.Y'),
-			//	],
-			//],
+			't_cdate' => [
+				'filter' => FILTER_VALIDATE_REGEXP,
+				'options' => [
+					'regexp' => '/^(\d{2}\.){2}\d{4}$/',
+					'default' => date('d.m.Y'),
+				],
+			],
 			'confirm' => [
 				'filter' => FILTER_VALIDATE_INT,
 				'options' => [
@@ -580,7 +580,7 @@ class TicketController extends CController {
 		$info['devices'] = $info['devices'] ?: [];
 
 		// дату создания добиваем нулями (время), и преобразум к mysql формату
-		//$info['t_cdate'] = date2mysql($info['t_cdate'] . ' 00:00');
+		$info['t_cdate'] = date2mysql($info['t_cdate'] . ' 00:00');
 
 		// обнуляем номер заявки если это новая (чтобы номер сгенерировался автоматически)
 		if ($info['t_number'] === '-') $info['t_number'] = null;

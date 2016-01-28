@@ -279,8 +279,8 @@ textarea.reason {
 }
 
 .ticket-window {
-    min-height: 420px;
-    max-height: 420px;
+    min-height: 440px;
+    max-height: 440px;
     overflow-y: auto;
 }
 

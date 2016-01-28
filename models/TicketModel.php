@@ -53,7 +53,7 @@ class TicketModel extends CModel {
 			'tnode' => get_param($arguments, 't_node'),
 			'uid' => get_param($arguments, 'user'),
 			'depid' => get_param($arguments, 'depid'),
-			'dt_create' => get_param($arguments, 't_cdate', date('Y-m-d H:i')),
+			'dt_create' => get_param($arguments, 't_cdate'),
 			'parent_id' => get_param($arguments, 'parent', null),
 		]);
 
