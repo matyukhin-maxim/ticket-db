@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 	<title><?= $this->title; ?></title>
 	<link rel="stylesheet" href="/public/css/bootstrap.min.css"/>
 	<link rel="stylesheet" href="/public/css/bootstrap-theme.css"/>
@@ -76,7 +76,7 @@
 					</ul>
 				</li>
 			<?php endif; ?>
-			<li>
+			<li class="mr15">
 				<a href="/about/"><i class="glyphicon glyphicon-question-sign"></i>
 					Помощь</a>
 			</li>

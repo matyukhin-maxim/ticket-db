@@ -91,12 +91,16 @@ body {
 }
 
 .navbar-top-links li:last-child {
+    margin-right: 15px; /* didn't work in ie8 */
+}
+
+.mr15 {
     margin-right: 15px;
 }
 
 .navbar-top-links li a {
     padding: 15px;
-    min-height: 50px;
+    /*min-height: 50px;*/  /* ie8 bug */
 }
 
 .navbar-top-links .dropdown-menu li {
@@ -275,8 +279,8 @@ textarea.reason {
 }
 
 .ticket-window {
-    min-height: 450px;
-    max-height: 450px;
+    min-height: 420px;
+    max-height: 420px;
     overflow-y: auto;
 }
 
