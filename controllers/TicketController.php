@@ -397,7 +397,7 @@ class TicketController extends CController {
 
 				break;
 			case STATUS_OPEN :
-				$this->data['title'] = 'Прикрытие / Продление заявки';
+				$this->data['title'] = 'Прикрытие заявки';
 
 				if ($my_role === Configuration::$ROLE_USER && $my_dep === $tdepid) {
 					$this->data['buttons'] = CHtml::createTag('div', ['class' => 'btn-group',], [
@@ -425,6 +425,11 @@ class TicketController extends CController {
 
 				$template = 'ticket-preview-history';
 				$this->data['title'] = 'Просмотр заявки';
+
+				// Для статуса ОТКЛОНЕНА/РАЗРЕШЕНА найдем причину/условие либо в согласовании, либо в разрешении
+				$reason = get_param($agree,  'reason', null);
+				$reason = get_param($review, 'reason', $reason); //nl2br(html_entity_decode( X )) ??? [для краясвкости]
+
 				$this->data['history'] = '';
 				$log = $this->model->getTicketHistory($req_id);
 				foreach ($log as $action) {
@@ -432,6 +437,13 @@ class TicketController extends CController {
 						CHtml::createTag('div', ['class' => 'col-xs-12 strong text-center'], get_param($action, 'action')),
 						CHtml::createTag('div', ['class' => 'col-xs-6'], makeSortName(get_param($action, 'fullname'))),
 						CHtml::createTag('em', ['class' => 'col-xs-6 text-right text-muted'], sqldate2human(get_param($action, 'dt_stamp'))),
+						get_param($action, 'status_id') == STATUS_REJECT ? CHtml::createTag('div', ['class' => 'text-danger strong'], [
+							CHtml::createTag('div', ['class' => 'col-xs-4'], 'Причина:'),
+							CHtml::createTag('em',  ['class' => 'col-xs-8 text-right'], $reason),
+							]) : '',
+						get_param($action, 'status_id') == STATUS_ACCEPT ? CHtml::createTag('em', [
+							'class' => 'text-success strong text-right col-xs-12',
+						], $reason) : '',
 					]);
 				}
 
@@ -550,13 +562,13 @@ class TicketController extends CController {
 				'flags' => FILTER_REQUIRE_ARRAY,
 			],
 			't_number' => FILTER_SANITIZE_STRING,
-			't_cdate' => [
-				'filter' => FILTER_VALIDATE_REGEXP,
-				'options' => [
-					'regexp' => '/^(\d{2}\.){2}\d{4}$/',
-					'default' => date('d.m.Y'),
-				],
-			],
+			//'t_cdate' => [
+			//	'filter' => FILTER_VALIDATE_REGEXP,
+			//	'options' => [
+			//		'regexp' => '/^(\d{2}\.){2}\d{4}$/',
+			//		'default' => date('d.m.Y'),
+			//	],
+			//],
 			'confirm' => [
 				'filter' => FILTER_VALIDATE_INT,
 				'options' => [
@@ -568,7 +580,7 @@ class TicketController extends CController {
 		$info['devices'] = $info['devices'] ?: [];
 
 		// дату создания добиваем нулями (время), и преобразум к mysql формату
-		$info['t_cdate'] = date2mysql($info['t_cdate'] . ' 00:00');
+		//$info['t_cdate'] = date2mysql($info['t_cdate'] . ' 00:00');
 
 		// обнуляем номер заявки если это новая (чтобы номер сгенерировался автоматически)
 		if ($info['t_number'] === '-') $info['t_number'] = null;

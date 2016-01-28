@@ -29,6 +29,24 @@ $(function () {
         $('#dev-cnt').text($('.dev-check:checked').length);
     }
 
+
+    $(document).click(function (e) {
+        var ctrl = $(e.target).closest('.date');
+        if (!ctrl.length) {
+            $('.input-group.date').each(function(){
+                $(this).data('DateTimePicker').hide();
+            });
+        }
+    });
+
+    /*
+    $('.date > input').blur(function(e, data) {
+        console.log(e, data);
+        //$(this).closest('.date').data('DateTimePicker').hide();
+        $(this).focus();
+    });
+    */
+
     $('button.btn-save').click(function(e) {
         e.preventDefault();
         var btn = $(e.target);

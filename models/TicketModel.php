@@ -53,7 +53,7 @@ class TicketModel extends CModel {
 			'tnode' => get_param($arguments, 't_node'),
 			'uid' => get_param($arguments, 'user'),
 			'depid' => get_param($arguments, 'depid'),
-			'dt_create' => get_param($arguments, 't_cdate'),
+			'dt_create' => get_param($arguments, 't_cdate', date('Y-m-d H:i')),
 			'parent_id' => get_param($arguments, 'parent', null),
 		]);
 
@@ -245,7 +245,8 @@ class TicketModel extends CModel {
 		SELECT
 		  h.dt_stamp,
 		  s.action,
-		  u.fullname
+		  u.fullname,
+		  h.status_id
 		FROM bid.history h
 		  LEFT JOIN bid.states s ON h.status_id = s.id
 		  LEFT JOIN bid.users u ON h.user_id = u.id

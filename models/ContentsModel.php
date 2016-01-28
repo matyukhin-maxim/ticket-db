@@ -54,32 +54,4 @@ class ContentsModel extends CModel {
 			'depid' => $udep,
 		]);
 	}
-
-	public function _getCounter($udep = 0) {
-
-		$data = $this->select('
-		SELECT
-			t.status,
-			t.department_id dep,
-			count(*) cnt
-		FROM bid.tickets t
-		WHERE t.deleted = 0
-		GROUP BY 1, 2');
-
-		$result = [];
-		foreach ($data as $row) {
-			$status = intval(get_param($row, 'status'));
-			$mult = intval(get_param($row, 'dep') == $udep);
-			$cnt = get_param($row, 'cnt');
-			$result[$status] += $status !== STATUS_DRAFT ? $cnt : $cnt * $mult;
-		}
-
-		$result += array_fill_keys(range(1, 8), 0);
-
-		$out = [];
-		foreach ($result as $item => $value) {
-			$out[] = ['id' => $item, 'cnt' => $value];
-		}
-		return array_combine(array_keys($result), array_values($result));
-	}
 }

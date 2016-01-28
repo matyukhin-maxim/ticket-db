@@ -31,6 +31,7 @@ $(function() {
         ignoreReadonly: true,
         sideBySide: true,
         stepping: 10,
+        debug: true
         //useCurrent: false,
         //minDate: current
     });
@@ -54,8 +55,6 @@ $(function() {
     });
 
     $('[data-toggle="popover"]').popover();
-
-    $('.badge:empty').hide();
 
     showPopup();
 

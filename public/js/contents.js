@@ -35,8 +35,6 @@ $(function () {
                         item.text(row.cnt);
                     }
                 });
-                //$('.badge:empty').hide();
-                //$('.badge(:not(empty))').show();
             }, 'json');
     }
 
