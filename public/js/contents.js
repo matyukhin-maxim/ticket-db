@@ -35,6 +35,11 @@ $(function () {
                         item.text(row.cnt);
                     }
                 });
+
+                $('.badge').each(function () {
+                    var b = $(this);
+                    b.toggleClass('hidden', b.text().length === 0);
+                });
             }, 'json');
     }
 
