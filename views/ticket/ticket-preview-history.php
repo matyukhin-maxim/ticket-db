@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="col-sm-8">
+	<div class="col-md-8">
 		<div class="panel panel-default">
 			<div class="panel-heading strong">
 				<a href="/contents/" class="close" title="Закрыть">&times;</a>
@@ -88,7 +88,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-sm-4">
+	<div class="col-md-4">
 		<div class="panel panel-default">
 			<div class="panel-heading strong">История заявки</div>
 			<div class="panel-body">
