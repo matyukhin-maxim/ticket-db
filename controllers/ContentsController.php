@@ -70,6 +70,7 @@ class ContentsController extends CController {
 		]);
 
 		$dep_id = get_param($this->authdata, 'depid', -1);
+		$role = get_param($this->authdata, 'role_id');
 		$ticketlist = $this->model->getTicketListByStatus($status, $dep_id);
 		if (count($ticketlist) == 0) echo $this->renderPartial('no-ticket');
 		foreach ($ticketlist as $ticket) {
@@ -87,10 +88,13 @@ class ContentsController extends CController {
 				'class' => 'btn btn-default -active btn-block',
 			    'title' => 'Открыть заявку',
 			]);
+
+			/* Подсветка строк списка заявок */
 			$this->data['tclass'] = '';
 			switch ($status) {
 				case STATUS_AGREE:
-					$this->data['tclass'] = get_param($ticket, 'adep') === $dep_id ? 'alert-warning strong' : '';
+					if ($role == Configuration::$ROLE_USER)
+						$this->data['tclass'] = (get_param($ticket, 'adep') === $dep_id) ? 'alert-warning strong' : '';
 					break;
 				default:
 			}
