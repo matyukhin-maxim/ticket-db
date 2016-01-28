@@ -24,8 +24,7 @@
 							</td>
 							<td>
 								<input id="dcurrent" type="text" class="form-control text-center" name="t_cdate"
-								       readonly
-								       value="<?= $t_cdate; ?>">
+								       disabled value="<?= $t_cdate; ?>">
 							</td>
 							<td>
 								<input type="text" class="form-control" name="t_department" disabled
@@ -35,7 +34,7 @@
 								<input type="text" class="form-control" name="t_user" disabled value="<?= $t_user; ?>">
 							</td>
 							<td>
-								<select class="selectpicker show-tick form-control" name="agreement">
+								<select class="selectpicker show-tick form-control" data-width="100%" name="agreement">
 									<?= $departments; ?>
 								</select>
 							</td>
@@ -68,7 +67,8 @@
 					<div class="row form-group">
 						<div class="col-xs-4">
 							<label class="control-label">Узел :</label>
-							<select class="selectpicker show-tick form-control" name="t_node" title="Выбор узла"
+							<select class="selectpicker show-tick form-control" data-width="100%" name="t_node"
+							        title="Выбор узла"
 							        id="t_node"
 							        data-live-search="true" data-size="10">
 								<?= $nodes; ?>
