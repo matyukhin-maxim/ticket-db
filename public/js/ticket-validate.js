@@ -29,23 +29,16 @@ $(function () {
         $('#dev-cnt').text($('.dev-check:checked').length);
     }
 
-
-    $(document).click(function (e) {
-        var ctrl = $(e.target).closest('.date');
-        if (!ctrl.length) {
-            $('.input-group.date').each(function(){
-                $(this).data('DateTimePicker').hide();
-            });
-        }
-    });
-
-    /*
-    $('.date > input').blur(function(e, data) {
-        console.log(e, data);
-        //$(this).closest('.date').data('DateTimePicker').hide();
-        $(this).focus();
-    });
-    */
+    if ($('.date').length) {
+        $(document).click(function (e) {
+            var ctrl = $(e.target).closest('.date');
+            if (!ctrl.length) {
+                $('.input-group.date').each(function () {
+                    $(this).data('DateTimePicker').hide();
+                });
+            }
+        });
+    }
 
     $('button.btn-save').click(function(e) {
         e.preventDefault();
@@ -58,11 +51,11 @@ $(function () {
             item.parent().toggleClass('has-error', item.find('input').val() === '');
         });
 
-        $('#t_node').parent().toggleClass('has-error', $('#t_node').val() <= 0);
+        $('#t_node').closest('.form-group').toggleClass('has-error', $('#t_node').val() === '');
 
         // если количесво групп с ошибкой > 0, то покажем сообщение, и форму отправлять не будем
         if ($('.has-error').length > 0) {
-            showPopup('Ошибка при заполнении полей формы', 'alert-warning');
+            showPopup('Заполните все необходимые поля', 'alert-warning');
             return;
         }
 
