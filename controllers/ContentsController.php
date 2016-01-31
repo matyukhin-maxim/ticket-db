@@ -96,6 +96,10 @@ class ContentsController extends CController {
 					if ($role == Configuration::$ROLE_USER)
 						$this->data['tclass'] = (get_param($ticket, 'adep') === $dep_id) ? 'alert-warning strong' : '';
 					break;
+				case STATUS_OPEN:
+					if ($role == Configuration::$ROLE_USER)
+						$this->data['tclass'] = (get_param($ticket, 'depid') === $dep_id) ? 'alert-warning strong' : '';
+					break;
 				default:
 			}
 			echo $this->renderPartial('ticket-row');
