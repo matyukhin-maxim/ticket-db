@@ -21,24 +21,24 @@
 <nav class="navbar navbar-default navbar-fixed-top">
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar"
-		        aria-expanded="false" aria-controls="navbar">
+		        aria-expanded="false">
 			<span class="sr-only">Переключить</span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="/">
+		<a class="navbar-brand strong" href="/">
 			<?= $brand; ?>
 		</a>
+	</div>
+	<div id="navbar" class="collapse navbar-collapse">
 		<?php if ($authdata !== false): ?>
-			<ul class="nav navbar-left hidden-xs">
-				<li class="role-name alert-info strong text-center" title="Роль">
+			<ul class="nav navbar-nav">
+				<li class="role-name alert alert-info strong text-center" title="Роль">
 					<?= get_param($authdata, 'rolename', '?'); ?>
 				</li>
 			</ul>
 		<?php endif; ?>
-	</div>
-	<div id="navbar" class="collapse navbar-collapse">
 		<ul class="nav navbar-top-links navbar-right">
 			<?php if ($authdata === false): ?>
 				<li>
@@ -46,10 +46,7 @@
 						Вход</a>
 				</li>
 			<?php else: ?>
-				<li class="role-name alert-info strong text-center visible-xs" title="Роль">
-					<?= get_param($authdata, 'rolename', '?'); ?>
-				</li>
-				<li class="navbar-text"><span>Вы вошли как:</span></li>
+				<li class="text-muted strong"><span>Вы вошли как:</span></li>
 				<li class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 						<i class="glyphicon glyphicon-user"></i>
