@@ -33,8 +33,8 @@ class Configuration {
 		'common',
 	];
 
-	public static $siteName  = 'Журнал заявок НГРЭС';
-	public static $brandName = 'Журнал заявок Нерюнгринской ГРЭС';
+	public static $siteName  = 'Журнал заявок';
+	public static $brandName = 'Журнал заявок НГРЭС';
 
 	public static $ROLE_NSS   = "1";
 	public static $ROLE_ME    = "2";
