@@ -1,7 +1,7 @@
 <li>
 	<a href="/ticket/create/" title="Создать новую заявку" class="text-center">
-		<h4>
-			<i class="glyphicon glyphicon-bell hidden-xs hidden-sm"></i>
+		<h4 class="strong">
+			<i class="glyphicon glyphicon-bell"></i>
 			Новая заявка
 		</h4>
 	</a>

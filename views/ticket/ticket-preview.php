@@ -37,9 +37,9 @@
 					<div class="col-md-6">
 						<div class="row">
 							<div class="col-sm-6">
-								<label class="control-label">Дата и время начала работ :</label>
+								<label class="control-label">Дата начала работ :</label>
 								<div class="input-group">
-	                                <span class="input-group-addon hidden-sm hidden-xs">
+	                                <span class="input-group-addon">
 	                                    <i class="glyphicon glyphicon-calendar"></i>
 	                                </span>
 									<input id="sdate" type="text" class="form-control" readonly
@@ -47,9 +47,9 @@
 								</div>
 							</div>
 							<div class="col-sm-6">
-								<label class="control-label">Дата и время окончания работ :</label>
+								<label class="control-label">Дата окончания работ :</label>
 								<div class="input-group">
-                                    <span class="input-group-addon hidden-sm hidden-xs">
+                                    <span class="input-group-addon">
 	                                    <i class="glyphicon glyphicon-calendar"></i>
                                     </span>
 									<input id="edate" type="text" class="form-control" readonly
