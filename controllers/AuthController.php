@@ -7,10 +7,9 @@ class AuthController extends CController {
 
 		Session::del('auth');
 		Session::destroy();
-		//$this->scripts[] = 'authorisation';
-		//$this->render('form');
-		$this->redirect('http://auth-server.asu.ngres/');
-
+		$this->scripts[] = 'authorisation';
+		$this->render('form');
+		//$this->redirect('http://auth-server.asu.ngres/');
 	}
 
 	public function actionLogin() {

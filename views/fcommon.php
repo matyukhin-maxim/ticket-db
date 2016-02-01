@@ -5,7 +5,7 @@
 		<div class="row">
 			<p class="text-muted text-center">
 				АО "ДГК" НГРЭС.
-				<abbr title="Подробнее..." id="asu-info">Отдел информационных технологий</abbr>. 2015г.
+				<abbr title="Подробнее..." id="asu-info">Отдел информационных технологий</abbr>. 2015-2016г.
 			</p>
 		</div>
 	</div>
