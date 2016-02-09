@@ -66,9 +66,7 @@ try {
 	$message = $exc->getMessage();
 
 	setcookie('status', $message, time() + 5, '/');
-	//setcookie('status', var_export($url, true) , time() + 5, '/');
-	//var_dump($url);
-	header('Location: /');
-	//echo $message . PHP_EOL;
+	$location = get_param($_SERVER, 'HTTP_REFERER', '/');
+	if (!isAjax()) header("Location: $location");
 	exit();
 }
