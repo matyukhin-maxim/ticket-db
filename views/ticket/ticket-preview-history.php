@@ -95,5 +95,20 @@
 				<ul class="list-group"><?= $history ?></ul>
 			</div>
 		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading strong">Диспетчеры ПЧ-18</div>
+			<div class="panel-body">
+				<div class="list-group">
+					<div class="list-group-item clearfix">
+						<em class="pull-right"><?= $fire_o;?></em>
+						<div class="text-left">Сообщиение о выводе принял</div>
+					</div>
+					<div class="list-group-item clearfix">
+						<em class="pull-right"><?= $fire_c;?></em>
+						<div class="text-left">Сообщиение о вводе принял</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

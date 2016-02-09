@@ -275,7 +275,6 @@ class TicketController extends CController {
 		}
 		/* REVIEW FORM */
 
-
 		//$this->scripts[] = 'debug-reload';
 
 		if ($ticket_status >= STATUS_OPEN) {
@@ -293,8 +292,26 @@ class TicketController extends CController {
 			$this->data['resolutions'] .= CHtml::createTag('ul', ['class' => 'list-group text-center'], $items);
 		}
 
-		$template = 'ticket-preview';
+		// Пожарные
+		$fire_person = $this->model->getFireDispatcher(); // Список диспетчеров для выпадающиго списка
+		$fire_column = array_column($fire_person, 'title', 'id');
+		$dfire_o = get_param($ticket, 'fire_o') ?: -1;
+		$dfire_c = get_param($ticket, 'fire_c') ?: -1;
 
+		$this->data['fire_o'] = CHtml::createTag('input', [
+			'class' => 'form-control',
+			'readonly' => true,
+			'type' => 'text',
+			'value' => get_param($fire_column, $dfire_o, '-'),
+		]);
+		$this->data['fire_c'] = CHtml::createTag('input', [
+			'class' => 'form-control',
+			'readonly' => true,
+			'type' => 'text',
+			'value' => get_param($fire_column, $dfire_c, '-'),
+		]);
+
+		$template = 'ticket-preview';
 		switch ($ticket_status) {
 			case STATUS_DRAFT : {
 				$template = 'new-ticket';
@@ -390,9 +407,19 @@ class TicketController extends CController {
 				}
 
 				if ($my_role === Configuration::$ROLE_NSS) {
-					$this->data['buttons'] = CHtml::createLink('Открыть заявку', "/ticket/start/$req_id/", [
+
+					$this->data['fire_o'] = CHtml::createTag('select', [
+						'class' => 'selectpicker show-tick form-control',
+						'data-style' => 'btn-default strong',
+					], generateOptions($fire_person, null, 'Не требуется'));
+
+					$this->data['buttons'] .= CHtml::createLink('Открыть заявку', "/ticket/start/$req_id/", [
 						'class' => 'btn btn-primary',
+						'data-fire' => '',
+						'id' => 'action-btn',
 					]);
+
+					$this->scripts[] = 'fire-select';
 				}
 
 				break;
@@ -414,17 +441,31 @@ class TicketController extends CController {
 				// Добавим панельку с информацией о том, кто открыл заявку
 
 				if ($my_role === Configuration::$ROLE_NSS) {
+
+					$this->data['fire_c'] = CHtml::createTag('select', [
+						'class' => 'selectpicker show-tick form-control',
+						'data-style' => 'btn-default strong',
+					], generateOptions($fire_person, null, 'Не требуется'));
+
 					$this->data['buttons'] = CHtml::createLink('Закрыть заявку', "/ticket/close/$req_id/", [
 						'class' => 'btn btn-primary strong',
+						'data-fire' => '',
+						'id' => 'action-btn',
 					]);
+
+					$this->scripts[] = 'fire-select';
 				}
 
 				break;
 			case STATUS_REJECT :
 			case STATUS_CLOSE  :
+			case STATUS_ARCHIVE:
 
 				$template = 'ticket-preview-history';
 				$this->data['title'] = 'Просмотр заявки';
+
+				$this->data['fire_o'] = get_param($fire_column, $dfire_o, '-');
+				$this->data['fire_c'] = get_param($fire_column, $dfire_c, '-');
 
 				// Для статуса ОТКЛОНЕНА/РАЗРЕШЕНА найдем причину/условие либо в согласовании, либо в разрешении
 				$reason = get_param($agree,  'reason', null);
@@ -452,6 +493,11 @@ class TicketController extends CController {
 				$template = 'incorrect-status';
 		}
 
+
+		if ($ticket_status >= STATUS_ACCEPT) {
+			$this->data['resolutions'] .= $this->renderPartial('fire-panel');
+		}
+
 		$this->data['devlist'] = $devices;
 		$this->render($template);
 
@@ -461,6 +507,8 @@ class TicketController extends CController {
 
 		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
 		$role = get_param($this->authdata, 'role_id', -1);
+
+		$fire_d = get_param($this->arguments, 1, null);
 
 		$info = $this->model->getTicketInfo($ticket_id);
 		$errors = '';
@@ -473,7 +521,7 @@ class TicketController extends CController {
 			$errors = 'Заявку может открыть только Начальник смены!';
 		}
 
-		$ok = $this->model->openTicket($ticket_id);
+		$ok = $this->model->openTicket($ticket_id, $fire_d);
 		if ($ok) $this->model->setTicketStatus($ticket_id, STATUS_OPEN);
 
 		$errors .= CModel::getErrorList();
@@ -777,6 +825,8 @@ class TicketController extends CController {
 		$role = get_param($this->authdata, 'role_id');
 		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
 
+		$fire_d = get_param($this->arguments, 1, null);
+
 		$info = $this->model->getTicketInfo($ticket_id);
 		if (!$info) {
 			$this->prepareError('Запрошеная заявка не найдена');
@@ -786,7 +836,7 @@ class TicketController extends CController {
 			$this->prepareError('Не достаточно прав для выполнения операции.');
 		}
 
-		$ok = $this->model->closeTicket($ticket_id);
+		$ok = $this->model->closeTicket($ticket_id, $fire_d);
 		if ($ok) $this->model->setTicketStatus($ticket_id, STATUS_CLOSE);
 
 		$this->prepareError('Заявка закрыта.', 'alert-info');

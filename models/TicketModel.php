@@ -207,18 +207,24 @@ class TicketModel extends CModel {
 		return $cnt > 0;  // Если запись добавилась или обновилсь
 	}
 
-	public function openTicket($ticket_id) {
+	public function openTicket($ticket_id, $f_id = null) {
 
 		$cnt = 0;
-		$this->select('UPDATE bid.tickets SET dt_open = now() WHERE id = :tid', ['tid' => $ticket_id], $cnt);
+		$this->select('UPDATE bid.tickets SET dt_open = now(), fire_o = :duser WHERE id = :tid', [
+			'tid' => $ticket_id,
+			'duser' => $f_id,
+		], $cnt);
 		return $cnt === 1;
 		//$this->setTicketStatus($ticket_id, STATUS_OPEN, $user_id);
 	}
 
-	public function closeTicket($ticket_id) {
+	public function closeTicket($ticket_id, $f_id = null) {
 
 		$cnt = 0;
-		$this->select('UPDATE bid.tickets SET dt_close = now() WHERE id = :tid', ['tid' => $ticket_id], $cnt);
+		$this->select('UPDATE bid.tickets SET dt_close = now(), fire_c = :duser WHERE id = :tid', [
+			'tid' => $ticket_id,
+			'duser' => $f_id,
+		], $cnt);
 		return $cnt === 1;
 		//$this->setTicketStatus($ticket_id, STATUS_CLOSE, $user_id);
 	}
@@ -258,5 +264,11 @@ class TicketModel extends CModel {
 		$data = $this->select($query, $parameters);
 
 		return $last ? array_pop($data) : $data;
+	}
+
+	public function getFireDispatcher() {
+
+		$data = $this->select('SELECT id, shortname title FROM bid.fire_personal WHERE deleted = 0 ORDER BY 2');
+		return $data; // array_column($data, 'shortname', 'id');
 	}
 }

@@ -40,6 +40,7 @@ class CController {
 
 	public function render($view, $endpage = true) {
 
+		$this->data['elist'] = CModel::getErrorList();
 		extract($this->data);
 		if (!$this->hprint) {
 			include $this->viewFolder . 'hcommon.php';
@@ -52,7 +53,6 @@ class CController {
 		}
 
 		if ($endpage) {
-			$elist = CModel::getErrorList();
 			include $this->viewFolder . 'fcommon.php';
 		}
 	}
