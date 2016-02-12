@@ -19,7 +19,7 @@ footer .text-muted {
 /*}*/
 
 body {
-    /*background-color: #cfcfcf;*/
+    /*background-color: rgba(31, 23, 117, 0.65);*/
     background: url("../back.jpg") fixed;
     background-size: 100% 100%;
     opacity: 0.95;
@@ -148,7 +148,7 @@ body {
 
 .badge {
     min-width: 30px;
-    width: 30px;
+    /*width: 30px;*/
     border-radius: 5px;
 }
 

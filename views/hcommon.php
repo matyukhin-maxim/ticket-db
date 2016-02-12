@@ -58,12 +58,12 @@
 							<?= get_param($authdata, 'fullname', '-'); ?>
 						</li>
 						<li class="divider"></li>
-						<li>
-							<a href="/auth/changepassword/">
-								<i class="glyphicon glyphicon-lock"></i>
-								Изменить пароль
-							</a>
-						</li>
+<!--						<li>-->
+<!--							<a href="/auth/changepassword/">-->
+<!--								<i class="glyphicon glyphicon-lock"></i>-->
+<!--								Изменить пароль-->
+<!--							</a>-->
+<!--						</li>-->
 						<li>
 							<a href="/auth/logout/">
 								<i class="glyphicon glyphicon-log-out"></i>

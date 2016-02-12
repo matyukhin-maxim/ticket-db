@@ -8,7 +8,7 @@
 			<blockquote>
 				ТУТ ПОЗЖЕ БУДЕТ ИНСТРУКЦИЯ
 			</blockquote>
-			<a href="/transfer/" class="btn btn-danger">НЕ НАЖИМАТЬ</a>
+<!--			<a href="/transfer/" class="btn btn-danger">НЕ НАЖИМАТЬ</a>-->
 			<br/><br/><br/>
 		</div>
 	</div>

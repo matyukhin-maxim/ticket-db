@@ -48,6 +48,7 @@ class ContentsController extends CController {
 
 	public function actionIndex() {
 
+		//$this->render('info', false);
 		$this->render('list');
 	}
 

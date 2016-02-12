@@ -479,7 +479,7 @@ class TicketController extends CController {
 						CHtml::createTag('div', ['class' => 'col-xs-6'], makeSortName(get_param($action, 'fullname'))),
 						CHtml::createTag('em', ['class' => 'col-xs-6 text-right text-muted'], sqldate2human(get_param($action, 'dt_stamp'))),
 						get_param($action, 'status_id') == STATUS_REJECT ? CHtml::createTag('div', ['class' => 'text-danger strong'], [
-							CHtml::createTag('div', ['class' => 'col-xs-4'], 'Причина:'),
+							$reason ? CHtml::createTag('div', ['class' => 'col-xs-4'], 'Причина:') : '',
 							CHtml::createTag('em',  ['class' => 'col-xs-8 text-right'], $reason),
 							]) : '',
 						get_param($action, 'status_id') == STATUS_ACCEPT ? CHtml::createTag('em', [

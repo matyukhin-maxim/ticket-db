@@ -85,7 +85,7 @@ class CModel {
 			}
 		}
 
-		//var_dump($param);
+		//var_dump($query);
 
 		$sth = self::$db->prepare($query);
 

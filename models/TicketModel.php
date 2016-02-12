@@ -155,12 +155,13 @@ class TicketModel extends CModel {
 		return $cnt === 1;
 	}
 
-	public function setTicketStatus($ticket_id, $status, $user_id = null) {
+	public function setTicketStatus($ticket_id, $status, $user_id = null, $cstamp = null) {
 
 		if (!$user_id) {
 			$auth = Session::get('auth');
 			$user_id = get_param($auth, 'id');
 		}
+		if ($cstamp === null) $cstamp = date('Y-m-d H:i:s');
 
 		$this->select('UPDATE bid.tickets SET status = :state WHERE id = :tid', [
 			'tid' => $ticket_id,
@@ -169,10 +170,11 @@ class TicketModel extends CModel {
 
 		$this->select('INSERT INTO bid.history
 			(ticket_id, user_id, dt_stamp, status_id)
-		VALUES (:tid, :uid, now(), :state)', [
+		VALUES (:tid, :uid, :stamp, :state)', [
 			'tid' => $ticket_id,
 			'uid' => $user_id,
 			'state' => $status,
+			'stamp' => $cstamp,
 		]);
 	}
 
@@ -269,6 +271,28 @@ class TicketModel extends CModel {
 	public function getFireDispatcher() {
 
 		$data = $this->select('SELECT id, shortname title FROM bid.fire_personal WHERE deleted = 0 ORDER BY 2');
-		return $data; // array_column($data, 'shortname', 'id');
+		return $data; // array_column($data, 'title', 'id');
+	}
+
+	public function findPersonByName($pname) {
+
+		if (empty(trim($pname))) return -1;
+		$parts = preg_split('/[\.\s]+/', trim($pname));
+		$pname = sprintf("%s %s%% %s%%", $parts[0], $parts[1], $parts[2]);
+
+		$cnt = 0;
+
+		$result = $this->select('
+			select id, fullname
+			from openid.personal
+			where fullname like :filter', ['filter' => $pname], $cnt);
+
+		if ($cnt > 1) {
+			var_dump($pname);
+			var_dump($result);
+		}
+		$data = get_param($result, 0);
+		//return get_param($data, 'fullname');
+		return get_param($data, 'id');
 	}
 }

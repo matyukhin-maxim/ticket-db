@@ -192,3 +192,10 @@ function makeSortName($fullname) {
 	foreach ($parts as $next) $result .= ' ' . ($result ? mb_substr($next, 0, 1) . '.' : $next);
 	return trim($result);
 }
+
+function mb_capitalize($str) {
+
+	$str = trim($str);
+	$fc = mb_strtoupper(mb_substr($str, 0, 1));
+	return $fc . mb_substr($str, 1);
+}
