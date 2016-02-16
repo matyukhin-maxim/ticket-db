@@ -8,7 +8,7 @@ define('STATUS_OPEN'      , 5); // Открыта ННСом
 define('STATUS_COMPLETE'  , 6); // Прикрыта (исполнена)
 define('STATUS_REJECT'    , 7); // Отказана (цехом или ГИ)
 define('STATUS_CLOSE'     , 8); // закрыта
-define('STATUS_ARCHIVE'   ,10); // закрыта
+define('STATUS_ARCHIVE'   ,10); // Архивная заявка
 
 class Configuration {
 

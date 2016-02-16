@@ -44,7 +44,7 @@ $(function () {
     }
 
     setInterval(function() {
-        //$('.active .menu-item').trigger('click');
-    }, 5000);
+        $('.active .menu-item').trigger('click');
+    }, 3 * 60 * 1000);
     $('.menu-item').eq(last % $('.menu-item').length).trigger('click');
 });

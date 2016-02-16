@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="/public/css/bootstrap-theme.css"/>
 	<link rel="stylesheet" href="/public/css/bootstrap-select.min.css"/>
 	<link rel="stylesheet" href="/public/css/bootstrap-datetimepicker.min.css"/>
+	<link rel="stylesheet" href="/public/css/jquery-ui.css"/>
 	<link rel="stylesheet" href="/public/css/main.css"/>
 	<!--[if lt IE 9]>
 	<script src="/public/js/lib/html5shiv.min.js"></script>
