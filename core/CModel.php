@@ -115,6 +115,7 @@ class CModel {
 
 		if ($ecode !== '00000') {
 			$emsg = get_param($error, 2);
+			charsetChange($emsg);
 			self::$errorlist[] = "MySQL error [$ecode]: " . ($emsg ? $emsg : 'Invalid params');
 		}
 		$rowCount = $sth->rowCount();

@@ -304,3 +304,7 @@ textarea.reason {
 .compact, .compact > [class*="col-"] {
     padding: 7px;
 }
+
+.ui-autocomplete {
+    z-index: 3 !important;
+}

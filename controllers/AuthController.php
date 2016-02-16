@@ -7,7 +7,7 @@ class AuthController extends CController {
 
 		Session::del('auth');
 		Session::destroy();
-		$this->scripts[] = 'authorisation';
+		$this->scripts[] = 'auth';
 		$this->render('form');
 		//$this->redirect('http://auth-server.asu.ngres/');
 	}
@@ -31,7 +31,7 @@ class AuthController extends CController {
 
 	public function ajaxLogin() {
 
-		$login = filter_input(INPUT_POST, 'login', FILTER_SANITIZE_STRING);
+		$login = filter_input(INPUT_POST, 'tabel', FILTER_SANITIZE_STRING);
 		$password = filter_input(INPUT_POST, 'password');
 
 		$this->authdata = $this->model->setAuthenticate($login, $password);
@@ -54,5 +54,15 @@ class AuthController extends CController {
 		setcookie('last-item', null, -1, '/'); // forgot menu item
 
 		$this->redirect('/');
+	}
+
+	public function ajaxComplete() {
+
+		$filter = filter_input(INPUT_POST, 'q', FILTER_SANITIZE_STRING);
+
+		// запрос будем строить опираясь на то, что ввели в поисковой строке (число / строка)
+		// если это число, то будем искать по табельному номеру, иначе по совпадению ФИО
+		$data = $this->model->getUsers($filter, 35);
+		echo json_encode($data);
 	}
 }

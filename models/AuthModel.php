@@ -12,7 +12,7 @@ class AuthModel extends CModel {
 		LEFT JOIN bid.roles r ON u.role_id = r.id
 		LEFT JOIN bid.departments d ON d.id = u.department_id
 		WHERE u.deleted = 0
-			AND u.login = :login
+			AND u.id = :login
 			AND u.pwd_hash = :password', [
 			'login' => $p_login,
 			'password' => sha1($p_password),
@@ -24,4 +24,32 @@ class AuthModel extends CModel {
 		$data = get_param($auth, 0);
 		return $data;
 	}
+
+	public function getUsers($filter, $limit = 0) {
+
+		if (empty($filter)) return [];
+		$field = 'id';
+
+		if (is_numeric($filter)) {
+			$filter = "8000$filter%";
+		} else {
+			$filter .= '%';
+			$field = 'fullname';
+		}
+
+		$limit = $limit ? sprintf("LIMIT %d ", intval($limit)) : '';
+		$result = $this->select("
+        SELECT
+          id       value,
+          fullname label
+        FROM bid.users
+        WHERE $field LIKE :filter
+              AND deleted = 0
+        ORDER BY fullname
+        $limit
+        ", ['filter' => $filter]);
+
+		return $result;
+	}
+
 }
