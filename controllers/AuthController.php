@@ -5,6 +5,9 @@ class AuthController extends CController {
 
 	public function actionIndex() {
 
+		$needHelp = filter_input(INPUT_COOKIE, 'no-help', FILTER_VALIDATE_INT) ?: 0;
+		if ($needHelp === 0) $this->redirect('/about/');
+
 		Session::del('auth');
 		Session::destroy();
 		$this->scripts[] = 'auth';
@@ -12,21 +15,10 @@ class AuthController extends CController {
 		//$this->redirect('http://auth-server.asu.ngres/');
 	}
 
-	public function actionLogin() {
+	public function actionThx() {
 
-		$login = filter_input(INPUT_POST, 'login', FILTER_SANITIZE_STRING);
-		$password = filter_input(INPUT_POST, 'password');
-
-		$authdata = $this->model->setAuthenticate($login, $password);
-		if (!$authdata) {
-			$this->prepareError('Ошибка авторизации. Пользователь или пароль указаны не верно.');
-		} elseif (!get_param($authdata, 'rolename')) {
-			$this->prepareError('Роль указаннго пользователя не определена. Обратитесь в отдел АСУ.');
-		} else {
-			Session::set('auth', $authdata);
-		}
-
-		$this->redirect('/');
+		setcookie('no-help', 1, time() + 30 * 24 * 3600, '/');
+		$this->redirect('/auth/');
 	}
 
 	public function ajaxLogin() {
