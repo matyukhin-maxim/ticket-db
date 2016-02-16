@@ -37,9 +37,9 @@ class TicketModel extends CModel {
 	public function saveTicket($arguments) {
 
 		$query = "REPLACE INTO bid.tickets
-			(id, dt_create, number, dt_start, dt_stop, user_id, department_id, node_id, message, parent_id)
+			(id, dt_create, number, dt_start, dt_stop, user_id, department_id, node_id, message, parent_id, realtime)
 			VALUES
-  			(:tid, :dt_create, :tnumber, :dt_start, :dt_stop, :uid, :depid, :tnode, :tmessage, :parent_id)";
+  			(:tid, :dt_create, :tnumber, :dt_start, :dt_stop, :uid, :depid, :tnode, :tmessage, :parent_id, now())";
 
 		$this->startTransaction();
 
@@ -274,7 +274,7 @@ class TicketModel extends CModel {
 		return $data; // array_column($data, 'title', 'id');
 	}
 
-	public function findPersonByName($pname) {
+	public function findPersonByName($pname, $what = 'id') {
 
 		if (empty(trim($pname))) return -1;
 		$parts = preg_split('/[\.\s]+/', trim($pname));
@@ -292,7 +292,6 @@ class TicketModel extends CModel {
 			var_dump($result);
 		}
 		$data = get_param($result, 0);
-		//return get_param($data, 'fullname');
-		return get_param($data, 'id');
+		return $what ? get_param($data, $what) : $data;
 	}
 }
