@@ -66,4 +66,23 @@ class TransferModel extends CModel {
 		], $ok);
 		return $ok !== 0;
 	}
+
+	public function getBadNames() {
+
+		return $this->select('SELECT * FROM oper.users WHERE char_length(fname) <= 1');
+	}
+
+	public function setOperName($uid, $full) {
+
+		$parts = explode(' ', $full);
+		$res = 0;
+		$this->select('UPDATE oper.users SET lname = :ln, fname = :fn, pname = :pn WHERE id = :uid', [
+			'uid' => $uid,
+			'ln' => get_param($parts, 0),
+			'fn' => get_param($parts, 1),
+			'pn' => get_param($parts, 2),
+		], $res);
+
+		return $res > 0;
+	}
 }

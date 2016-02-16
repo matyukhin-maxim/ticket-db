@@ -66,8 +66,10 @@ class TransferController extends CController {
 			and DataPodashi >= :ds
 		order by 2 desc');
 		$stmt->execute([
-			'ds' => '2016-02-10',
+			'ds' => '2016-01-01',
 		]);
+
+		//and NomerZaiavki in (11677,11653)
 
 		$list = $this->prepareData($stmt);
 		$tdev = $this->mdb->prepare('select * from RemontMehanizmov where NomerZaiavki = :tnum');
@@ -255,7 +257,7 @@ class TransferController extends CController {
 				$tmod->setTicketStatus($ticket_id, STATUS_CLOSE, $person, $dclose);
 			}
 
-			var_dump($info);
+			//var_dump($info);
 			//$tmod->setTicketStatus($ticket_id, STATUS_CLOSE, -1);
 		}
 
@@ -291,4 +293,35 @@ class TransferController extends CController {
 		var_dump($this->model->getErrors());
 	}
 
+	public function actionSyncOperNames () {
+
+		$this->render('', false);
+		$data = $this->model->getBadNames();
+		var_dump(count($data));
+		$tmod = new TicketModel();
+
+		$cache = [];
+		$result = 1;
+		$this->model->startTransaction();
+
+		foreach ($data as $user) {
+
+			$short = trim(join(' ', get_array_part($user, 'lname fname pname')));
+			//var_dump($short);
+
+			$full = $tmod->findPersonByName($short, 'fullname');
+			if ($full) {
+
+				$uid = get_param($user, 'id');
+				$cache[$uid] = $full;
+
+				$result *= $this->model->setOperName($uid, $full);
+			}
+		}
+
+		if ($result) var_dump($cache);
+		$this->model->stopTransaction($result);
+
+		$this->render('');
+	}
 }
