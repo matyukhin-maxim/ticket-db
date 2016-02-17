@@ -20,6 +20,7 @@ $(function () {
         $.post('/contents/list/', {type: type},
             function (data) {
                 $('#ticket-list').html(data);
+                $('[data-toggle="popover"]').popover({html:true});
             });
         askCount();
     });

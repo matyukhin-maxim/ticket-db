@@ -308,3 +308,7 @@ textarea.reason {
 .ui-autocomplete {
     z-index: 3 !important;
 }
+
+.popover{
+    width: 95%; !important;/* Max Width of the popover (depending on the container!) */
+}

@@ -26,14 +26,17 @@ class ContentsModel extends CModel {
 		  date_format(t.dt_create, '%d.%m.%Y') dc,
 		  date_format(t.dt_start, '%d.%m.%Y %H:%i') dstart,
 		  date_format(t.dt_stop, '%d.%m.%Y %H:%i') dstop,
-		  n.nodename, t.status, a.department_id adep
+		  n.nodename, t.status, a.department_id adep, group_concat(m.name) devs
 		FROM bid.tickets t
 		  LEFT JOIN bid.departments d ON t.department_id = d.id
 		  LEFT JOIN bid.nodes n ON t.node_id = n.id
-		  LEFT JOIN bid.agreements a on t.id = a.ticket_id
+		  LEFT JOIN bid.agreements a ON t.id = a.ticket_id
+		  LEFT JOIN bid.ticket_device td ON t.id = td.ticket_id
+		  LEFT JOIN bid.devices m ON td.device_id = m.id
 		WHERE t.deleted = 0
 		  AND t.status = :pstate
 		  $depcondition
+		GROUP BY 1,2,3,4,5,6,7,8,9,10
 		ORDER BY t.dt_create DESC, t.realtime desc ", $params);
 	}
 
