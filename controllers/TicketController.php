@@ -29,7 +29,7 @@ class TicketController extends CController {
 	public function actionCreate() {
 
 		// если какм-то чудом сюда попал не руководитель, то отправляем его на главную страницу
-		if (get_param($this->authdata, 'role_id') !== Configuration::$ROLE_USER) {
+		if (!$this->isGrantToMe('ACE_NEW')) {
 			// Создать новую заявку может только Руководитель
 			$this->render('block-create', false);
 			$this->redirect([
@@ -102,11 +102,11 @@ class TicketController extends CController {
 		$my_role = get_param($this->authdata, 'role_id');
 
 		if (!$ticket) {
-			$this->prepareError('Заявка не найдена', 'alert-warning');
+			$this->preparePopup('Заявка не найдена', 'alert-warning');
 			$this->redirect('/contents/');
 		} elseif (get_param($ticket, 'status') == STATUS_DRAFT) {
 			if (get_param($ticket, 'department_id') != $my_dep) {
-				$this->prepareError('Редактировать черновики чужого цеха запрещено');
+				$this->preparePopup('Редактировать черновики чужого цеха запрещено');
 				$this->redirect('/contents/');
 			}
 		}
@@ -181,10 +181,10 @@ class TicketController extends CController {
 		if (get_param($this->arguments, 1) === 'clone') {
 
 			if ($ticket_status !== STATUS_OPEN) {
-				$this->prepareError('Продливать можно только открытую заявку');
+				$this->preparePopup('Продливать можно только открытую заявку');
 				$this->redirect(['back' => 1]);
 			} elseif ($tdepid !== $my_dep) {
-				$this->prepareError('Продливать можно только заявки своего цеха', 'alert-warning');
+				$this->preparePopup('Продливать можно только заявки своего цеха', 'alert-warning');
 				$this->redirect(['back' => 1]);
 			}
 			// по сути, мы открывем текущую заявку подменив ей статус на черновик,
@@ -226,7 +226,8 @@ class TicketController extends CController {
 		/* AGREE FORM */
 		if ($agree) {
 			if ($ares === null) {
-				if ($my_role === Configuration::$ROLE_USER && $my_dep === $adepid) {
+				//if ($my_role === Configuration::$ROLE_USER && $my_dep === $adepid) {
+				if ($this->isGrantToMe('ACE_AGREE', $adepid)) {
 					$this->data['panel_content'] = $this->renderPartial('form-agree');
 					$this->scripts[] = 'agree-ticket';
 				} else {
@@ -254,7 +255,8 @@ class TicketController extends CController {
 
 			if (!$review) {
 				// Если результата согласования нет
-				if ($my_role === Configuration::$ROLE_ME) {
+				//if ($my_role === Configuration::$ROLE_ME) {
+				if ($this->isGrantToMe('ACE_ACCEPT')) {
 					// Рисуем форму и подгружаем скрипт-обработчик
 					$this->data['panel_content'] = $this->renderPartial('form-review');
 					$this->scripts[] = 'review-ticket';
@@ -350,7 +352,7 @@ class TicketController extends CController {
 					// Если id цеха, который должен согласовывать, не указан, или согласование уже получено (!= null)
 					// то статус у заявки неверный, и его желательно исправить
 
-					$this->prepareError('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
+					$this->preparePopup('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
 					$template = 'incorrect-status';
 
 					// Я пока не уверен, что менять статус заяви автоматически - есть хорошо...
@@ -359,8 +361,8 @@ class TicketController extends CController {
 
 				// Если текущий пользователь - Руководитель, то добавим ему кнопку сохранения,
 				// чтобы он мог увековечить результат своего согласования
-				if ($my_role === Configuration::$ROLE_USER && $my_dep === $adepid) {
-
+				//if (($my_role === Configuration::$ROLE_USER && $my_dep === $adepid)	|| $my_role === Configuration::$ROLE_NSS) {
+				if ($this->isGrantToMe('ACE_AGREE', $adepid)) {
 					$this->data['buttons'] = CHtml::createButton('Сохранить', [
 						'class' => 'btn btn-primary',
 						'id' => 'save-btn',
@@ -381,13 +383,14 @@ class TicketController extends CController {
 					// Заявка должна быть согласована, но результата согласования нет
 					// соответственно в текущем статусе она быть не может
 
-					$this->prepareError('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
+					$this->preparePopup('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
 					$template = 'incorrect-status';
 
 					//$this->model->setTicketStatus($req_id, $agree ? STATUS_AGREE : STATUS_DRAFT, 0);
 				}
 
-				if ($my_role === Configuration::$ROLE_ME) {
+				//if ($my_role === Configuration::$ROLE_ME) {
+				if ($this->isGrantToMe('ACE_ACCEPT')) {
 					$this->data['buttons'] = CHtml::createButton('Сохранить', [
 						'class' => 'btn btn-primary',
 						'id' => 'save-btn',
@@ -400,13 +403,14 @@ class TicketController extends CController {
 
 				if (!$review) {
 					// Нет согласования главного инженера
-					$this->prepareError('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
+					$this->preparePopup('Ошибочный статус заявки. Обратитесь в отдел АСУ.', 'alert-warning');
 					$template = 'incorrect-status';
 
 					//$this->model->setTicketStatus($req_id, STATUS_ACCEPT, 0);
 				}
 
-				if ($my_role === Configuration::$ROLE_NSS) {
+				//if ($my_role === Configuration::$ROLE_NSS) {
+				if ($this->isGrantToMe('ACE_OPEN')) {
 
 					$this->data['fire_o'] = CHtml::createTag('select', [
 						'class' => 'selectpicker show-tick form-control',
@@ -426,7 +430,8 @@ class TicketController extends CController {
 			case STATUS_OPEN :
 				$this->data['title'] = 'Прикрытие заявки';
 
-				if ($my_role === Configuration::$ROLE_USER && $my_dep === $tdepid) {
+				//if ($my_role === Configuration::$ROLE_USER && $my_dep === $tdepid) {
+				if ($this->isGrantToMe('ACE_COMPLETE', $tdepid)) {
 					$this->data['buttons'] = CHtml::createTag('div', ['class' => 'btn-group',], [
 						CHtml::createLink('Продлить заявку', 'clone/', ['class' => 'btn btn-default']),
 						CHtml::createButton('Прикрыть заявку', ['id' => 'btn-close', 'class' => 'btn btn-primary',]),
@@ -440,7 +445,8 @@ class TicketController extends CController {
 
 				// Добавим панельку с информацией о том, кто открыл заявку
 
-				if ($my_role === Configuration::$ROLE_NSS) {
+				//if ($my_role === Configuration::$ROLE_NSS) {
+				if ($this->isGrantToMe("ACE_CLOSE")) {
 
 					$this->data['fire_c'] = CHtml::createTag('select', [
 						'class' => 'selectpicker show-tick form-control',
@@ -517,8 +523,9 @@ class TicketController extends CController {
 			$errors = 'Запрошенная заявка не найдена.';
 		} elseif ($info['status'] != STATUS_ACCEPT) {
 			$errors = 'Заявка должна быть утверждена главным инженером.';
-		} elseif ($role !== Configuration::$ROLE_NSS) {
-			$errors = 'Заявку может открыть только Начальник смены!';
+		//} elseif ($role !== Configuration::$ROLE_NSS) {
+		} elseif (!$this->isGrantToMe('ACE_OPEN')) {
+			$errors = 'Не достаточно прав для открытия заявки!';
 		}
 
 		$ok = $this->model->openTicket($ticket_id, $fire_d);
@@ -526,8 +533,8 @@ class TicketController extends CController {
 
 		$errors .= CModel::getErrorList();
 		if ($errors) {
-			$this->prepareError($errors);
-		} else $this->prepareError("Статус заявки изменен.\n Заявка открыта.", 'alert-success');
+			$this->preparePopup($errors);
+		} else $this->preparePopup("Статус заявки изменен.\n Заявка открыта.", 'alert-success');
 
 		$this->redirect('/contents/');
 	}
@@ -538,22 +545,22 @@ class TicketController extends CController {
 
 		$info = $this->model->getTicketInfo($ticket_id);
 		if (!$info) {
-			$this->prepareError('Запрошенная заявка не найдена.');
+			$this->preparePopup('Запрошенная заявка не найдена.');
 			$this->redirect('/contents/');
 		} elseif ($info['status'] != STATUS_DRAFT) {
-			$this->prepareError('Удалять можно только черновик.');
+			$this->preparePopup('Удалять можно только черновик.');
 			$this->redirect('/contents/');
 		} elseif ($info['department_id'] !== get_param($this->authdata, 'depid')) {
-			$this->prepareError('Заявку другого цеха удалять запрещено!');
+			$this->preparePopup('Заявку другого цеха удалять запрещено!');
 			$this->redirect('/contents/');
 		}
 
 		$res = $this->model->deleteDraft($ticket_id);
 		if ($res) {
-			$this->prepareError('Заявка удалена.', 'alert-info');
+			$this->preparePopup('Заявка удалена.', 'alert-info');
 			$this->model->setTicketStatus($ticket_id, -1);
 		} else {
-			$this->prepareError('Заявка не найдена.');
+			$this->preparePopup('Заявка не найдена.');
 		}
 
 		$this->redirect('/contents/');
@@ -640,7 +647,7 @@ class TicketController extends CController {
 
 		$res = $this->model->saveTicket($info);
 		if ($res) {
-			$this->prepareError('Заявка сохранена.', 'alert-success');
+			$this->preparePopup('Заявка сохранена.', 'alert-success');
 			$this->model->setTicketStatus($res, STATUS_DRAFT, $user_id);
 
 			// определим новый статус заявки, и запишем информацию в журнал
@@ -649,10 +656,10 @@ class TicketController extends CController {
 				// Если agreement задан, то заявка уходит в согласование цеха, иначе сразу к ГИ
 				if (get_param($info, 'agreement')) {
 					$this->model->setTicketStatus($res, STATUS_AGREE, $user_id);
-					$this->prepareError('Заявка отправлена на согласование', 'alert-info');
+					$this->preparePopup('Заявка отправлена на согласование', 'alert-info');
 				} else {
 					$this->model->setTicketStatus($res, STATUS_REVIEW, $user_id);
-					$this->prepareError('Заявка отправлена на рассмотрение', 'alert-info');
+					$this->preparePopup('Заявка отправлена на рассмотрение', 'alert-info');
 				}
 			}
 
@@ -661,7 +668,7 @@ class TicketController extends CController {
 			$parent = get_param($info, 'parent', null);
 			if (get_param($info, 'parent')) $this->model->setTicketStatus($parent, STATUS_COMPLETE, $user_id);
 
-		} else $this->prepareError('Ошибка создания заявки.' . PHP_EOL . CModel::getErrorList());
+		} else $this->preparePopup('Ошибка создания заявки.' . PHP_EOL . CModel::getErrorList());
 	}
 
 	public function ajaxDevices() {
@@ -715,14 +722,13 @@ class TicketController extends CController {
 		$agree = get_param($info, 'agree'); // информация о цехе, кто должен согласовать
 		$need = get_param($agree, 'department_id'); // его id
 
-		if ($role !== Configuration::$ROLE_USER) {
-			return $this->prepareError('Согласовывать заявки могут только руководители цехов', 'alert-warning');
+		//if ($role !== Configuration::$ROLE_USER) {
+		if (!$this->isGrantToMe('ACE_AGREE', $need)) {
+			return $this->preparePopup('Не достаточно прав для согласования заявки', 'alert-warning');
 		} elseif (!$info) {
-			return $this->prepareError('Запрошеная заявка не найдена');
+			return $this->preparePopup('Запрошеная заявка не найдена');
 		} elseif (!$agree) {
-			return $this->prepareError('Заявка не нуждается в согласовании', 'alert-warning');
-		} elseif ($depid !== $need) {
-			return $this->prepareError("Заявку должен согласовывать\n руководитель другого цеха", 'alert-warning');
+			return $this->preparePopup('Заявка не нуждается в согласовании', 'alert-warning');
 		}
 
 		$result = get_param($request, 'result', null);
@@ -736,7 +742,7 @@ class TicketController extends CController {
 		if (count($this->model->getErrors())) {
 			echo CModel::getErrorList();
 		} else {
-			$this->prepareError('Заявка сохранена', 'alert-success');
+			$this->preparePopup('Заявка сохранена', 'alert-success');
 		}
 	}
 
@@ -768,12 +774,13 @@ class TicketController extends CController {
 		$tid = get_param($request, 'ticket_id');
 		$info = $this->model->getTicketInfo($tid);
 
-		if ($role !== Configuration::$ROLE_ME) {
-			return $this->prepareError('Согласовывать заявки может только главный инженер', 'alert-warning');
+		//if ($role !== Configuration::$ROLE_ME) {
+		if (!$this->isGrantToMe('ACE_ACCEPT')) {
+			return $this->preparePopup('Нет прав на согласование заявки!', 'alert-warning');
 		} elseif (!$info) {
-			return $this->prepareError('Запрошеная заявка не найдена');
+			return $this->preparePopup('Запрошеная заявка не найдена');
 		} elseif (get_param($info, 'status') != STATUS_REVIEW) {
-			return $this->prepareError('Неправильный статус рассматриваемой заявки');
+			return $this->preparePopup('Неправильный статус рассматриваемой заявки');
 		}
 
 		$result = get_param($request, 'result', null);
@@ -788,7 +795,7 @@ class TicketController extends CController {
 		if (count($this->model->getErrors())) {
 			echo CModel::getErrorList();
 		} else {
-			$this->prepareError('Заявка сохранена', 'alert-success');
+			$this->preparePopup('Заявка сохранена', 'alert-success');
 		}
 	}
 
@@ -802,11 +809,12 @@ class TicketController extends CController {
 
 		$info = $this->model->getTicketInfo($ticket_id);
 		if (!$info) {
-			return $this->prepareError('Запрошеная заявка не найдена');
+			return $this->preparePopup('Запрошеная заявка не найдена');
 		} elseif (get_param($info, 'status') != STATUS_OPEN) {
-			return $this->prepareError('Нельзя прикрыть заявку, которая не открыта', 'alert-warning');
-		} elseif ($role !== Configuration::$ROLE_USER || get_param($info, 'department_id') !== $depid) {
-			return $this->prepareError("Прикрыть заявку может руководитель цеха,\n который создал ее.");
+			return $this->preparePopup('Нельзя прикрыть заявку, которая не открыта', 'alert-warning');
+		//} elseif ($role !== Configuration::$ROLE_USER || get_param($info, 'department_id') !== $depid) {
+		} elseif (!$this->isGrantToMe('ACE_COMPLETE', get_param($info, 'department_id'))) {
+			return $this->preparePopup("Прикрыть заявку может руководитель цеха,\n который создал ее.");
 		}
 
 		// Если ошибок нет, то переводим ее в статус закрытая, установив дату закрытия
@@ -816,7 +824,7 @@ class TicketController extends CController {
 		if (count($this->model->getErrors())) {
 			echo CModel::getErrorList();
 		} else {
-			$this->prepareError('Заявка прикрыта', 'alert-info');
+			$this->preparePopup('Заявка прикрыта', 'alert-info');
 		}
 	}
 
@@ -829,17 +837,18 @@ class TicketController extends CController {
 
 		$info = $this->model->getTicketInfo($ticket_id);
 		if (!$info) {
-			$this->prepareError('Запрошеная заявка не найдена');
+			$this->preparePopup('Запрошеная заявка не найдена');
 		} elseif (get_param($info, 'status') != STATUS_COMPLETE) {
-			$this->prepareError('Закрыть можно только прикрытую заявку', 'alert-warning');
-		} elseif ($role !== Configuration::$ROLE_NSS) {
-			$this->prepareError('Не достаточно прав для выполнения операции.');
+			$this->preparePopup('Закрыть можно только прикрытую заявку', 'alert-warning');
+		//} elseif ($role !== Configuration::$ROLE_NSS) {
+		} elseif (!$this->isGrantToMe('ACE_CLOSE')) {
+			$this->preparePopup('Не достаточно прав для выполнения операции.');
 		}
 
 		$ok = $this->model->closeTicket($ticket_id, $fire_d);
 		if ($ok) $this->model->setTicketStatus($ticket_id, STATUS_CLOSE);
 
-		$this->prepareError('Заявка закрыта.', 'alert-info');
+		$this->preparePopup('Заявка закрыта.', 'alert-info');
 		$this->redirect(['back' => 1]);
 	}
 

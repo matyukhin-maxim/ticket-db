@@ -12,10 +12,11 @@ class CController {
 	// variables for output templates
 	public $data = [];
 	// some special vars for internal use
-	private   $hprint     = false;
-	private   $viewFolder = './views/';
-	private   $classname;
-	protected $authdata   = [];
+	private $hprint = false;
+	private $viewFolder = './views/';
+	private $classname;
+	private $grants;
+	protected $authdata = [];
 	protected $scripts;
 
 	function __construct() {
@@ -29,6 +30,31 @@ class CController {
 
 		$this->authdata = Session::get('auth');
 		$this->data['authdata'] = $this->authdata;
+
+		/* Перечень прав и доступ ролей к ним */
+		$this->grants = [
+			'ACE_NEW' => [
+				Configuration::$ROLE_USER,
+				Configuration::$ROLE_NSS,
+			],
+			'ACE_AGREE' => [
+				Configuration::$ROLE_USER,
+				Configuration::$ROLE_NSS,
+			],
+			'ACE_ACCEPT' => [
+				Configuration::$ROLE_ME,
+				Configuration::$ROLE_NSS,
+			],
+			'ACE_OPEN' => [
+				Configuration::$ROLE_NSS,
+			],
+			'ACE_COMPLETE' => [
+				Configuration::$ROLE_USER,
+			],
+			'ACE_CLOSE' => [
+				Configuration::$ROLE_NSS,
+			],
+		];
 
 		// сформируем и проинициализируем модель по умолчанию
 		// для текущего контроллера.
@@ -71,7 +97,7 @@ class CController {
 		return ob_get_clean();
 	}
 
-	public function prepareError($etext, $eclass = 'alert-danger') {
+	public function preparePopup($etext, $eclass = 'alert-danger') {
 		if (!headers_sent() && $etext) {
 			setcookie('status', nl2br($etext), time() + 10, '/');
 			setcookie('class', $eclass, time() + 10, '/');
@@ -121,4 +147,25 @@ class CController {
 
 	}
 
+	public function isGrantToMe($ace, $department_id = null) {
+
+		$my_dep = get_param($this->authdata, 'depid');
+		$my_role = get_param($this->authdata, 'role_id');
+
+		/**
+		 * Принципиально не хочу хранить информацию о правах роли в БД
+		 * Во-первых лишний запрос
+		 * Во-вторых отсутствие возможности измененя прав на лету (при запросе нужно будет перелогиниваться)
+		 * В-третьих меньше косяков, если вдруг случайно дал не той роли право
+		 **/
+
+		$result = false;
+		$result |= in_array($my_role, get_param($this->grants, $ace, []));
+		if ($department_id !== null) {
+			// Если нужно проверить идентификатор отдела (ННСа это не касается)
+			$result &= $my_role === Configuration::$ROLE_NSS ?: $department_id === $my_dep;
+		}
+
+		return $result;
+	}
 }
