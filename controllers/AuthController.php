@@ -18,7 +18,7 @@ class AuthController extends CController {
 	public function actionThx() {
 
 		setcookie('no-help', 1, time() + 30 * 24 * 3600, '/');
-		$this->redirect('/auth/');
+		$this->redirect('/');
 	}
 
 	public function ajaxLogin() {
@@ -28,9 +28,9 @@ class AuthController extends CController {
 
 		$this->authdata = $this->model->setAuthenticate($login, $password);
 		if (!$this->authdata) {
-			$this->prepareError("Ошибка авторизации.\nПользователь или пароль указаны неверно.");
+			$this->preparePopup("Ошибка авторизации.\nПользователь или пароль указаны неверно.");
 		} elseif (!get_param($this->authdata, 'rolename')) {
-			$this->prepareError("Роль пользователя не определена.\nОбратитесь в отдел АСУ.", 'alert-warning');
+			$this->preparePopup("Роль пользователя не определена.\nОбратитесь в отдел АСУ.", 'alert-warning');
 		} else {
 			Session::set('auth', $this->authdata);
 			return;
