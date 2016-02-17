@@ -1,6 +1,6 @@
 <?php
 echo <<<ROWDATA
-<tr class="ticket- $tclass">
+<tr class="$tclass">
 	<td>$tn</td>
 	<td>$dcreate</td>
 	<td>$tdepartment</td>
