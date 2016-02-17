@@ -13,6 +13,9 @@
 		</div>
 	</div>
 	<div class="col-md-9">
+		<div class="alert alert-success text-center strong compact" style="margin-bottom: 0">
+			Наведите курсор мыши на УЗЕЛ, чтобы увидеть механизмы, указанные в заявке
+		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading strong">
 				<i class="glyphicon glyphicon-bullhorn"></i>
