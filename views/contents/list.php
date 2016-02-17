@@ -15,6 +15,8 @@
 	<div class="col-md-9">
 		<div class="alert alert-success text-center strong compact" style="margin-bottom: 0">
 			Наведите курсор мыши на УЗЕЛ, чтобы увидеть механизмы, указанные в заявке
+			<br>
+			<em class="text-muted small">Если не работает, нажмите <kbd>ctrl+F5</kbd></em>
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading strong">
