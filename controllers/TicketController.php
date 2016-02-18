@@ -318,22 +318,24 @@ class TicketController extends CController {
 		 * для того, чтобы сформировать кнопки "следующая" и "предыдущая"
 		 * для реализации очередной "хотелки"
 		 */
-		if ($ticket_status < STATUS_REJECT) {
+		if ($ticket_status < STATUS_ARCHIVE) {
 			$cmod = new ContentsModel();
-			$all = $cmod->getTicketListByStatus($ticket_status, $my_dep);
+			$all = array_column($cmod->getTicketListByStatus($ticket_status, $my_dep), 'id');
+			$idx = array_search($req_id, $all);
 			$prev = $next = null;
-			foreach ($all as $current) {
-				$cid = intval(get_param($current, 'id'));
-				$prev = $cid < $req_id ? $cid : $prev;
-				$next = $cid > $req_id ? $cid : $next;
-			}
+			$prev = get_param($all, $idx - 1);
+			$next = get_param($all, $idx + 1);
+
 			// Нашли предыдущую и слудующую, рисуем кнопки
 			$this->data['navbtn'] = CHtml::createTag('div', ['class' => 'btn-group'], [
 				CHtml::createTag('a', [
-					'class' => 'btn btn-default',
-					'href' => $this->createActionUrl("edit/$prev"),
-				], 'X'),
-				CHtml::createButton('b'),
+					'class' => 'btn btn-default strong' . ($prev ? '' : ' disabled'),
+					'href' => ($prev ? $this->createActionUrl("edit/$prev") : '#'),
+				], [CHtml::createIcon('chevron-left'), 'Предыдущая']),
+				CHtml::createTag('a', [
+					'class' => 'btn btn-default strong' . ($next ? '' : ' disabled'),
+					'href' => ($next ? $this->createActionUrl("edit/$next") : '#'),
+				], ['Следующая', CHtml::createIcon('chevron-right')]),
 			]);
 		}
 

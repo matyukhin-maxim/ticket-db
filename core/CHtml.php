@@ -47,4 +47,9 @@ class CHtml {
 
 		return self::createTag('option', $options, $title);
 	}
+
+	public static function createIcon($icon = '') {
+
+		return self::createTag('i', ['class' => "glyphicon glyphicon-$icon"], ' ');
+	}
 }
