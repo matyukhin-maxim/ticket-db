@@ -26,7 +26,9 @@ class ContentsModel extends CModel {
 		  date_format(t.dt_create, '%d.%m.%Y') dc,
 		  date_format(t.dt_start, '%d.%m.%Y %H:%i') dstart,
 		  date_format(t.dt_stop, '%d.%m.%Y %H:%i') dstop,
-		  n.nodename, t.status, a.department_id adep, group_concat(m.name) devs
+		  n.nodename, t.status, a.department_id adep,
+		  datediff(t.dt_stop, now()) cday,
+		  group_concat(m.name SEPARATOR '|') devs
 		FROM bid.tickets t
 		  LEFT JOIN bid.departments d ON t.department_id = d.id
 		  LEFT JOIN bid.nodes n ON t.node_id = n.id
@@ -36,7 +38,7 @@ class ContentsModel extends CModel {
 		WHERE t.deleted = 0
 		  AND t.status = :pstate
 		  $depcondition
-		GROUP BY 1,2,3,4,5,6,7,8,9,10
+		GROUP BY 1,2,3,4,5,6,7,8,9,10,11
 		ORDER BY t.dt_create DESC, t.realtime desc ", $params);
 	}
 

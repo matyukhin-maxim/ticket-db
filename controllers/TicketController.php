@@ -99,7 +99,6 @@ class TicketController extends CController {
 		$this->render('', false);
 		$ticket = $this->model->getTicketInfo($req_id);
 		$my_dep = get_param($this->authdata, 'depid');
-		$my_role = get_param($this->authdata, 'role_id');
 
 		if (!$ticket) {
 			$this->preparePopup('Заявка не найдена', 'alert-warning');
@@ -312,6 +311,31 @@ class TicketController extends CController {
 			'type' => 'text',
 			'value' => get_param($fire_column, $dfire_c, '-'),
 		]);
+
+		$this->data['navbtn'] = '';
+		/**
+		 * Получим весь список заявок с таким же статусом, воспользовавшись моделью Списка
+		 * для того, чтобы сформировать кнопки "следующая" и "предыдущая"
+		 * для реализации очередной "хотелки"
+		 */
+		if ($ticket_status < STATUS_REJECT) {
+			$cmod = new ContentsModel();
+			$all = $cmod->getTicketListByStatus($ticket_status, $my_dep);
+			$prev = $next = null;
+			foreach ($all as $current) {
+				$cid = intval(get_param($current, 'id'));
+				$prev = $cid < $req_id ? $cid : $prev;
+				$next = $cid > $req_id ? $cid : $next;
+			}
+			// Нашли предыдущую и слудующую, рисуем кнопки
+			$this->data['navbtn'] = CHtml::createTag('div', ['class' => 'btn-group'], [
+				CHtml::createTag('a', [
+					'class' => 'btn btn-default',
+					'href' => $this->createActionUrl("edit/$prev"),
+				], 'X'),
+				CHtml::createButton('b'),
+			]);
+		}
 
 		$template = 'ticket-preview';
 		switch ($ticket_status) {

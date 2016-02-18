@@ -86,7 +86,7 @@ class ContentsController extends CController {
 			$dnode = CHtml::createTag('div', [
 				'class' => '',
 				'data-trigger' => 'hover',
-				'data-content' => str_replace(',', "<br/>", get_param($ticket, 'devs')) ?: 'Не указаны',
+				'data-content' => str_replace('|', "<br/>", htmlspecialchars(get_param($ticket, 'devs'))) ?: 'Не указаны',
 				'data-original-title' => 'Механизмы',
 				'data-toggle' => 'popover',
 				'data-placement' => 'top',
@@ -107,16 +107,24 @@ class ContentsController extends CController {
 			    'title' => 'Открыть заявку',
 			]);
 
+			// НСС просили подсвечивать заявки кторые близки к просрочке
+			$open_class = '';
+			$cday = get_param($ticket, 'cday', 10);
+			if ($cday < 0) $open_class = 'danger';
+			elseif ($cday <= 1) $open_class = 'warning strong';
+
 			/* Подсветка строк списка заявок */
 			$this->data['tclass'] = '';
 			switch ($status) {
 				case STATUS_AGREE:
 					if ($role == Configuration::$ROLE_USER)
-						$this->data['tclass'] = (get_param($ticket, 'adep') === $dep_id) ? 'alert-warning strong' : '';
+						$this->data['tclass'] = (get_param($ticket, 'adep') === $dep_id) ? 'warning strong' : '';
 					break;
 				case STATUS_OPEN:
-					if ($role == Configuration::$ROLE_USER)
-						$this->data['tclass'] = (get_param($ticket, 'depid') === $dep_id) ? 'alert-warning strong' : '';
+					if ($role === Configuration::$ROLE_USER)
+						$this->data['tclass'] = (get_param($ticket, 'depid') === $dep_id) ? 'warning strong' : '';
+					if (in_array($role, [Configuration::$ROLE_NSS, Configuration::$ROLE_ADMIN]))
+						$this->data['tclass'] = $open_class;
 					break;
 				default:
 			}

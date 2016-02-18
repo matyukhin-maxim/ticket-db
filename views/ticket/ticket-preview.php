@@ -82,6 +82,9 @@
 			<div class="panel-footer">
 				<div class="row">
 					<div class="col-xs-12">
+						<div class="pull-left">
+							<?= $navbtn; ?>
+						</div>
 						<div class="pull-right">
 							<?= $buttons; ?>
 							<a href="/contents/" class="btn btn-default">Закрыть</a>

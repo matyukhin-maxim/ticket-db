@@ -33,28 +33,15 @@ class CController {
 
 		/* Перечень прав и доступ ролей к ним */
 		$this->grants = [
-			'ACE_NEW' => [
-				Configuration::$ROLE_USER,
-				Configuration::$ROLE_NSS,
-			],
-			'ACE_AGREE' => [
-				Configuration::$ROLE_USER,
-				Configuration::$ROLE_NSS,
-			],
-			'ACE_ACCEPT' => [
-				Configuration::$ROLE_ME,
-				Configuration::$ROLE_NSS,
-			],
-			'ACE_OPEN' => [
-				Configuration::$ROLE_NSS,
-			],
-			'ACE_COMPLETE' => [
-				Configuration::$ROLE_USER,
-			],
-			'ACE_CLOSE' => [
-				Configuration::$ROLE_NSS,
-			],
+			'ACE_NEW'       => [Configuration::$ROLE_USER, Configuration::$ROLE_NSS],
+			'ACE_AGREE'     => [Configuration::$ROLE_USER, Configuration::$ROLE_NSS],
+			'ACE_ACCEPT'    => [Configuration::$ROLE_ME, Configuration::$ROLE_NSS],
+			'ACE_OPEN'      => [Configuration::$ROLE_NSS],
+			'ACE_COMPLETE'  => [Configuration::$ROLE_USER],
+			'ACE_CLOSE'     => [Configuration::$ROLE_NSS],
 		];
+		// и в каждую роль добавим АДМИНА. На то он и админ
+		foreach ($this->grants as $ace => $roles) $this->grants[$ace][] = Configuration::$ROLE_ADMIN;
 
 		// сформируем и проинициализируем модель по умолчанию
 		// для текущего контроллера.
@@ -163,7 +150,7 @@ class CController {
 		$result |= in_array($my_role, get_param($this->grants, $ace, []));
 		if ($department_id !== null) {
 			// Если нужно проверить идентификатор отдела (ННСа это не касается)
-			$result &= $my_role === Configuration::$ROLE_NSS ?: $department_id === $my_dep;
+			$result &= in_array($my_role, [Configuration::$ROLE_NSS, Configuration::$ROLE_ADMIN]) ?: $department_id === $my_dep;
 		}
 
 		return $result;

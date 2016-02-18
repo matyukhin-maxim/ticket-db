@@ -12,11 +12,16 @@ define('STATUS_ARCHIVE'   ,10); // Архивная заявка
 
 class Configuration {
 
+
 	public static $connection = [
 		'host' => 'localhost',
 		'user' => 'root',
 		'pass' => 'fell1x',
 		'base' => '',
+//		'host' => 'tech-db',
+//		'user' => 'bid-user',
+//		'pass' => 'bid-user',
+//		'base' => 'bid',
 	];
 
 	public static $scriptList = [
@@ -39,6 +44,8 @@ class Configuration {
 	public static $ROLE_NSS   = "1";
 	public static $ROLE_ME    = "2";
 	public static $ROLE_USER  = "3";
+	public static $ROLE_READ  = "4";
+	public static $ROLE_ADMIN = "5";
 
 	public static $passkey = 'qicjlG528b5SOE63cGsFeXKmiZ02Kl32';
 
