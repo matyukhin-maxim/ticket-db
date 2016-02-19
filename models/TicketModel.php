@@ -134,6 +134,10 @@ class TicketModel extends CModel {
 			'tid' => $ticket_id,
 		]);
 		$data['review'] = get_param($row, 0);
+		$extra = $this->select('SELECT data FROM bid.information WHERE ticket_id = :tid AND deleted = 0', [
+			'tid' => $ticket_id,
+		]);
+		$data['extra'] = get_param($extra, 0);
 
 		return $data;
 	}
@@ -283,9 +287,9 @@ class TicketModel extends CModel {
 		$cnt = 0;
 
 		$result = $this->select('
-			select id, fullname
-			from openid.personal
-			where fullname like :filter', ['filter' => $pname], $cnt);
+			SELECT id, fullname
+			FROM openid.personal
+			WHERE fullname LIKE :filter', ['filter' => $pname], $cnt);
 
 		if ($cnt > 1) {
 			var_dump($pname);
@@ -293,5 +297,16 @@ class TicketModel extends CModel {
 		}
 		$data = get_param($result, 0);
 		return $what ? get_param($data, $what) : $data;
+	}
+
+	public function deleteTicket($ticket_id, $reason = 'Без комментариев') {
+
+		$res = 0;
+		$this->select('replace into bid.information (ticket_id, data, deleted) VALUES (:tid, :reason, 0)', [
+			'tid' => $ticket_id,
+			'reason' => $reason,
+		], $res);
+
+		return $res > 0;
 	}
 }

@@ -1,5 +1,11 @@
 </div>
 
+<div class="modal fade" tabindex="-1" role="dialog" id="popup-dialog" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content"></div>
+	</div>
+</div>
+
 <footer class="navbar navbar-default navbar-fixed-bottom">
 	<div class="container">
 		<div class="row">

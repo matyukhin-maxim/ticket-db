@@ -65,7 +65,7 @@ class TicketController extends CController {
 
 		// Список узлов
 		$nodes = array_column($this->model->getNodes(), 'title', 'id');
-		foreach($nodes as $id => $title) $this->data['nodes'] .= CHtml::createOption($title, $id);
+		foreach ($nodes as $id => $title) $this->data['nodes'] .= CHtml::createOption($title, $id);
 
 		$this->data['buttons'] = join(PHP_EOL, [
 			CHtml::createButton('Сохранить черновик', [
@@ -100,6 +100,8 @@ class TicketController extends CController {
 		$ticket = $this->model->getTicketInfo($req_id);
 		$my_dep = get_param($this->authdata, 'depid');
 
+		if (get_param($this->authdata, 'role_id') === Configuration::$ROLE_NSS) $this->render('info', false);
+
 		if (!$ticket) {
 			$this->preparePopup('Заявка не найдена', 'alert-warning');
 			$this->redirect('/contents/');
@@ -132,7 +134,7 @@ class TicketController extends CController {
 
 		//$this->data['departments'] = generateOptions($departments, $adepid, 'Не требуется');
 		// Список отделов с заблокировкой текущего цеха и отметкой выбранного
-		$this->data['departments'] = CHtml::createTag('option', ['value'=>''], 'Не требуется');
+		$this->data['departments'] = CHtml::createTag('option', ['value' => ''], 'Не требуется');
 		foreach ($deplist as $id => $title) {
 			$param = [];
 			$param['value'] = $id;
@@ -182,8 +184,8 @@ class TicketController extends CController {
 			if ($ticket_status !== STATUS_OPEN) {
 				$this->preparePopup('Продливать можно только открытую заявку');
 				$this->redirect(['back' => 1]);
-			} elseif ($tdepid !== $my_dep) {
-				$this->preparePopup('Продливать можно только заявки своего цеха', 'alert-warning');
+			} elseif (!$this->isGrantToMe('ACE_PROLONG', $tdepid)) {
+				$this->preparePopup('Не достаточно прав для продления заявки', 'alert-warning');
 				$this->redirect(['back' => 1]);
 			}
 			// по сути, мы открывем текущую заявку подменив ей статус на черновик,
@@ -322,7 +324,6 @@ class TicketController extends CController {
 			$cmod = new ContentsModel();
 			$all = array_column($cmod->getTicketListByStatus($ticket_status, $my_dep), 'id');
 			$idx = array_search($req_id, $all);
-			$prev = $next = null;
 			$prev = get_param($all, $idx - 1);
 			$next = get_param($all, $idx + 1);
 
@@ -332,6 +333,9 @@ class TicketController extends CController {
 					'class' => 'btn btn-default strong' . ($prev ? '' : ' disabled'),
 					'href' => ($prev ? $this->createActionUrl("edit/$prev") : '#'),
 				], [CHtml::createIcon('chevron-left'), 'Предыдущая']),
+				CHtml::createButton(sprintf("%d из %d", $idx + 1, count($all)), [
+					'disabled' => true,
+				]),
 				CHtml::createTag('a', [
 					'class' => 'btn btn-default strong' . ($next ? '' : ' disabled'),
 					'href' => ($next ? $this->createActionUrl("edit/$next") : '#'),
@@ -435,6 +439,17 @@ class TicketController extends CController {
 					//$this->model->setTicketStatus($req_id, STATUS_ACCEPT, 0);
 				}
 
+				if ($this->isGrantToMe('ACE_DELETE')) {
+					$this->data['buttons'] .= CHtml::createButton('Удалить заявку', [
+						'class' => 'btn btn-danger',
+						'id' => 'delete-btn',
+						'data-toggle' => 'modal',
+						'data-target' => '#popup-dialog',
+						'href' => "/ticket/inputreason/$req_id/",
+					]);
+					//$this->scripts[] = 'delete-ticket';
+				}
+
 				//if ($my_role === Configuration::$ROLE_NSS) {
 				if ($this->isGrantToMe('ACE_OPEN')) {
 
@@ -492,6 +507,7 @@ class TicketController extends CController {
 			case STATUS_REJECT :
 			case STATUS_CLOSE  :
 			case STATUS_ARCHIVE:
+			case STATUS_DELETE :
 
 				$template = 'ticket-preview-history';
 				$this->data['title'] = 'Просмотр заявки';
@@ -500,7 +516,7 @@ class TicketController extends CController {
 				$this->data['fire_c'] = get_param($fire_column, $dfire_c, '-');
 
 				// Для статуса ОТКЛОНЕНА/РАЗРЕШЕНА найдем причину/условие либо в согласовании, либо в разрешении
-				$reason = get_param($agree,  'reason', null);
+				$reason = get_param($agree, 'reason', null);
 				$reason = get_param($review, 'reason', $reason); //nl2br(html_entity_decode( X )) ??? [для краясвкости]
 
 				$this->data['history'] = '';
@@ -512,11 +528,14 @@ class TicketController extends CController {
 						CHtml::createTag('em', ['class' => 'col-xs-6 text-right text-muted'], sqldate2human(get_param($action, 'dt_stamp'))),
 						get_param($action, 'status_id') == STATUS_REJECT ? CHtml::createTag('div', ['class' => 'text-danger strong'], [
 							$reason ? CHtml::createTag('div', ['class' => 'col-xs-4'], 'Причина:') : '',
-							CHtml::createTag('em',  ['class' => 'col-xs-8 text-right'], $reason),
-							]) : '',
+							CHtml::createTag('em', ['class' => 'col-xs-8 text-right'], $reason),
+						]) : '',
 						get_param($action, 'status_id') == STATUS_ACCEPT ? CHtml::createTag('em', [
 							'class' => 'text-success strong text-right col-xs-12',
 						], $reason) : '',
+						get_param($action, 'status_id') == STATUS_DELETE ? CHtml::createTag('em', [
+							'class' => 'text-danger strong text-right col-xs-12',
+						], get_param($ticket, 'extra')) : '',
 					]);
 				}
 
@@ -535,11 +554,17 @@ class TicketController extends CController {
 
 	}
 
+	public function ajaxInputReason() {
+
+		$this->data['ticket'] = filter_var(get_param($this->arguments, 0), FILTER_VALIDATE_INT, [
+			'options' => ['default' => 0],
+		]);
+		echo $this->renderPartial('reason-form');
+	}
+
 	public function actionStart() {
 
 		$ticket_id = filter_var(get_param($this->arguments, 0, -1), FILTER_VALIDATE_INT);
-		$role = get_param($this->authdata, 'role_id', -1);
-
 		$fire_d = get_param($this->arguments, 1, null);
 
 		$info = $this->model->getTicketInfo($ticket_id);
@@ -549,7 +574,7 @@ class TicketController extends CController {
 			$errors = 'Запрошенная заявка не найдена.';
 		} elseif ($info['status'] != STATUS_ACCEPT) {
 			$errors = 'Заявка должна быть утверждена главным инженером.';
-		//} elseif ($role !== Configuration::$ROLE_NSS) {
+			//} elseif ($role !== Configuration::$ROLE_NSS) {
 		} elseif (!$this->isGrantToMe('ACE_OPEN')) {
 			$errors = 'Не достаточно прав для открытия заявки!';
 		}
@@ -590,6 +615,24 @@ class TicketController extends CController {
 		}
 
 		$this->redirect('/contents/');
+	}
+
+	public function actionReject() {
+
+		$ticket_id = filter_input(INPUT_POST, 'ticket_id', FILTER_VALIDATE_INT);
+		$reason = filter_input(INPUT_POST, 'reason');
+
+		if (!$this->isGrantToMe('ACE_DELETE'))
+			$this->preparePopup('Нет прав на удаление заявок!', 'alert-warning');
+		else {
+			$ok = $this->model->deleteTicket($ticket_id, $reason);
+			if ($ok) {
+				$this->model->setTicketStatus($ticket_id, STATUS_DELETE);
+				$this->preparePopup('Заявка удалена');
+			} else $this->preparePopup($this->model->getErrorList());
+		}
+
+		$this->redirect('/');
 	}
 
 	public function ajaxSave() {
@@ -838,7 +881,7 @@ class TicketController extends CController {
 			return $this->preparePopup('Запрошеная заявка не найдена');
 		} elseif (get_param($info, 'status') != STATUS_OPEN) {
 			return $this->preparePopup('Нельзя прикрыть заявку, которая не открыта', 'alert-warning');
-		//} elseif ($role !== Configuration::$ROLE_USER || get_param($info, 'department_id') !== $depid) {
+			//} elseif ($role !== Configuration::$ROLE_USER || get_param($info, 'department_id') !== $depid) {
 		} elseif (!$this->isGrantToMe('ACE_COMPLETE', get_param($info, 'department_id'))) {
 			return $this->preparePopup("Прикрыть заявку может руководитель цеха,\n который создал ее.");
 		}
@@ -866,7 +909,7 @@ class TicketController extends CController {
 			$this->preparePopup('Запрошеная заявка не найдена');
 		} elseif (get_param($info, 'status') != STATUS_COMPLETE) {
 			$this->preparePopup('Закрыть можно только прикрытую заявку', 'alert-warning');
-		//} elseif ($role !== Configuration::$ROLE_NSS) {
+			//} elseif ($role !== Configuration::$ROLE_NSS) {
 		} elseif (!$this->isGrantToMe('ACE_CLOSE')) {
 			$this->preparePopup('Не достаточно прав для выполнения операции.');
 		}

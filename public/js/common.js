@@ -42,7 +42,7 @@ $(function() {
     });
 
     // mysql ошибки или другие
-    $('#status-text:empty').closest('#status-footer').hide();
+    $('#status-text:not(:empty)').closest('#status-footer').show();
 
     $('.selectpicker').selectpicker({
         dropupAuto : false
@@ -55,7 +55,9 @@ $(function() {
     });
 
     $('[data-toggle="popover"]').popover();
+    $('.modal').on('hide.bs.modal', function (e) {
+        $(this).removeData('bs.modal');
+    });
 
     showPopup();
-
 });

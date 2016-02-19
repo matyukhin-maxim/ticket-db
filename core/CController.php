@@ -39,8 +39,11 @@ class CController {
 			'ACE_OPEN'      => [Configuration::$ROLE_NSS],
 			'ACE_COMPLETE'  => [Configuration::$ROLE_USER],
 			'ACE_CLOSE'     => [Configuration::$ROLE_NSS],
+			'ACE_PROLONG'   => [Configuration::$ROLE_USER, Configuration::$ROLE_NSS],
+			'ACE_DELETE'    => [Configuration::$ROLE_NSS],
 		];
-		// и в каждую роль добавим АДМИНА. На то он и админ
+
+		// и к каждуму гранту добавим роль АДМИНА. На то он и админ
 		foreach ($this->grants as $ace => $roles) $this->grants[$ace][] = Configuration::$ROLE_ADMIN;
 
 		// сформируем и проинициализируем модель по умолчанию

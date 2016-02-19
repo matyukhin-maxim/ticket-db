@@ -10,6 +10,7 @@ class ContentsController extends CController {
 		STATUS_OPEN => 'Открытые',
 		STATUS_COMPLETE => 'Прикрытые',
 		STATUS_REJECT => 'Отказанные',
+		STATUS_DELETE => 'Удаленные',
 		STATUS_CLOSE => 'Закрытые',
 	];
 
@@ -49,7 +50,6 @@ class ContentsController extends CController {
 
 	public function actionIndex() {
 
-		//$this->render('info', false);
 		$this->render('list');
 	}
 

@@ -33,7 +33,9 @@ class CModel {
 			} catch (Exception $exc) {
 
 				self::$db = null;
-				self::$errorlist[] = 'База данных не доступна! ' . $exc->getMessage();
+				$text = $exc->getMessage();
+				charsetChange($text);
+				self::$errorlist[] = 'База данных не доступна! ' . $text;
 			}
 		}
 	}
