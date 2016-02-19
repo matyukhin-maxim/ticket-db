@@ -7,7 +7,6 @@
 	<div class="modal-body compact">
 		<div class="form-group no-pad">
 			<input type="hidden" name="ticket_id" value="<?= $ticket; ?>">
-			<label for="message-text" class="control-label">Причина удаления</label>
 			<textarea class="form-control" id="message-text" name="reason" required
 			          placeholder="Описание причины удаления согласованной заявки"></textarea>
 		</div>
