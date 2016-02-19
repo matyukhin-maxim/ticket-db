@@ -333,7 +333,11 @@ class TicketController extends CController {
 					'class' => 'btn btn-default strong' . ($prev ? '' : ' disabled'),
 					'href' => ($prev ? $this->createActionUrl("edit/$prev") : '#'),
 				], [CHtml::createIcon('chevron-left'), 'Предыдущая']),
-				CHtml::createButton(sprintf("%d из %d", $idx + 1, count($all))),
+				CHtml::createButton(sprintf("%d из %d", $idx + 1, count($all)), [
+					'class' => 'btn btn-default strong',
+				    'disabled' => true,
+				    'style' => 'color: #000',
+				]),
 				CHtml::createTag('a', [
 					'class' => 'btn btn-default strong' . ($next ? '' : ' disabled'),
 					'href' => ($next ? $this->createActionUrl("edit/$next") : '#'),
