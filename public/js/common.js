@@ -25,6 +25,10 @@ $(function() {
 
     moment.locale('ru');
 
+    $('a.disabled').click(function (e) {
+        e.preventDefault();
+    });
+
     $('.input-group.date > input').prop('readonly', true);
     $('.input-group.date').datetimepicker({
         format: 'DD.MM.YYYY HH:mm',
