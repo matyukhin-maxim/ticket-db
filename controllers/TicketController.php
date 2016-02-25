@@ -100,7 +100,7 @@ class TicketController extends CController {
 		$ticket = $this->model->getTicketInfo($req_id);
 		$my_dep = get_param($this->authdata, 'depid');
 
-		if (get_param($this->authdata, 'role_id') === Configuration::$ROLE_NSS) $this->render('info', false);
+		//if (get_param($this->authdata, 'role_id') === Configuration::$ROLE_NSS) $this->render('info', false);
 
 		if (!$ticket) {
 			$this->preparePopup('Заявка не найдена', 'alert-warning');
@@ -207,7 +207,7 @@ class TicketController extends CController {
 		// обходим перечень устройств указанных в заявке
 		foreach ($devs as $item_id) {
 			// получаем название из списка
-			$devname = get_param($dlist, $item_id);
+			$devname = get_param($dlist, $item_id, '???');
 
 			$this->data['mark'] = 1;
 			$this->data['dev_name'] = $devname;
@@ -627,7 +627,7 @@ class TicketController extends CController {
 		if (!$this->isGrantToMe('ACE_DELETE'))
 			$this->preparePopup('Нет прав на удаление заявок!', 'alert-warning');
 		else {
-			$ok = $this->model->deleteTicket($ticket_id, $reason);
+			$ok = $this->model->deleteTicket($ticket_id, mb_capitalize($reason));
 			if ($ok) {
 				$this->model->setTicketStatus($ticket_id, STATUS_DELETE);
 				$this->preparePopup('Заявка удалена');

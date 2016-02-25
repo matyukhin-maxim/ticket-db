@@ -123,7 +123,7 @@ class CController {
 		}
 	}
 
-	public function createActionUrl($pAction) {
+	public function createActionUrl($pAction, $pArguments = null) {
 		return sprintf("/%s/%s/", strtolower($this->classname), $pAction);
 	}
 
@@ -152,7 +152,7 @@ class CController {
 		$result = false;
 		$result |= in_array($my_role, get_param($this->grants, $ace, []));
 		if ($department_id !== null) {
-			// Если нужно проверить идентификатор отдела (ННСа это не касается)
+			// Если нужно проверить идентификатор отдела (ННСа и Админа это не касается)
 			$result &= in_array($my_role, [Configuration::$ROLE_NSS, Configuration::$ROLE_ADMIN]) ?: $department_id === $my_dep;
 		}
 
