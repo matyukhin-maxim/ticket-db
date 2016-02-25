@@ -18,17 +18,15 @@
 			        data-live-search="true" data-size="15">
 				<?= $nodes; ?>
 			</select>
-			<br>
-			<div class="alert alert-info strong clearfix">
-				<span class="badge pull-right strong font-big" id="dev-cnt">0</span>
-				Количество механизмов в узле:
-			</div>
-
+			<br><br><br><br><br><br><br><br><br><br>
 			<button class="btn btn-danger btn-block italic" id="del-node" disabled>Удалить выбранный узел</button>
 		</div>
 		<div class="col-md-7">
 			<div class="panel panel-default">
-				<div class="panel-heading strong">Механизмы узла</div>
+				<div class="panel-heading strong">
+					Механизмы узла
+					<kbd class="badge pull-right strong font-big" id="dev-cnt">0</kbd>
+				</div>
 				<div class="panel-body strong compact" id="dev-list">
 					<div class="alert alert-warning strong text-center">Узел не выбран</div>
 				</div>

@@ -78,7 +78,7 @@
 								<div class="pull-right badge" id="dev-cnt">0</div>
 								<span class="text-info">Выбрано механизмов:</span>
 							</div>
-							<a href="/devices/" class="btn btn-default btn-block strong">Новый узел и механизм</a>
+							<a href="/devices/" class="btn btn-default btn-block strong">Новый узел или механизм</a>
 						</div>
 						<div class="col-xs-8">
 							<label class="control-label">Механизмы :</label>
