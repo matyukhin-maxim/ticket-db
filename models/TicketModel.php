@@ -292,8 +292,10 @@ class TicketModel extends CModel {
 			WHERE fullname LIKE :filter', ['filter' => $pname], $cnt);
 
 		if ($cnt > 1) {
-			var_dump($pname);
-			var_dump($result);
+			var_dump([
+				'query' => $pname,
+				'response' => $result,
+			]);
 		}
 		$data = get_param($result, 0);
 		return $what ? get_param($data, $what) : $data;

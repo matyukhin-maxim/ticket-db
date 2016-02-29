@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 set_time_limit(0);
 error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
 
-chdir(dirname(__FILE__));
+//chdir(dirname(__FILE__));
 
 require_once 'config/Config.php';
 require_once 'core/CModel.php';
@@ -14,7 +14,7 @@ require_once 'core/Pager.php';
 require_once 'core/Session.php';
 require_once 'core/CHtml.php';
 
-$query = strtolower(rtrim(get_param($_GET, 'url', 'index'), '/'));
+$query = strtolower(rtrim(get_param($_GET, 'url', 'contents'), '/')); // Убрем лишний редирект с index
 $url = explode('/', $query);
 
 mb_internal_encoding("UTF-8");

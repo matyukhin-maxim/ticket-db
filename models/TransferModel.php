@@ -72,6 +72,11 @@ class TransferModel extends CModel {
 		return $this->select('SELECT * FROM oper.users WHERE char_length(fname) <= 1');
 	}
 
+	public function getAllOperNames() {
+
+		return $this->select('SELECT * FROM oper.users');
+	}
+
 	public function setOperName($uid, $full) {
 
 		$parts = explode(' ', $full);
@@ -82,6 +87,14 @@ class TransferModel extends CModel {
 			'fn' => get_param($parts, 1),
 			'pn' => get_param($parts, 2),
 		], $res);
+
+		return $res > 0;
+	}
+
+	public function setOperTabel($uid, $full) {
+
+		$res = 0;
+		$this->select('update oper.users set tabnom = :tn where id = :uid', ['tn' => $full, 'uid' => $uid], $res);
 
 		return $res > 0;
 	}

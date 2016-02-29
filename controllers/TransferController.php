@@ -17,7 +17,7 @@ class TransferController extends CController {
 	public function __construct() {
 		parent::__construct();
 
-		$basename = 'd:\J_Z_BE.mdb';
+		$basename = 'd:\OLD_MDB\J_Z_BE.mdb';
 		$dns = sprintf('odbc:Driver={Microsoft Access Driver (*.mdb)};Dbq=%s;Uid=Admin', $basename);
 
 		$this->qerrors = [];
@@ -320,6 +320,40 @@ class TransferController extends CController {
 		}
 
 		if ($result) var_dump($cache);
+		$this->model->stopTransaction($result);
+
+		$this->render('');
+	}
+
+	public function actionSetOperTabel() {
+
+		$this->render('', false);
+		$personal = $this->model->getAllOperNames();
+
+		$tmod = new TicketModel();
+
+		$cache = [];
+		$result = 1;
+		$this->model->startTransaction();
+
+		foreach ($personal as $user) {
+
+			//$short = trim(join(' ', get_array_part($user, 'lname fname pname')));
+			$short = get_param($user, 'lname');
+			$short .= ' ' . mb_substr(get_param($user, 'fname'), 0, 1);
+			$short .= ' ' . mb_substr(get_param($user, 'pname'), 0, 1);
+
+			$full = $tmod->findPersonByName($short, 'id');
+			if ($full) {
+				$uid = get_param($user, 'id');
+				$result *= $this->model->setOperTabel($uid, $full);
+			} else {
+				$cache[] = $short;
+			}
+		}
+
+		//if ($result)
+		var_dump($cache);
 		$this->model->stopTransaction($result);
 
 		$this->render('');
