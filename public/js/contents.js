@@ -13,12 +13,17 @@ $(function () {
 
         e.preventDefault();
 
-        $('.menu > li').removeClass('active');
-        self.closest('li').addClass('active');
+        //$('.menu > li').removeClass('active');
+        //self.closest('li').addClass('active');
         var type = self.data('type');
+        //$('#ticket-list').html($('<tr/>').addClass('warning text-center strong').html('<td colspan="6">Загрузка...</td>'));
+        //$('#ticket-list').html('');
 
         $.post('/contents/list/', {type: type},
             function (data) {
+                $('.menu > li').removeClass('active');
+                self.closest('li').addClass('active');
+
                 $('#ticket-list').html(data);
                 $('[data-toggle="popover"]').popover({html:true});
             });
