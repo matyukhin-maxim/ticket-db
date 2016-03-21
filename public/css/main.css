@@ -23,6 +23,7 @@ body {
     background: url("../coal.jpg") fixed;
     /*background-size: 100% 100%;*/
     opacity: 0.95;
+	filter: Alpha(Opacity=95); /* support: IE8 */
 }
 
 .panel-response {
@@ -334,6 +335,10 @@ textarea.reason {
     max-height: 300px;
 
     overflow-y: auto;
+}
+
+a:focus, a:hover {
+    outline: none; !important;
 }
 
 .font-big {font-size: 1.2em;}

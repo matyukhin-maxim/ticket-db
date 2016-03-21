@@ -18,6 +18,7 @@ $query = strtolower(rtrim(get_param($_GET, 'url', 'contents'), '/')); // Убр�
 $url = explode('/', $query);
 
 mb_internal_encoding("UTF-8");
+//mb_regex_encoding("UTF-8");
 Session::start();
 
 try {

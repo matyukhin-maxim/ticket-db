@@ -84,6 +84,5 @@ $(function () {
         $(this).data("DateTimePicker").minDate(moment($('#dcurrent').val(), 'DD.MM.YYYY'));
     });
 
-
     updateDevs(true);
 });

@@ -187,7 +187,9 @@ function sqldate2human($dbdate, $format = "d.m.Y H:i") {
  */
 function makeSortName($fullname) {
 
-	$parts = preg_split('/\s+/', $fullname);
+	$parts = preg_split('/\s+/u', $fullname);
+	//$parts = mb_split('\s+', $fullname);
+	//var_dump($parts);
 	$result = '';
 	foreach ($parts as $next) $result .= ' ' . ($result ? mb_substr($next, 0, 1) . '.' : $next);
 	return trim($result);

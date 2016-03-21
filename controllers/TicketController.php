@@ -40,7 +40,7 @@ class TicketController extends CController {
 			$this->render('');
 			return;
 		}
-
+		
 		$this->data['title'] = 'Новая заявка';
 		$this->data['t_number'] = '-';
 		$this->data['t_cdate'] = date('d.m.Y');
@@ -920,7 +920,7 @@ class TicketController extends CController {
 		if ($ok) $this->model->setTicketStatus($ticket_id, STATUS_CLOSE);
 
 		$this->preparePopup('Заявка закрыта.', 'alert-info');
-		$this->redirect(['back' => 1]);
+		$this->redirect('/contents/');
 	}
 
 }
