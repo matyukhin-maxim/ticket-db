@@ -78,7 +78,8 @@
 								<div class="pull-right badge" id="dev-cnt">0</div>
 								<span class="text-info">Выбрано механизмов:</span>
 							</div>
-							<a href="/devices/" class="btn btn-default btn-block strong" id="newdev">Новый узел или механизм</a>
+							<a href="/devices/" class="btn btn-default btn-block strong" id="newdev">Новый узел или
+								механизм</a>
 						</div>
 						<div class="col-xs-8">
 							<label class="control-label">Механизмы :</label>
@@ -98,6 +99,9 @@
 			<div class="panel-footer">
 				<div class="row">
 					<div class="col-xs-12">
+						<div class="pull-left text-danger italic strong control-label">
+							Проверяйте правильность заполнения перед отправкой на согласование.
+						</div>
 						<div class="pull-right">
 							<div class="btn-toolbar">
 								<?= $buttons; ?>
