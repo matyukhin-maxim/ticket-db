@@ -5,14 +5,16 @@ class AuthController extends CController {
 
 	public function actionIndex() {
 
-		$needHelp = filter_input(INPUT_COOKIE, 'no-help', FILTER_VALIDATE_INT) ?: 0;
-		if ($needHelp === 0) $this->redirect('/about/');
+		//$needHelp = filter_input(INPUT_COOKIE, 'no-help', FILTER_VALIDATE_INT) ?: 0;
+		//if ($needHelp === 0) $this->redirect('/about/');
 
 		Session::del('auth');
 		Session::destroy();
-		$this->scripts[] = 'auth';
-		$this->render('form');
-		//$this->redirect('http://auth-server.asu.ngres/');
+		//$this->scripts[] = 'auth';
+		//$this->render('form');
+		if (isPOST()) return $this->actionOpenID();
+
+		$this->redirect('http://openid.asu.ngres/');
 	}
 
 	public function actionThx() {
@@ -37,6 +39,30 @@ class AuthController extends CController {
 		}
 
 		echo 'error';
+	}
+
+	public function actionOpenID() {
+
+		$login = filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_STRING);
+
+		$this->authdata = $this->model->openAuth($login);
+		if (!$this->authdata) {
+			$this->preparePopup("Ошибка авторизации.\nНет информации о данном пользователе.\nОбратитесь в отдел АСУ");
+		} elseif (!get_param($this->authdata, 'rolename')) {
+			$this->preparePopup("Роль пользователя не определена.\nОбратитесь в отдел АСУ.", 'alert-warning');
+		} else {
+			Session::set('auth', $this->authdata);
+		}
+
+		$this->render('', false);
+		$this->redirect([
+			'location' => '/',
+			'soft' => intval($this->authdata === false),
+			'delay' => 5,
+		]);
+		$this->render('');
+
+		return 0;
 	}
 
 	public function actionLogout() {

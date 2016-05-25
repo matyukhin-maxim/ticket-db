@@ -11,6 +11,9 @@ define('STATUS_CLOSE'     , 8); // закрыта
 define('STATUS_DELETE'    ,20); // Удаленная заявка (но не скрытая)
 define('STATUS_ARCHIVE'   ,90); // Архивная заявка
 
+// Ключ для расшифровки авторизационных данных
+define('PASSKEY', 'qicjlG528b5SOE63cGsFeXKmiZ02Kl32');
+
 class Configuration {
 
 
@@ -47,7 +50,5 @@ class Configuration {
 	public static $ROLE_USER  = "3";
 	public static $ROLE_READ  = "4";
 	public static $ROLE_ADMIN = "5";
-
-	public static $passkey = 'qicjlG528b5SOE63cGsFeXKmiZ02Kl32';
 
 }

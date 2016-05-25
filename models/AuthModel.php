@@ -25,6 +25,27 @@ class AuthModel extends CModel {
 		return $data;
 	}
 
+	public function openAuth($p_login) {
+
+		$auth = $this->select('
+		SELECT
+			u.id, u.fullname, u.role_id, u.department_id depid,
+			u.login, r.rolename, d.name depname
+		FROM bid.users u
+		LEFT JOIN bid.roles r ON u.role_id = r.id
+		LEFT JOIN bid.departments d ON d.id = u.department_id
+		WHERE u.deleted = 0
+			AND u.id = :login', [
+			'login' => $p_login,
+		]);
+
+		// если пользователь не найден, то пытаться определить его првава нет никакого смысла
+		if (!$auth) return false;
+
+		$data = get_param($auth, 0);
+		return $data;
+	}
+
 	public function getUsers($filter, $limit = 0) {
 
 		if (empty($filter)) return [];
