@@ -13,8 +13,9 @@ require_once 'core/Routine.php';
 require_once 'core/Pager.php';
 require_once 'core/Session.php';
 require_once 'core/CHtml.php';
+require_once 'core/Cipher.php';
 
-$query = strtolower(rtrim(get_param($_GET, 'url', 'contents'), '/')); // Убрем лишний редирект с index
+$query = (rtrim(get_param($_GET, 'url', 'contents'), '/')); // Убрем лишний редирект с index
 $url = explode('/', $query);
 
 mb_internal_encoding("UTF-8");
